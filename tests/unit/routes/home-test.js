@@ -1,5 +1,5 @@
 import { module, test } from 'qunit';
-import { setupTest } from 'portfolio/tests/helpers';
+import { setupTest } from '../../helpers';
 
 module('Unit | Route | home', function (hooks) {
   setupTest(hooks);
