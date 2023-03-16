@@ -7,4 +7,9 @@ if (!storageUsers) {
   getUsers();
 }
 
-export default class HomeRoute extends Route {}
+export default class HomeRoute extends Route {
+  model() {
+    console.log('The model hook for home just ran!');
+    return 'Hello Ember!';
+  }
+}
