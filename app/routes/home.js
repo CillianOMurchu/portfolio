@@ -17,7 +17,6 @@ export default class HomeRoute extends Route {
     // console.log('running in model callback');
     // const baseUrl = `https://api.spotify.com/`;
     // const headers = {
-    //   Authentication: `Bearer 208a18d927d34d878d29352fc8a88296`,
     // };
     // fetch(baseUrl, headers)
     //   .then((res) => res.json())
