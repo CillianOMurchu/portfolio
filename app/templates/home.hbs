@@ -1,3 +1,8 @@
 {{page-title "Home"}}
-You are home
+You are home The tunez info is
+{{#each @model as |post|}}
+  <div>
+    {{post}}
+  </div>
+{{/each}}
 {{outlet}}

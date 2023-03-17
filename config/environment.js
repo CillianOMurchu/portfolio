@@ -6,6 +6,10 @@ module.exports = function (environment) {
     environment,
     rootURL: '/',
     locationType: 'history',
+    // spotify
+    SPOTIFY_CLIENT_ID: '78fcfc145ca04d6b8b33ef85599f00f3',
+    SPOTIFY_AUTHORIZE_URL: 'https://accounts.spotify.com/authorize',
+    SPOTIFY_REDIRECT_URL: 'http://localhost:4200/redirect',
     EmberENV: {
       EXTEND_PROTOTYPES: false,
       FEATURES: {
