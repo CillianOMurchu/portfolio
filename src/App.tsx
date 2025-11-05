@@ -70,7 +70,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header 
-        title="Script Portfolio"
+        title="Portfolio"
         subtitle="A collection of creative stories and screenplay ideas, from concept to completion."
       />
       
