@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "scrape-logos": "tsx logo-scraper.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
@@ -41,7 +42,9 @@
     "globals": "^16.4.0",
     "jsdom": "^27.0.1",
     "postcss": "^8.5.6",
+    "puppeteer": "^24.29.0",
     "tailwindcss": "^3.4.18",
+    "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",
     "vite": "^7.1.7",

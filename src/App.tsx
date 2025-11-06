@@ -105,15 +105,9 @@ const LogoutButton: React.FC<{
         </h1>
       </ShimmerEffect>
 
-      {/* 3D Rotating Icons Display */}
-      <div className="mb-8">
-        <RotatingIcons3D className="rounded-lg shadow-lg mx-auto" />
-      </div>
-
       {/* Canvas-based Word Sphere */}
-      <div className="mb-8 flex justify-center">
+      <div className="mb-8 flex justify-center" style={{ marginLeft: '-10px' }}>
         <ThreeDBall 
-          words={['React', 'TypeScript', 'JavaScript', 'Node.js', 'Python', 'Three.js', 'Vite', 'Tailwind']} 
           options={{ width: 352, height: 352, radius: 120 }}
         />
       </div>

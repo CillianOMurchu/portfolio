@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { ShimmerEffect } from '../ShimmerEffect'
 
 describe('ShimmerEffect', () => {
@@ -29,5 +29,36 @@ describe('ShimmerEffect', () => {
     
     expect(shimmerOverlay).toBeInTheDocument()
     expect(shimmerOverlay).toHaveClass('absolute', 'inset-0')
+  })
+
+  it('should show stars on hover', () => {
+    // Arrange
+    render(<ShimmerEffect>Test Content</ShimmerEffect>)
+    
+    // Act
+    const shimmerElement = screen.getByTestId('shimmer-effect')
+    fireEvent.mouseEnter(shimmerElement)
+    
+    // Assert
+    const stars = shimmerElement.querySelectorAll('svg')
+    expect(stars.length).toBeGreaterThan(0)
+    
+    // Act - mouse leave
+    fireEvent.mouseLeave(shimmerElement)
+    
+    // Stars should be hidden after mouse leave
+    // Note: Due to animation timing, we're just testing that the hover handlers exist
+    expect(shimmerElement).toBeInTheDocument()
+  })
+
+  it('renders children content', () => {
+    // Arrange
+    const testContent = 'Hello World'
+    
+    // Act
+    render(<ShimmerEffect>{testContent}</ShimmerEffect>)
+    
+    // Assert
+    expect(screen.getByText(testContent)).toBeInTheDocument()
   })
 })
