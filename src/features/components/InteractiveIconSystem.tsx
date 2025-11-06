@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TechInfo } from '../types/interactiveIcon';
 
@@ -21,123 +21,67 @@ export const InteractiveIconSystem: React.FC<InteractiveIconSystemProps> = ({
 }) => {
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [infoPanelVisible, setInfoPanelVisible] = useState(false);
-  const [lineProgress, setLineProgress] = useState(0);
   const [panelPosition, setPanelPosition] = useState({ x: 0, y: 0 });
-  const [lineStart, setLineStart] = useState({ x: 0, y: 0 });
-  const [lineEnd, setLineEnd] = useState({ x: 0, y: 0 });
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'lineGrow' | 'iconTravel' | 'absorb' | 'return'>('idle');
-  const [travelProgress, setTravelProgress] = useState(0);
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'absorb'>('idle');
+
+  // Use ref to avoid recreating handleIconClick when animation state changes
+  const animationPhaseRef = useRef(animationPhase);
+  animationPhaseRef.current = animationPhase;
 
   const handleIconClick = useCallback((iconKey: string, position: { x: number; y: number }) => {
-    if (animationPhase !== 'idle' || !iconData[iconKey]) return;
+    // Use refs to access current state without triggering dependency changes
+    if (animationPhaseRef.current !== 'idle' || !iconData[iconKey]) return;
 
     setSelectedIcon(iconKey);
-    setAnimationPhase('lineGrow');
+    setAnimationPhase('absorb'); // Skip line and travel animations
     
-    // Calculate panel position (adaptive based on click position)
+    // Get the actual position relative to the viewport
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
     
-    // Choose side based on click position to avoid screen edges
-    const shouldPlaceRight = position.x < windowWidth * 0.6;
+    // Convert canvas-relative position to viewport position
+    const canvasElement = document.querySelector('canvas');
+    let actualStartX = position.x;
+    let actualStartY = position.y;
+    
+    if (canvasElement) {
+      const canvasRect = canvasElement.getBoundingClientRect();
+      actualStartX = canvasRect.left + position.x;
+      actualStartY = canvasRect.top + position.y;
+    }
+    
+    // Choose optimal panel position - prefer right side with good spacing
     const panelWidth = 400;
     const panelHeight = 300;
     
-    const panelX = shouldPlaceRight 
-      ? Math.min(windowWidth - panelWidth - 20, position.x + 200)
-      : Math.max(20, position.x - panelWidth - 50);
+    // Calculate best position for panel (prefer right side, avoid edges)
+    let panelX;
     
-    const panelY = Math.max(20, Math.min(windowHeight - panelHeight - 20, position.y - 150));
+    // Try right side first
+    if (actualStartX + 250 + panelWidth < windowWidth - 20) {
+      panelX = actualStartX + 250;
+    } else {
+      // Place on left side
+      panelX = Math.max(20, actualStartX - 250 - panelWidth);
+    }
+    
+    // Center vertically relative to the icon, but keep within bounds
+    const panelY = Math.max(20, Math.min(windowHeight - panelHeight - 20, actualStartY - panelHeight / 2));
     
     setPanelPosition({ x: panelX, y: panelY });
-    setLineStart(position);
-    setLineEnd({ x: panelX + panelWidth / 2, y: panelY + panelHeight / 2 });
     
-    // Start line growth animation
-    const startTime = Date.now();
-    const duration = 600;
-    
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(1, elapsed / duration);
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
-      
-      setLineProgress(easedProgress);
-      
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        setInfoPanelVisible(true);
-        setAnimationPhase('iconTravel');
-        // Start icon travel
-        setTimeout(() => {
-          // Start icon travel animation
-          const travelStartTime = Date.now();
-          const travelDuration = 800;
-          
-          const travelAnimate = () => {
-            const travelElapsed = Date.now() - travelStartTime;
-            const travelProgress = Math.min(1, travelElapsed / travelDuration);
-            const easedTravelProgress = travelProgress < 0.5 
-              ? 2 * travelProgress * travelProgress 
-              : 1 - Math.pow(-2 * travelProgress + 2, 3) / 2;
-            
-            setTravelProgress(easedTravelProgress);
-            
-            if (travelProgress < 1) {
-              requestAnimationFrame(travelAnimate);
-            } else {
-              setAnimationPhase('absorb');
-            }
-          };
-          
-          requestAnimationFrame(travelAnimate);
-        }, 100);
-      }
-    };
-    
-    requestAnimationFrame(animate);
-  }, [iconData, animationPhase]);
+    // Show info panel immediately
+    setInfoPanelVisible(true);
+  }, [iconData]); // Only depend on iconData, not animation state
 
   const handlePanelClose = useCallback(() => {
-    if (animationPhase === 'absorb' || animationPhase === 'iconTravel') {
-      // Start return animation
-      const startTime = Date.now();
-      const duration = 1000;
-      
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(1, elapsed / duration);
-        
-        // Reverse travel progress
-        setTravelProgress(1 - progress);
-        
-        // Shrink line
-        setLineProgress(1 - progress);
-        
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          // Reset everything
-          setSelectedIcon(null);
-          setInfoPanelVisible(false);
-          setLineProgress(0);
-          setTravelProgress(0);
-          setAnimationPhase('idle');
-        }
-      };
-      
-      requestAnimationFrame(animate);
-    }
-  }, [animationPhase]);
+    // Instantly close and reset everything
+    setSelectedIcon(null);
+    setInfoPanelVisible(false);
+    setAnimationPhase('idle');
+  }, []);
 
   const selectedTechInfo = selectedIcon ? iconData[selectedIcon] : null;
-
-  // Calculate icon current position during travel
-  const currentIconPosition = {
-    x: lineStart.x + (lineEnd.x - lineStart.x) * travelProgress,
-    y: lineStart.y + (lineEnd.y - lineStart.y) * travelProgress
-  };
 
   return (
     <>
@@ -146,102 +90,6 @@ export const InteractiveIconSystem: React.FC<InteractiveIconSystemProps> = ({
         selectedIcon,
         isAnimating: animationPhase !== 'idle'
       })}
-      
-      {/* Animated Line */}
-      <AnimatePresence>
-        {lineProgress > 0 && (
-          <div className="fixed inset-0 pointer-events-none z-40">
-            <svg className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
-              {/* Glowing background line */}
-              <motion.line
-                x1={lineStart.x}
-                y1={lineStart.y}
-                x2={lineStart.x + (lineEnd.x - lineStart.x) * lineProgress}
-                y2={lineStart.y + (lineEnd.y - lineStart.y) * lineProgress}
-                stroke="#3B82F6"
-                strokeWidth="6"
-                strokeOpacity={0.3}
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: lineProgress }}
-                transition={{ duration: 0.1, ease: "linear" }}
-              />
-              
-              {/* Main line */}
-              <motion.line
-                x1={lineStart.x}
-                y1={lineStart.y}
-                x2={lineStart.x + (lineEnd.x - lineStart.x) * lineProgress}
-                y2={lineStart.y + (lineEnd.y - lineStart.y) * lineProgress}
-                stroke="#3B82F6"
-                strokeWidth="2"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: lineProgress }}
-                transition={{ duration: 0.1, ease: "linear" }}
-              />
-              
-              {/* Animated dots along the line */}
-              {lineProgress > 0.1 && (
-                <>
-                  {[0.2, 0.4, 0.6, 0.8].map((dotProgress, index) => {
-                    if (dotProgress > lineProgress) return null;
-                    
-                    const dotX = lineStart.x + (lineEnd.x - lineStart.x) * dotProgress;
-                    const dotY = lineStart.y + (lineEnd.y - lineStart.y) * dotProgress;
-                    
-                    return (
-                      <motion.circle
-                        key={index}
-                        cx={dotX}
-                        cy={dotY}
-                        r={2}
-                        fill="#3B82F6"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 0.7 }}
-                        transition={{ 
-                          delay: dotProgress * 0.3,
-                          duration: 0.3,
-                          repeat: Infinity,
-                          repeatType: "reverse",
-                          repeatDelay: 1
-                        }}
-                      />
-                    );
-                  })}
-                </>
-              )}
-            </svg>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Traveling Icon */}
-      <AnimatePresence>
-        {travelProgress > 0 && selectedTechInfo && (
-          <motion.div
-            className="fixed z-50 pointer-events-none"
-            style={{
-              left: currentIconPosition.x - 20,
-              top: currentIconPosition.y - 20,
-            }}
-            initial={{ scale: 1 }}
-            animate={{ 
-              scale: animationPhase === 'absorb' ? 0.3 : 1,
-              rotate: travelProgress * 360
-            }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-              <img 
-                src={selectedTechInfo.image} 
-                alt={selectedTechInfo.name}
-                className="w-6 h-6"
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Info Panel */}
       <AnimatePresence>
