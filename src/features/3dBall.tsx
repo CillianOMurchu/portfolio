@@ -45,14 +45,12 @@ function loadIconFromCache(tech: string): string | null {
 }
 
 function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => void): Promise<Record<string, HTMLImageElement>> {
-  // Initialize load states with fly-in animation properties
+  // Initialize load states with dramatic dive-in animation properties
   techs.forEach(tech => {
-    // Generate random starting positions around the sphere
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 200 + Math.random() * 100; // Start 200-300px away from center
-    const startX = Math.cos(angle) * distance;
-    const startY = Math.sin(angle) * distance;
-    const startZ = (Math.random() - 0.5) * 200; // Random depth
+    // Icons start much closer to the viewer and to the side of the sphere
+    const startX = (Math.random() - 0.5) * 400; // Random horizontal spread wider
+    const startY = -50 - Math.random() * 100; // Start slightly above the sphere (-50 to -150)
+    const startZ = 300 + Math.random() * 100; // Start much closer to viewer (300-400 Z)
     
     iconLoadState[tech] = { 
       loaded: false, 
@@ -67,17 +65,23 @@ function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => vo
 
   const promises = techs.map((tech, index) => {
     return new Promise<void>((resolve) => {
-      // Calculate accelerating delay - starts slow, gets faster
-      const maxDelay = 600; // Maximum delay for first icon
-      const minDelay = 30;  // Minimum delay for last icons
+      // Calculate slower cascading delay - much more dramatic timing
+      const maxDelay = 1200; // Maximum delay for first icon (doubled)
+      const minDelay = 100;   // Minimum delay for last icons (increased)
       const progressRatio = index / Math.max(1, techs.length - 1);
       
-      // Use exponential decay for delay - starts high, drops quickly
-      const delay = maxDelay * Math.pow(0.1, progressRatio * 1.5) + minDelay;
+      // Use exponential decay for delay - starts high, drops more gradually
+      const delay = maxDelay * Math.pow(0.15, progressRatio * 1.2) + minDelay;
       
       setTimeout(() => {
         if (iconCache[tech]) {
-          iconLoadState[tech] = { loaded: true, opacity: 0, loadTime: Date.now() }; // Start with 0 opacity for fade-in
+          const state = iconLoadState[tech];
+          iconLoadState[tech] = { 
+            ...state,
+            loaded: true, 
+            opacity: 0, 
+            loadTime: Date.now() 
+          }; // Start with 0 opacity for fade-in
           if (onIconLoaded) onIconLoaded(tech);
           resolve();
           return;
@@ -89,7 +93,13 @@ function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => vo
           const img = new Image();
           img.src = cachedDataUrl;
           iconCache[tech] = img;
-          iconLoadState[tech] = { loaded: true, opacity: 0, loadTime: Date.now() }; // Start with 0 opacity for fade-in
+          const state = iconLoadState[tech];
+          iconLoadState[tech] = { 
+            ...state,
+            loaded: true, 
+            opacity: 0, 
+            loadTime: Date.now() 
+          }; // Start with 0 opacity for fade-in
           if (onIconLoaded) onIconLoaded(tech);
           resolve();
           return;
@@ -107,7 +117,13 @@ function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => vo
           img.src = module.default;
           img.onload = () => {
             iconCache[tech] = img;
-            iconLoadState[tech] = { loaded: true, opacity: 0, loadTime: Date.now() };
+            const state = iconLoadState[tech];
+            iconLoadState[tech] = { 
+              ...state,
+              loaded: true, 
+              opacity: 0, 
+              loadTime: Date.now() 
+            };
             
             // Convert to data URL and cache it
             const canvas = document.createElement('canvas');
@@ -139,25 +155,36 @@ function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => vo
   return Promise.all(promises).then(() => iconCache);
 }
 
-// Update icon opacity for fade-in effect with accelerating timing
+// Update icon opacity and dramatic dive-in animation
 function updateIconOpacity(tech: string, deltaTime: number, iconIndex: number, totalIcons: number) {
   const state = iconLoadState[tech];
-  if (!state || !state.loaded) return 0;
+  if (!state || !state.loaded) return { opacity: 0, flyProgress: 0 };
   
-  if (state.opacity < 1) {
-    // Calculate fade speed based on icon index - later icons fade in faster
+  // Update dive-in progress - much slower for more dramatic effect
+  if (state.flyProgress < 1) {
+    // Calculate dive speed based on icon index - very gradual speed increase
     const progressRatio = iconIndex / Math.max(1, totalIcons - 1);
-    const speedMultiplier = 1 + (progressRatio * 2); // Speed increases from 1x to 3x
-    const fadeSpeed = 0.003 * speedMultiplier;
+    const speedMultiplier = 1 + (progressRatio * 0.3); // Speed increases from 1x to 1.3x (much more gradual)
+    const diveSpeed = 0.0008 * speedMultiplier; // Much slower base speed for dramatic dive motion
+    
+    state.flyProgress = Math.min(1, state.flyProgress + deltaTime * diveSpeed);
+  }
+  
+  // Start fading in early for visibility during dive
+  if (state.flyProgress > 0.05 && state.opacity < 1) {
+    // Calculate fade speed - also slower for better visibility
+    const progressRatio = iconIndex / Math.max(1, totalIcons - 1);
+    const speedMultiplier = 1 + (progressRatio * 1.0); // Speed increases from 1x to 2x
+    const fadeSpeed = 0.004 * speedMultiplier; // Slower fade for better control
     
     state.opacity = Math.min(1, state.opacity + deltaTime * fadeSpeed);
     
-    // Add easing for smoother animation
-    const easedOpacity = 1 - Math.pow(1 - state.opacity, 2); // Ease-out quad
+    // Add easing for smoother fade animation (ease-out quad)
+    const easedOpacity = 1 - Math.pow(1 - state.opacity, 2);
     state.opacity = easedOpacity;
   }
   
-  return state.opacity;
+  return { opacity: state.opacity, flyProgress: state.flyProgress };
 }
 
 interface WordSphereOptions {
@@ -195,7 +222,12 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
     vy: 0,
     clicked: false,
     lastX: 0,
-    lastY: 0
+    lastY: 0,
+    hovering: false,
+    lastMouseX: 0,
+    lastMouseY: 0,
+    autoRotationDirectionX: 1,
+    autoRotationDirectionZ: 1
   });
 
   useEffect(() => {
@@ -270,7 +302,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className="block"
+      className="block cursor-pointer"
       style={{ width: "352px", height: "352px" }}
     />
   );
@@ -291,6 +323,11 @@ function setupCanvas(
     clicked: boolean;
     lastX: number;
     lastY: number;
+    hovering: boolean;
+    lastMouseX: number;
+    lastMouseY: number;
+    autoRotationDirectionX: number;
+    autoRotationDirectionZ: number;
   }>
 ): () => void {
   const {
@@ -319,27 +356,78 @@ function setupCanvas(
     rotationRef.current.lastY = event.screenY;
   };
 
+  const handleMouseEnter = () => {
+    rotationRef.current.hovering = true;
+  };
+
   const handleMouseMove = (event: MouseEvent) => {
-    if (!rotationRef.current.clicked) return;
-    const dx = event.screenX - rotationRef.current.lastX;
-    const dy = event.screenY - rotationRef.current.lastY;
-    rotationRef.current.lastX = event.screenX;
-    rotationRef.current.lastY = event.screenY;
+    const rect = canvas.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Always track mouse position for exit direction calculation
+    rotationRef.current.lastMouseX = event.clientX;
+    rotationRef.current.lastMouseY = event.clientY;
+    
+    if (!rotationRef.current.clicked && rotationRef.current.hovering) {
+      // Gentle opposite movement on hover
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      
+      // Calculate distance from center (normalized to -1 to 1)
+      const deltaX = (mouseX - centerX) / (rect.width / 2);
+      const deltaY = (mouseY - centerY) / (rect.height / 2);
+      
+      // Apply gentle opposite rotation (much smaller multiplier for subtle effect)
+      const sensitivity = 0.3; // Reduced sensitivity for gentle movement
+      rotationRef.current.rx = -deltaX * sensitivity;
+      rotationRef.current.rz = deltaY * sensitivity;
+      
+      return;
+    }
+    
+    // Original drag behavior when clicked
+    if (rotationRef.current.clicked) {
+      const dx = event.screenX - rotationRef.current.lastX;
+      const dy = event.screenY - rotationRef.current.lastY;
+      rotationRef.current.lastX = event.screenX;
+      rotationRef.current.lastY = event.screenY;
 
-    // rotation update
-    rotationRef.current.rz += -dy * 0.01;
-    rotationRef.current.rx += dx * 0.01;
+      // rotation update
+      rotationRef.current.rz += -dy * 0.01;
+      rotationRef.current.rx += dx * 0.01;
 
-    // velocity update
-    rotationRef.current.vx = dx * 0.1;
-    rotationRef.current.vy = dy * 0.1;
+      // velocity update
+      rotationRef.current.vx = dx * 0.1;
+      rotationRef.current.vy = dy * 0.1;
+    }
   };
 
   const handleMouseUp = () => (rotationRef.current.clicked = false);
-  const handleMouseLeave = () => (rotationRef.current.clicked = false);
+  
+  const handleMouseLeave = () => {
+    rotationRef.current.clicked = false;
+    rotationRef.current.hovering = false;
+    
+    // Calculate exit direction and set opposite auto-rotation direction
+    const rect = canvas.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Get the last mouse position relative to center
+    const deltaX = rotationRef.current.lastMouseX - centerX;
+    const deltaY = rotationRef.current.lastMouseY - centerY;
+    
+    // Set auto-rotation to go opposite to exit direction
+    // If cursor was to the right (positive deltaX), rotate left (negative direction)
+    rotationRef.current.autoRotationDirectionX = deltaX > 0 ? -1 : 1;
+    // If cursor was below (positive deltaY), rotate up (negative direction) 
+    rotationRef.current.autoRotationDirectionZ = deltaY > 0 ? -1 : 1;
+  };
 
   // Add event listeners
   canvas.addEventListener("mousedown", handleMouseDown);
+  canvas.addEventListener("mouseenter", handleMouseEnter);
   canvas.addEventListener("mousemove", handleMouseMove);
   canvas.addEventListener("mouseup", handleMouseUp);
   canvas.addEventListener("mouseleave", handleMouseLeave);
@@ -347,6 +435,7 @@ function setupCanvas(
   // Return cleanup function to remove event listeners
   return () => {
     canvas.removeEventListener("mousedown", handleMouseDown);
+    canvas.removeEventListener("mouseenter", handleMouseEnter);
     canvas.removeEventListener("mousemove", handleMouseMove);
     canvas.removeEventListener("mouseup", handleMouseUp);
     canvas.removeEventListener("mouseleave", handleMouseLeave);
@@ -369,6 +458,11 @@ function drawCanvasWithFadeIn(
     clicked: boolean;
     lastX: number;
     lastY: number;
+    hovering: boolean;
+    lastMouseX: number;
+    lastMouseY: number;
+    autoRotationDirectionX: number;
+    autoRotationDirectionZ: number;
   },
   deltaTime: number
 ): void {
@@ -396,9 +490,66 @@ function drawCanvasWithFadeIn(
     if (i >= positions.length) return;
 
     const pos = positions[i];
-    let x = radius * pos.x;
-    let y = radius * pos.y;
-    let z = radius * pos.z;
+    const targetX = radius * pos.x;
+    const targetY = radius * pos.y;
+    const targetZ = radius * pos.z;
+
+    // Get animation state
+    const animState = updateIconOpacity(tech, deltaTime, i, techs.length);
+    const { opacity, flyProgress } = animState;
+    
+    // Skip if not visible yet
+    if (opacity <= 0) return;
+    
+    // Get starting position for dramatic rocket-ship fly-in animation
+    const state = iconLoadState[tech];
+    const startX = state?.startX || 0;
+    const startY = state?.startY || 0;
+    const startZ = state?.startZ || 0;
+    
+    // Create dramatic dive-in trajectory: hover close to viewer, then dive down into sphere
+    let x, y, z;
+    
+    if (flyProgress < 0.4) {
+      // Phase 1: Hover close to the viewer (0-40% of animation)
+      const phase1Progress = flyProgress / 0.4;
+      const easedProgress = Math.sin(phase1Progress * Math.PI * 0.5); // Gentle sine easing
+      
+      // Stay close to viewer with subtle movement
+      x = startX + (startX * 0.05) * easedProgress; // Very slight horizontal drift
+      y = startY - (30) * easedProgress; // Slight upward movement before dive
+      z = startZ - (startZ * 0.1) * easedProgress; // Move slightly further back
+      
+    } else if (flyProgress < 0.8) {
+      // Phase 2: Begin the dive (40-80% of animation)
+      const phase2Progress = (flyProgress - 0.4) / 0.4;
+      const diveProgress = phase2Progress * phase2Progress; // Quadratic acceleration for dive
+      
+      // Calculate intermediate dive position (halfway to target)
+      const midX = startX + (targetX - startX) * 0.3;
+      const midY = startY + (targetY - startY) * 0.3;
+      const midZ = startZ + (targetZ - startZ) * 0.6; // Move significantly toward sphere depth
+      
+      // Dive from hover position to intermediate position
+      x = startX + (midX - startX) * diveProgress;
+      y = (startY - 30) + (midY - (startY - 30)) * diveProgress; // From raised position
+      z = (startZ * 0.9) + (midZ - (startZ * 0.9)) * diveProgress;
+      
+    } else {
+      // Phase 3: Complete the dive to final position (80-100% of animation)
+      const phase3Progress = (flyProgress - 0.8) / 0.2;
+      const finalProgress = 1 - Math.pow(1 - phase3Progress, 2); // Ease-out quad for smooth landing
+      
+      // Calculate the intermediate position (end of phase 2)
+      const midX = startX + (targetX - startX) * 0.3;
+      const midY = startY + (targetY - startY) * 0.3;
+      const midZ = startZ + (targetZ - startZ) * 0.6;
+      
+      // Final dive from intermediate to target position
+      x = midX + (targetX - midX) * finalProgress;
+      y = midY + (targetY - midY) * finalProgress;
+      z = midZ + (targetZ - midZ) * finalProgress;
+    }
 
     // camera transform
     [y, z] = rot(y, z, tilt);
@@ -407,13 +558,13 @@ function drawCanvasWithFadeIn(
 
     // convert to cartesian and apply depth-based effects
     const baseAlpha = 0.6 + 0.4 * (x / radius);
+    
+    // Keep original size calculation - no artificial size scaling
     const size = iconSize + 2 + 8 * (x / radius);
 
     const img = iconCache[tech];
     if (img) {
-      // Get cascading fade-in opacity
-      const fadeOpacity = updateIconOpacity(tech, deltaTime, i, techs.length);
-      const finalAlpha = baseAlpha * fadeOpacity;
+      const finalAlpha = baseAlpha * opacity;
       
       ctx.globalAlpha = finalAlpha;
       ctx.drawImage(
@@ -428,20 +579,24 @@ function drawCanvasWithFadeIn(
   });
 
   // Update rotation for next frame
-  // Add continuous auto-rotation
-  const autoRotationSpeed = 0.005;
-  rotation.rx += autoRotationSpeed;
-  rotation.rz += autoRotationSpeed * 0.7;
+  // Add continuous auto-rotation only when not hovering, using calculated directions
+  if (!rotation.hovering) {
+    const autoRotationSpeed = 0.005;
+    rotation.rx += autoRotationSpeed * rotation.autoRotationDirectionX;
+    rotation.rz += autoRotationSpeed * 0.7 * rotation.autoRotationDirectionZ;
+  }
 
-  // deacceleration for mouse interaction
-  if (rotation.vx > 0) rotation.vx = rotation.vx - 0.01;
-  if (rotation.vy > 0) rotation.vy = rotation.vy - 0.01;
-  if (rotation.vx < 0) rotation.vx = rotation.vx + 0.01;
-  if (rotation.vy < 0) rotation.vy = rotation.vy + 0.01;
+  // deacceleration for mouse interaction (only when not hovering)
+  if (!rotation.hovering) {
+    if (rotation.vx > 0) rotation.vx = rotation.vx - 0.01;
+    if (rotation.vy > 0) rotation.vy = rotation.vy - 0.01;
+    if (rotation.vx < 0) rotation.vx = rotation.vx + 0.01;
+    if (rotation.vy < 0) rotation.vy = rotation.vy + 0.01;
 
-  // Apply mouse interaction velocity
-  rotation.rz += rotation.vy * 0.01;
-  rotation.rx += rotation.vx * 0.01;
+    // Apply mouse interaction velocity
+    rotation.rz += rotation.vy * 0.01;
+    rotation.rx += rotation.vx * 0.01;
+  }
 }
 
 export default ThreeDBall;

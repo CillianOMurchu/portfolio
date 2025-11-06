@@ -155,7 +155,7 @@ const LogoutButton: React.FC<{
       </div>
 
       {/* 3D Component with optimized loading */}
-      <div className="mb-8 flex justify-center" style={{ marginLeft: '-10px' }}>
+      <div className="mb-8 flex justify-center" style={{ marginLeft: '-10px', minHeight: '352px' }}>
         {show3D ? (
           <Suspense fallback={null}>
             <ThreeDBall 
