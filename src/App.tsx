@@ -134,6 +134,7 @@ import { createClient, type Session } from "@supabase/supabase-js";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { ShimmerEffect } from "./features/visual-effects";
+import { ShimmerDemo } from "./features/visual-effects/components";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -243,6 +244,7 @@ const LogoutButton: React.FC<{
       >
         {isVisitor ? "Exit Visitor Mode" : "Logout"}
       </button>
+      <ShimmerDemo />
     </div>
   );
 };

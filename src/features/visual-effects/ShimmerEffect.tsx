@@ -35,7 +35,7 @@ export const ShimmerEffect: React.FC<ShimmerEffectProps> = ({
           duration: 1.5,
           repeat: Infinity,
           ease: [0.4, 0.0, 0.2, 1],
-          repeatDelay: 0.5
+          repeatDelay: 6.5
         }}
       />
     </div>
