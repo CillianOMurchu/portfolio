@@ -3,34 +3,161 @@ import { allIcons, techIconMap } from "./3dBall.const";
 
 // Global image cache to prevent reloading icons
 const iconCache: Record<string, HTMLImageElement> = {};
+const iconLoadState: Record<string, { 
+  loaded: boolean; 
+  opacity: number; 
+  loadTime: number;
+  flyProgress: number;
+  startX: number;
+  startY: number;
+  startZ: number;
+}> = {};
+const CACHE_KEY = 'portfolio-icon-cache';
+const CACHE_VERSION = '1.0';
 
-function loadIcons(techs: string[]): Promise<Record<string, HTMLImageElement>> {
-  const promises = techs.map(tech => {
-    if (iconCache[tech]) return Promise.resolve();
-    
-    const iconImporter = techIconMap[tech];
-    if (!iconImporter) {
-      console.warn(`No icon found for ${tech}`);
-      return Promise.resolve();
+// Save icon URLs to localStorage for faster subsequent visits
+function saveIconToCache(tech: string, dataUrl: string) {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+    cached[tech] = { dataUrl, version: CACHE_VERSION, timestamp: Date.now() };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
+  } catch (error) {
+    console.warn('Failed to cache icon:', error);
+  }
+}
+
+// Load icon from localStorage cache
+function loadIconFromCache(tech: string): string | null {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+    const item = cached[tech];
+    if (item && item.version === CACHE_VERSION) {
+      // Cache is valid for 7 days
+      const isExpired = Date.now() - item.timestamp > 7 * 24 * 60 * 60 * 1000;
+      if (!isExpired) {
+        return item.dataUrl;
+      }
     }
+  } catch (error) {
+    console.warn('Failed to load from cache:', error);
+  }
+  return null;
+}
+
+function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => void): Promise<Record<string, HTMLImageElement>> {
+  // Initialize load states with fly-in animation properties
+  techs.forEach(tech => {
+    // Generate random starting positions around the sphere
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 200 + Math.random() * 100; // Start 200-300px away from center
+    const startX = Math.cos(angle) * distance;
+    const startY = Math.sin(angle) * distance;
+    const startZ = (Math.random() - 0.5) * 200; // Random depth
     
-    return iconImporter().then(module => {
-      const img = new Image();
-      img.src = module.default;
-      return new Promise<void>((resolve) => {
-        img.onload = () => {
+    iconLoadState[tech] = { 
+      loaded: false, 
+      opacity: 0, 
+      loadTime: 0,
+      flyProgress: 0,
+      startX,
+      startY,
+      startZ
+    };
+  });
+
+  const promises = techs.map((tech, index) => {
+    return new Promise<void>((resolve) => {
+      // Calculate accelerating delay - starts slow, gets faster
+      const maxDelay = 600; // Maximum delay for first icon
+      const minDelay = 30;  // Minimum delay for last icons
+      const progressRatio = index / Math.max(1, techs.length - 1);
+      
+      // Use exponential decay for delay - starts high, drops quickly
+      const delay = maxDelay * Math.pow(0.1, progressRatio * 1.5) + minDelay;
+      
+      setTimeout(() => {
+        if (iconCache[tech]) {
+          iconLoadState[tech] = { loaded: true, opacity: 0, loadTime: Date.now() }; // Start with 0 opacity for fade-in
+          if (onIconLoaded) onIconLoaded(tech);
+          resolve();
+          return;
+        }
+        
+        // Try loading from cache first
+        const cachedDataUrl = loadIconFromCache(tech);
+        if (cachedDataUrl) {
+          const img = new Image();
+          img.src = cachedDataUrl;
           iconCache[tech] = img;
+          iconLoadState[tech] = { loaded: true, opacity: 0, loadTime: Date.now() }; // Start with 0 opacity for fade-in
+          if (onIconLoaded) onIconLoaded(tech);
           resolve();
-        };
-        img.onerror = (error) => {
-          console.warn(`Failed to load icon for ${tech}:`, error);
+          return;
+        }
+        
+        const iconImporter = techIconMap[tech];
+        if (!iconImporter) {
+          console.warn(`No icon found for ${tech}`);
           resolve();
-        };
-      });
+          return;
+        }
+        
+        iconImporter().then(module => {
+          const img = new Image();
+          img.src = module.default;
+          img.onload = () => {
+            iconCache[tech] = img;
+            iconLoadState[tech] = { loaded: true, opacity: 0, loadTime: Date.now() };
+            
+            // Convert to data URL and cache it
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              canvas.width = img.width;
+              canvas.height = img.height;
+              ctx.drawImage(img, 0, 0);
+              try {
+                const dataUrl = canvas.toDataURL('image/png');
+                saveIconToCache(tech, dataUrl);
+              } catch (error) {
+                console.warn('Failed to create data URL for caching:', error);
+              }
+            }
+            
+            if (onIconLoaded) onIconLoaded(tech);
+            resolve();
+          };
+          img.onerror = (error) => {
+            console.warn(`Failed to load icon for ${tech}:`, error);
+            resolve();
+          };
+        });
+      }, delay);
     });
   });
 
   return Promise.all(promises).then(() => iconCache);
+}
+
+// Update icon opacity for fade-in effect with accelerating timing
+function updateIconOpacity(tech: string, deltaTime: number, iconIndex: number, totalIcons: number) {
+  const state = iconLoadState[tech];
+  if (!state || !state.loaded) return 0;
+  
+  if (state.opacity < 1) {
+    // Calculate fade speed based on icon index - later icons fade in faster
+    const progressRatio = iconIndex / Math.max(1, totalIcons - 1);
+    const speedMultiplier = 1 + (progressRatio * 2); // Speed increases from 1x to 3x
+    const fadeSpeed = 0.003 * speedMultiplier;
+    
+    state.opacity = Math.min(1, state.opacity + deltaTime * fadeSpeed);
+    
+    // Add easing for smoother animation
+    const easedOpacity = 1 - Math.pow(1 - state.opacity, 2); // Ease-out quad
+    state.opacity = easedOpacity;
+  }
+  
+  return state.opacity;
 }
 
 interface WordSphereOptions {
@@ -60,6 +187,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
+  const lastFrameTime = useRef<number>(0);
   const rotationRef = useRef({
     rx: 0,
     rz: 0,
@@ -113,16 +241,22 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       rotationRef
     );
 
-    // Start stable render loop
-    const renderLoop = () => {
-      drawCanvas(canvas, words, generateSpherePositions(words.length), mergedOptions, rotationRef.current);
+    // Start render loop immediately (icons will fade in as they load)
+    const renderLoop = (currentTime: number) => {
+      const deltaTime = currentTime - lastFrameTime.current;
+      lastFrameTime.current = currentTime;
+      
+      drawCanvasWithFadeIn(canvas, words, generateSpherePositions(words.length), mergedOptions, rotationRef.current, deltaTime);
       animationRef.current = requestAnimationFrame(renderLoop);
     };
 
-    // Load icons first, then start render loop
-    loadIcons(words).then(() => {
-      renderLoop();
+    // Start cascading icon loading
+    loadIconsCascading(words, (tech) => {
+      console.log(`Icon loaded: ${tech}`);
     });
+
+    // Start render loop immediately
+    animationRef.current = requestAnimationFrame(renderLoop);
 
     // Cleanup function to remove event listeners and stop animation
     return () => {
@@ -220,9 +354,9 @@ function setupCanvas(
 }
 
 /**
- * Draw canvas frame
+ * Draw canvas with fade-in effect for cascading icon loading
  */
-function drawCanvas(
+function drawCanvasWithFadeIn(
   canvas: HTMLCanvasElement,
   techs: string[],
   positions: { x: number; y: number; z: number }[],
@@ -235,7 +369,8 @@ function drawCanvas(
     clicked: boolean;
     lastX: number;
     lastY: number;
-  }
+  },
+  deltaTime: number
 ): void {
   const {
     width = 500,
@@ -270,13 +405,17 @@ function drawCanvas(
     [x, z] = rot(x, z, rotation.rz);
     [x, y] = rot(x, y, rotation.rx);
 
-    // convert to cartesian and then draw.
-    const alpha = 0.6 + 0.4 * (x / radius);
+    // convert to cartesian and apply depth-based effects
+    const baseAlpha = 0.6 + 0.4 * (x / radius);
     const size = iconSize + 2 + 8 * (x / radius);
 
     const img = iconCache[tech];
     if (img) {
-      ctx.globalAlpha = alpha;
+      // Get cascading fade-in opacity
+      const fadeOpacity = updateIconOpacity(tech, deltaTime, i, techs.length);
+      const finalAlpha = baseAlpha * fadeOpacity;
+      
+      ctx.globalAlpha = finalAlpha;
       ctx.drawImage(
         img,
         y + width / 2 - size / 2,
@@ -304,3 +443,5 @@ function drawCanvas(
   rotation.rz += rotation.vy * 0.01;
   rotation.rx += rotation.vx * 0.01;
 }
+
+export default ThreeDBall;

@@ -1,7 +1,6 @@
 import "./index.css";
 import { useState, useEffect, Suspense, lazy } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
-import { ShimmerEffect } from "./features/visual-effects";
 import { LoadingFallback } from "./components/LoadingFallback";
 import { PianoLoading } from "./components/PianoLoading";
 
@@ -127,6 +126,17 @@ const LogoutButton: React.FC<{
   isVisitor: boolean;
   setIsVisitor: (value: boolean) => void;
 }> = ({ supabase, isVisitor, setIsVisitor }) => {
+  const [show3D, setShow3D] = useState(false);
+
+  useEffect(() => {
+    // Delay 3D component loading significantly to improve LCP
+    const timer = setTimeout(() => {
+      setShow3D(true);
+    }, 1000); // Increased delay to 1 second for better LCP
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleLogout = async () => {
     if (isVisitor) {
       setIsVisitor(false);
@@ -137,19 +147,27 @@ const LogoutButton: React.FC<{
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <ShimmerEffect className="mb-6">
+      {/* Large text - this should be the LCP element and render immediately */}
+      <div className="mb-6">
         <h1 className="text-center text-8xl font-bold text-gray-900">
           Welcome
         </h1>
-      </ShimmerEffect>
+      </div>
 
-      {/* Canvas-based Word Sphere */}
+      {/* 3D Component with optimized loading */}
       <div className="mb-8 flex justify-center" style={{ marginLeft: '-10px' }}>
-        <Suspense fallback={<LoadingFallback message="Loading 3D Sphere..." />}>
-          <ThreeDBall 
-            options={{ width: 352, height: 352, radius: 120 }}
-          />
-        </Suspense>
+        {show3D ? (
+          <Suspense fallback={null}>
+            <ThreeDBall 
+              options={{ 
+                width: 352, 
+                height: 352, 
+                radius: 120
+              }}
+              // Use all icons with cascading load effect
+            />
+          </Suspense>
+        ) : null}
       </div>
 
       <p className="text-lg text-gray-600 mb-6">
