@@ -8,8 +8,8 @@ import { PianoLoading } from "./components/PianoLoading";
 const Auth = lazy(() =>
   import("@supabase/auth-ui-react").then((module) => ({ default: module.Auth }))
 );
-const ThreeDBall = lazy(() =>
-  import("./features").then((module) => ({ default: module.ThreeDBall }))
+const InteractiveThreeDBall = lazy(() =>
+  import("./features").then((module) => ({ default: module.InteractiveThreeDBall }))
 );
 
 // Import ThemeSupa normally since it's just a theme object, not a component
@@ -253,7 +253,7 @@ const LogoutButton: React.FC<{
             </div>
           }
         >
-          <ThreeDBall
+          <InteractiveThreeDBall
             options={{
               width: 352,
               height: 352,

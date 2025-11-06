@@ -203,6 +203,9 @@ interface WordSphereOptions {
 interface ThreeDBallProps {
   words?: string[];
   options?: WordSphereOptions;
+  onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
+  isInteractionDisabled?: boolean;
+  selectedIcon?: string | null;
 }
 
 // Extract just the names for the default words array
@@ -211,10 +214,16 @@ const defaultWords = allIcons.map((icon) => icon.name);
 export const ThreeDBall: React.FC<ThreeDBallProps> = ({
   words = defaultWords, // Use all available icons by default
   options = {},
+  onIconClick,
+  isInteractionDisabled = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const lastFrameTime = useRef<number>(0);
+  
+  // Track icon positions for click detection
+  const iconPositionsRef = useRef<Record<string, { x: number; y: number; size: number; visible: boolean }>>({});
+  
   const rotationRef = useRef({
     rx: 0,
     rz: 0,
@@ -275,7 +284,8 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
     const cleanup = setupCanvas(
       canvas,
       mergedOptions,
-      rotationRef
+      rotationRef,
+      { isInteractionDisabled, onIconClick, iconPositionsRef }
     );
 
     // Start render loop immediately (icons will fade in as they load)
@@ -283,7 +293,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       const deltaTime = currentTime - lastFrameTime.current;
       lastFrameTime.current = currentTime;
       
-      drawCanvasWithFadeIn(canvas, words, generateSpherePositions(words.length), mergedOptions, rotationRef.current, deltaTime);
+      drawCanvasWithFadeIn(canvas, words, generateSpherePositions(words.length), mergedOptions, rotationRef.current, deltaTime, { iconPositionsRef });
       animationRef.current = requestAnimationFrame(renderLoop);
     };
 
@@ -302,7 +312,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       }
       cleanup();
     };
-  }, [words, options]);
+  }, [words, options, isInteractionDisabled, onIconClick]);
 
   return (
     <canvas
@@ -338,7 +348,12 @@ function setupCanvas(
     hoverStartTime: number;
     prevMouseX: number;
     prevMouseY: number;
-  }>
+  }>,
+  interactionProps?: {
+    isInteractionDisabled?: boolean;
+    onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
+    iconPositionsRef: React.MutableRefObject<Record<string, { x: number; y: number; size: number; visible: boolean }>>;
+  }
 ): () => void {
   const {
     width = 500,
@@ -361,6 +376,31 @@ function setupCanvas(
 
   // Create event handlers as named functions for proper cleanup
   const handleMouseDown = (event: MouseEvent) => {
+    if (interactionProps?.isInteractionDisabled) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+    
+    // Check if click is on any icon
+    if (interactionProps?.iconPositionsRef && interactionProps?.onIconClick) {
+      const clickedIcon = Object.entries(interactionProps.iconPositionsRef.current).find(([, pos]) => {
+        if (!pos.visible) return false;
+        
+        const distance = Math.sqrt(
+          Math.pow(clickX - pos.x, 2) + Math.pow(clickY - pos.y, 2)
+        );
+        return distance <= pos.size / 2;
+      });
+      
+      if (clickedIcon) {
+        const [techName] = clickedIcon;
+        interactionProps.onIconClick(techName, { x: clickX, y: clickY });
+        return; // Don't start drag rotation if icon was clicked
+      }
+    }
+    
+    // Original drag behavior
     rotationRef.current.clicked = true;
     rotationRef.current.lastX = event.screenX;
     rotationRef.current.lastY = event.screenY;
@@ -518,7 +558,10 @@ function drawCanvasWithFadeIn(
     prevMouseX: number;
     prevMouseY: number;
   },
-  deltaTime: number
+  deltaTime: number,
+  interactionProps?: {
+    iconPositionsRef: React.MutableRefObject<Record<string, { x: number; y: number; size: number; visible: boolean }>>;
+  }
 ): void {
   const {
     width = 500,
@@ -619,12 +662,24 @@ function drawCanvasWithFadeIn(
     const img = iconCache[tech];
     if (img) {
       const finalAlpha = baseAlpha * opacity;
+      const screenX = y + width / 2 - size / 2;
+      const screenY = -z + height / 2 - size / 2;
+      
+      // Track icon position for click detection (only if visible enough)
+      if (interactionProps?.iconPositionsRef) {
+        interactionProps.iconPositionsRef.current[tech] = {
+          x: screenX + size / 2, // Center X
+          y: screenY + size / 2, // Center Y
+          size: size,
+          visible: finalAlpha > 0.3 // Only consider clickable if reasonably visible
+        };
+      }
       
       ctx.globalAlpha = finalAlpha;
       ctx.drawImage(
         img,
-        y + width / 2 - size / 2,
-        -z + height / 2 - size / 2,
+        screenX,
+        screenY,
         size,
         size
       );
