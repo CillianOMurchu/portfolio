@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { allIcons, techIconMap } from "./3dBall.const";
+import { skillsButtonPosition } from '../utils/skillsButtonPosition';
 
 // Global image cache to prevent reloading icons
 const iconCache: Record<string, HTMLImageElement> = {};
@@ -45,21 +46,55 @@ function loadIconFromCache(tech: string): string | null {
 }
 
 function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => void): Promise<Record<string, HTMLImageElement>> {
-  // Initialize load states with dramatic dive-in animation properties
+  // Initialize load states with icons starting from Skills button position
   techs.forEach(tech => {
-    // Icons start much closer to the viewer and to the side of the sphere
-    const startX = (Math.random() - 0.5) * 400; // Random horizontal spread wider
-    const startY = -50 - Math.random() * 100; // Start slightly above the sphere (-50 to -150)
-    const startZ = 300 + Math.random() * 100; // Start much closer to viewer (300-400 Z)
+    // Calculate Skills button position in canvas 3D coordinates
+    let skillsButtonX = 0, skillsButtonY = 0, skillsButtonZ = 0;
+    
+    if (skillsButtonPosition) {
+      // Use the actual button position from the click event
+      const buttonScreenX = skillsButtonPosition.x;
+      const buttonScreenY = skillsButtonPosition.y;
+      
+      // Canvas dimensions (full screen)
+      const canvasWidth = window.innerWidth;
+      const canvasHeight = window.innerHeight;
+      
+      // Convert to canvas 3D coordinates
+      // From drawing function: screenX = y + width/2, screenY = -z + height/2
+      // So: y = screenX - width/2, z = -(screenY - height/2)
+      skillsButtonY = buttonScreenX - (canvasWidth / 2);  // y maps to screen X
+      skillsButtonZ = -(buttonScreenY - (canvasHeight / 2)); // z maps to screen Y (flipped)
+      skillsButtonX = 0; // x is depth/rotation, start at 0 for center depth
+      
+      console.log('Using actual button position:', { 
+        screenX: buttonScreenX, 
+        screenY: buttonScreenY,
+        canvasY: skillsButtonY,
+        canvasZ: skillsButtonZ
+      });
+    } else {
+      // Fallback to estimated position if button position not available
+      const canvasWidth = window.innerWidth;
+      const canvasHeight = window.innerHeight;
+      const buttonScreenX = window.innerWidth - 24 - 40; // right-6 minus half button width
+      const buttonScreenY = 24 + 20; // top-6 plus half button height
+      
+      skillsButtonY = buttonScreenX - (canvasWidth / 2);
+      skillsButtonZ = -(buttonScreenY - (canvasHeight / 2));
+      skillsButtonX = 0;
+      
+      console.log('Using estimated button position (fallback)');
+    }
     
     iconLoadState[tech] = { 
       loaded: false, 
       opacity: 0, 
       loadTime: 0,
       flyProgress: 0,
-      startX,
-      startY,
-      startZ
+      startX: skillsButtonX,
+      startY: skillsButtonY,
+      startZ: skillsButtonZ
     };
   });
 
@@ -155,27 +190,27 @@ function loadIconsCascading(techs: string[], onIconLoaded?: (tech: string) => vo
   return Promise.all(promises).then(() => iconCache);
 }
 
-// Update icon opacity and dramatic dive-in animation
+// Update icon opacity and travel animation from Skills button
 function updateIconOpacity(tech: string, deltaTime: number, iconIndex: number, totalIcons: number) {
   const state = iconLoadState[tech];
   if (!state || !state.loaded) return { opacity: 0, flyProgress: 0 };
   
-  // Update dive-in progress - much slower for more dramatic effect
+  // Update travel progress - faster for more visible movement
   if (state.flyProgress < 1) {
-    // Calculate dive speed based on icon index - very gradual speed increase
+    // Calculate travel speed based on icon index - staggered arrival
     const progressRatio = iconIndex / Math.max(1, totalIcons - 1);
-    const speedMultiplier = 1 + (progressRatio * 0.3); // Speed increases from 1x to 1.3x (much more gradual)
-    const diveSpeed = 0.0008 * speedMultiplier; // Much slower base speed for dramatic dive motion
+    const speedMultiplier = 1 + (progressRatio * 0.5); // Speed increases from 1x to 1.5x
+    const travelSpeed = 0.002 * speedMultiplier; // Faster base speed for visible travel
     
-    state.flyProgress = Math.min(1, state.flyProgress + deltaTime * diveSpeed);
+    state.flyProgress = Math.min(1, state.flyProgress + deltaTime * travelSpeed);
   }
   
-  // Start fading in early for visibility during dive
-  if (state.flyProgress > 0.05 && state.opacity < 1) {
-    // Calculate fade speed - also slower for better visibility
+  // Start fading in immediately for visibility during travel
+  if (state.flyProgress > 0.02 && state.opacity < 1) {
+    // Calculate fade speed - faster for immediate visibility
     const progressRatio = iconIndex / Math.max(1, totalIcons - 1);
-    const speedMultiplier = 1 + (progressRatio * 1.0); // Speed increases from 1x to 2x
-    const fadeSpeed = 0.004 * speedMultiplier; // Slower fade for better control
+    const speedMultiplier = 1 + (progressRatio * 0.8); // Speed increases from 1x to 1.8x
+    const fadeSpeed = 0.006 * speedMultiplier; // Faster fade for better visibility
     
     state.opacity = Math.min(1, state.opacity + deltaTime * fadeSpeed);
     
@@ -205,7 +240,6 @@ interface ThreeDBallProps {
   options?: WordSphereOptions;
   onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
   isInteractionDisabled?: boolean;
-  selectedIcon?: string | null;
 }
 
 // Extract just the names for the default words array
@@ -220,10 +254,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const lastFrameTime = useRef<number>(0);
-  
-  // Track icon positions for click detection
   const iconPositionsRef = useRef<Record<string, { x: number; y: number; size: number; visible: boolean }>>({});
-  
   const rotationRef = useRef({
     rx: 0,
     rz: 0,
@@ -285,7 +316,11 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       canvas,
       mergedOptions,
       rotationRef,
-      { isInteractionDisabled, onIconClick, iconPositionsRef }
+      {
+        isInteractionDisabled,
+        onIconClick,
+        iconPositionsRef
+      }
     );
 
     // Start render loop immediately (icons will fade in as they load)
@@ -293,7 +328,9 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       const deltaTime = currentTime - lastFrameTime.current;
       lastFrameTime.current = currentTime;
       
-      drawCanvasWithFadeIn(canvas, words, generateSpherePositions(words.length), mergedOptions, rotationRef.current, deltaTime, { iconPositionsRef });
+      drawCanvasWithFadeIn(canvas, words, generateSpherePositions(words.length), mergedOptions, rotationRef.current, deltaTime, {
+        iconPositionsRef
+      });
       animationRef.current = requestAnimationFrame(renderLoop);
     };
 
@@ -407,63 +444,69 @@ function setupCanvas(
   };
 
   const handleMouseMove = (event: MouseEvent) => {
+    if (interactionProps?.isInteractionDisabled) return;
+    
     const rect = canvas.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    // Always track mouse position for exit direction calculation
-    rotationRef.current.lastMouseX = event.clientX;
-    rotationRef.current.lastMouseY = event.clientY;
-    
-    // Calculate distance from center to determine if cursor is over sphere
+    // Calculate mouse position relative to canvas
     const mouseX = event.clientX;
     const mouseY = event.clientY;
     const deltaX = mouseX - centerX;
     const deltaY = mouseY - centerY;
     const distanceFromCenter = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     
-    // Use sphere radius for hit detection (assuming sphere takes up most of the canvas)
-    const sphereRadius = Math.min(rect.width, rect.height) * 0.4; // Adjust this value as needed
+    // Use sphere radius for hit detection
+    const sphereRadius = Math.min(rect.width, rect.height) * 0.4;
     const isOverSphere = distanceFromCenter <= sphereRadius;
     
-    // If we're starting to hover, store the current rotation position and time
-    if (isOverSphere && !rotationRef.current.hovering) {
-      rotationRef.current.pausedRx = rotationRef.current.rx;
-      rotationRef.current.pausedRz = rotationRef.current.rz;
-      rotationRef.current.hoverStartTime = Date.now();
-    }
+    // Store previous mouse position for velocity calculation
+    rotationRef.current.prevMouseX = rotationRef.current.lastMouseX;
+    rotationRef.current.prevMouseY = rotationRef.current.lastMouseY;
+    rotationRef.current.lastMouseX = mouseX;
+    rotationRef.current.lastMouseY = mouseY;
     
-    // Track previous mouse position for velocity calculation
-    if (rotationRef.current.hovering) {
-      rotationRef.current.prevMouseX = rotationRef.current.lastMouseX;
-      rotationRef.current.prevMouseY = rotationRef.current.lastMouseY;
-    }
-    
-    // Update hovering state based on sphere hit detection
-    rotationRef.current.hovering = isOverSphere;
-    
-    if (!rotationRef.current.clicked && isOverSphere) {
-      // Calculate smooth pause transition
-      const hoverDuration = Date.now() - rotationRef.current.hoverStartTime;
-      const pauseTransitionTime = 300; // 300ms to smoothly transition to paused state
-      const pauseProgress = Math.min(1, hoverDuration / pauseTransitionTime);
-      const smoothPause = 1 - Math.pow(1 - pauseProgress, 3); // Cubic ease-out for smooth transition
+    if (isOverSphere) {
+      // Inside sphere: implement proximity-based rotation
+      if (!rotationRef.current.hovering) {
+        rotationRef.current.hovering = true;
+        rotationRef.current.hoverStartTime = Date.now();
+        rotationRef.current.pausedRx = rotationRef.current.rx;
+        rotationRef.current.pausedRz = rotationRef.current.rz;
+      }
       
-      // Gentle opposite movement on hover (only when over sphere)
-      // Calculate distance from center (normalized to -1 to 1)
-      const normalizedDeltaX = deltaX / sphereRadius;
-      const normalizedDeltaY = deltaY / sphereRadius;
+      // Calculate normalized distance from center (0 = center, 1 = edge)
+      const normalizedDistance = distanceFromCenter / sphereRadius;
       
-      // Apply small adjustments to the paused position, with smooth transition
-      const sensitivity = 0.08; // Even smaller for gentler movement
-      const targetRx = rotationRef.current.pausedRx + (-normalizedDeltaX * sensitivity);
-      const targetRz = rotationRef.current.pausedRz + (normalizedDeltaY * sensitivity);
+      // Calculate rotation speed based on distance from center
+      // Closer to center = slower rotation, further = faster rotation
+      const baseSpeed = 0.012;
+      const rotationSpeed = baseSpeed * normalizedDistance;
       
-      // Smoothly interpolate to target position during pause transition
-      rotationRef.current.rx = rotationRef.current.rx + (targetRx - rotationRef.current.rx) * 0.1 * smoothPause;
-      rotationRef.current.rz = rotationRef.current.rz + (targetRz - rotationRef.current.rz) * 0.1 * smoothPause;
+      // Calculate direction based on mouse position relative to center
+      const angle = Math.atan2(deltaY, deltaX);
+      
+      // Apply rotation in opposite direction
+      rotationRef.current.rx -= Math.cos(angle) * rotationSpeed;
+      rotationRef.current.rz -= Math.sin(angle) * rotationSpeed;
+      
+      // Store current rotation speed and direction for when mouse leaves
+      const velocityScale = 150; // Scale up for momentum
+      rotationRef.current.vx = -Math.cos(angle) * rotationSpeed * velocityScale;
+      rotationRef.current.vy = -Math.sin(angle) * rotationSpeed * velocityScale;
+      
+      // Set auto rotation direction based on current movement
+      rotationRef.current.autoRotationDirectionX = rotationRef.current.vx >= 0 ? 1 : -1;
+      rotationRef.current.autoRotationDirectionZ = rotationRef.current.vy >= 0 ? 1 : -1;
       
       return;
+    } else {
+      // Outside sphere: reset hovering state but keep momentum
+      if (rotationRef.current.hovering) {
+        rotationRef.current.hovering = false;
+        // The velocity and auto rotation direction are already set from the last mouse position
+      }
     }
     
     // Original drag behavior when clicked
@@ -604,48 +647,28 @@ function drawCanvasWithFadeIn(
     const startY = state?.startY || 0;
     const startZ = state?.startZ || 0;
     
-    // Create dramatic dive-in trajectory: hover close to viewer, then dive down into sphere
+    // Create smooth travel animation from Skills button to sphere position
     let x, y, z;
     
-    if (flyProgress < 0.4) {
-      // Phase 1: Hover close to the viewer (0-40% of animation)
-      const phase1Progress = flyProgress / 0.4;
-      const easedProgress = Math.sin(phase1Progress * Math.PI * 0.5); // Gentle sine easing
+    if (flyProgress < 1) {
+      // Smooth easing function for natural movement
+      const easedProgress = 1 - Math.pow(1 - flyProgress, 3); // Cubic ease-out
       
-      // Stay close to viewer with subtle movement
-      x = startX + (startX * 0.05) * easedProgress; // Very slight horizontal drift
-      y = startY - (30) * easedProgress; // Slight upward movement before dive
-      z = startZ - (startZ * 0.1) * easedProgress; // Move slightly further back
+      // Direct interpolation from start position to target position
+      x = startX + (targetX - startX) * easedProgress;
+      y = startY + (targetY - startY) * easedProgress;
+      z = startZ + (targetZ - startZ) * easedProgress;
       
-    } else if (flyProgress < 0.8) {
-      // Phase 2: Begin the dive (40-80% of animation)
-      const phase2Progress = (flyProgress - 0.4) / 0.4;
-      const diveProgress = phase2Progress * phase2Progress; // Quadratic acceleration for dive
-      
-      // Calculate intermediate dive position (halfway to target)
-      const midX = startX + (targetX - startX) * 0.3;
-      const midY = startY + (targetY - startY) * 0.3;
-      const midZ = startZ + (targetZ - startZ) * 0.6; // Move significantly toward sphere depth
-      
-      // Dive from hover position to intermediate position
-      x = startX + (midX - startX) * diveProgress;
-      y = (startY - 30) + (midY - (startY - 30)) * diveProgress; // From raised position
-      z = (startZ * 0.9) + (midZ - (startZ * 0.9)) * diveProgress;
+      // Add slight arc to the movement for more natural trajectory
+      const arcHeight = 50; // Height of the arc
+      const arcProgress = Math.sin(easedProgress * Math.PI); // Sine wave for arc
+      y += arcProgress * arcHeight;
       
     } else {
-      // Phase 3: Complete the dive to final position (80-100% of animation)
-      const phase3Progress = (flyProgress - 0.8) / 0.2;
-      const finalProgress = 1 - Math.pow(1 - phase3Progress, 2); // Ease-out quad for smooth landing
-      
-      // Calculate the intermediate position (end of phase 2)
-      const midX = startX + (targetX - startX) * 0.3;
-      const midY = startY + (targetY - startY) * 0.3;
-      const midZ = startZ + (targetZ - startZ) * 0.6;
-      
-      // Final dive from intermediate to target position
-      x = midX + (targetX - midX) * finalProgress;
-      y = midY + (targetY - midY) * finalProgress;
-      z = midZ + (targetZ - midZ) * finalProgress;
+      // Animation complete - use final position
+      x = targetX;
+      y = targetY;
+      z = targetZ;
     }
 
     // camera transform
@@ -665,13 +688,13 @@ function drawCanvasWithFadeIn(
       const screenX = y + width / 2 - size / 2;
       const screenY = -z + height / 2 - size / 2;
       
-      // Track icon position for click detection (only if visible enough)
+      // Track icon positions for click detection
       if (interactionProps?.iconPositionsRef) {
         interactionProps.iconPositionsRef.current[tech] = {
-          x: screenX + size / 2, // Center X
-          y: screenY + size / 2, // Center Y
+          x: screenX + size / 2, // Center of icon
+          y: screenY + size / 2, // Center of icon
           size: size,
-          visible: finalAlpha > 0.3 // Only consider clickable if reasonably visible
+          visible: finalAlpha > 0.1 // Only clickable when sufficiently visible
         };
       }
       
@@ -688,23 +711,23 @@ function drawCanvasWithFadeIn(
   });
 
   // Update rotation for next frame
-  // Add continuous auto-rotation only when not hovering, using calculated directions
+  // Add continuous auto-rotation when not hovering, using stored velocity and direction
   if (!rotation.hovering) {
-    const autoRotationSpeed = 0.005;
+    // Use stored velocity from mouse interaction for smoother continuation
+    const autoRotationSpeed = 0.022;
+    const velocityDecay = 0.98; // Gradual slowdown
+    
+    // Apply stored velocity with decay
+    rotation.rx += rotation.vx * 0.01;
+    rotation.rz += rotation.vy * 0.01;
+    
+    // Also apply auto-rotation in the stored direction
     rotation.rx += autoRotationSpeed * rotation.autoRotationDirectionX;
     rotation.rz += autoRotationSpeed * 0.7 * rotation.autoRotationDirectionZ;
-  }
-
-  // deacceleration for mouse interaction (only when not hovering)
-  if (!rotation.hovering) {
-    if (rotation.vx > 0) rotation.vx = rotation.vx - 0.01;
-    if (rotation.vy > 0) rotation.vy = rotation.vy - 0.01;
-    if (rotation.vx < 0) rotation.vx = rotation.vx + 0.01;
-    if (rotation.vy < 0) rotation.vy = rotation.vy + 0.01;
-
-    // Apply mouse interaction velocity
-    rotation.rz += rotation.vy * 0.01;
-    rotation.rx += rotation.vx * 0.01;
+    
+    // Apply velocity decay for gradual slowdown
+    rotation.vx *= velocityDecay;
+    rotation.vy *= velocityDecay;
   }
 }
 
