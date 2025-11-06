@@ -140,6 +140,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [isVisitor, setIsVisitor] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -155,9 +156,78 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (!session) {
-    return <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />;
+  const handleVisitorSignIn = () => {
+    setIsVisitor(true);
+  };
+
+  if (!session && !isVisitor) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Script Portfolio</h1>
+            <p className="text-gray-600">Sign in to access your script ideas</p>
+          </div>
+          
+          <Auth 
+            supabaseClient={supabase} 
+            appearance={{ theme: ThemeSupa }}
+            providers={['google']}
+            onlyThirdPartyProviders={true}
+          />
+          
+          <div className="mt-6 text-center">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">or</span>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleVisitorSignIn}
+              className="mt-4 w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Continue as Visitor
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   } else {
-    return <div>Logged in!</div>;
+    return <LogoutButton supabase={supabase} isVisitor={isVisitor} setIsVisitor={setIsVisitor} />;
   }
 }
+
+const LogoutButton: React.FC<{ 
+  supabase: typeof supabase; 
+  isVisitor: boolean; 
+  setIsVisitor: (value: boolean) => void;
+}> = ({ supabase, isVisitor, setIsVisitor }) => {
+  const handleLogout = async () => {
+    if (isVisitor) {
+      setIsVisitor(false);
+    } else {
+      await supabase.auth.signOut();
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <h1 className="text-3xl font-bold mb-6">
+        Welcome to the Script Portfolio!
+      </h1>
+      <p className="text-lg text-gray-600 mb-6">
+        {isVisitor ? "Browsing as Visitor" : "Signed in with Google"}
+      </p>
+      <button
+        onClick={handleLogout}
+        className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+      >
+        {isVisitor ? "Exit Visitor Mode" : "Logout"}
+      </button>
+    </div>
+  );
+};
