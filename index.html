@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfolio | Creative Developer</title>
     
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/index.css" as="style">
+    <link rel="preload" href="/src/main.tsx" as="script">
+    
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//apis.google.com">
+    
     <!-- Critical CSS for instant loading -->
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -79,23 +87,7 @@
     <meta name="description" content="Creative developer portfolio showcasing 3D animations, interactive effects, and modern web development skills." />
   </head>
   <body>
-    <div id="root">
-      <!-- Instant fallback content for immediate FCP -->
-      <div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
-        <div class="mb-6">
-          <h1 class="lcp-text text-center">
-            Welcome
-          </h1>
-        </div>
-        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">COM</h2>
-          <p class="text-gray-600">Creative Developer Portfolio</p>
-          <div class="mb-4" style="height: 32px;"></div>
-          <p class="text-gray-600">Loading interactive experience...</p>
-        </div>
-      </div>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
   </body>
 </html>

@@ -1,20 +1,17 @@
 import "./index.css";
 import { useState, useEffect, Suspense, lazy } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
-import { LoadingFallback } from "./components/LoadingFallback";
-import { PianoLoading } from "./components/PianoLoading";
-import { motion, AnimatePresence } from "framer-motion";
 import { setSkillsButtonPosition } from "./utils/skillsButtonPosition";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Lazy load heavy components
+// Lazy load heavy components only when needed
 const Auth = lazy(() =>
   import("@supabase/auth-ui-react").then((module) => ({ default: module.Auth }))
 );
-const InteractiveThreeDBall = lazy(() =>
-  import("./features").then((module) => ({ default: module.InteractiveThreeDBall }))
-);
+const SphereModal = lazy(() => import("./components/SphereModal"));
+const PianoLoading = lazy(() => import("./components/PianoLoading").then(module => ({ default: module.PianoLoading })));
 
-// Import ThemeSupa normally since it's just a theme object, not a component
+// Import only lightweight theme object
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -25,10 +22,17 @@ function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isVisitor, setIsVisitor] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
-  const [signInState, setSignInState] = useState<'signin' | 'complete'>('signin');
-  const [fadeClass, setFadeClass] = useState('opacity-100');
+  const [signInState, setSignInState] = useState<'signin' | 'transitioning' | 'complete'>('signin');
+  const [hydrated, setHydrated] = useState(false);
+  const [minLoadingComplete, setMinLoadingComplete] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => {
+    // Ensure minimum loading time of 1 second for smooth experience
+    const minLoadingTimer = setTimeout(() => {
+      setMinLoadingComplete(true);
+    }, 1000);
+
     // Check for debug mode in URL
     const urlParams = new URLSearchParams(window.location.search);
     const isDebugMode = urlParams.get("debug") === "loading";
@@ -43,92 +47,164 @@ function App() {
 
     if (isDebugMode) {
       document.addEventListener("keydown", handleKeyPress);
-      return () => document.removeEventListener("keydown", handleKeyPress);
+      return () => {
+        clearTimeout(minLoadingTimer);
+        document.removeEventListener("keydown", handleKeyPress);
+      };
     }
+
+    return () => clearTimeout(minLoadingTimer);
   }, []);
 
   useEffect(() => {
+    // Hydration guard - get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         // If we already have a session, set it directly (returning user)
         setSession(session);
         setSignInState('complete');
       }
+      setHydrated(true);
     });
+
+    // Listen for auth button clicks to show loading immediately
+    const handleAuthStarted = () => {
+      setAuthLoading(true);
+    };
+
+    window.addEventListener('authStarted', handleAuthStarted);
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        // User just signed in, trigger the transition sequence
+        // Immediate transition - no delay
         handleSignInSuccess(session);
       } else if (event === 'SIGNED_OUT') {
         // Reset everything on sign out
         setSession(null);
         setSignInState('signin');
-        setFadeClass('opacity-100');
+        setAuthLoading(false);
       } else {
         setSession(session);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('authStarted', handleAuthStarted);
+    };
   }, []);
 
   const handleSignInSuccess = (session: Session) => {
-    // Smooth direct transition - fade out auth, fade in welcome
-    setFadeClass('opacity-0'); // Fade out sign-in form
-    
-    // Short delay to let fade-out complete, then show welcome
-    setTimeout(() => {
-      setSignInState('complete');
-      setSession(session);
-    }, 300); // Just enough time for smooth fade transition
+    // Direct transition to complete state
+    setSignInState('complete');
+    setSession(session);
+    setAuthLoading(false);
   };
+
+  // Show loading if not yet hydrated OR minimum loading time hasn't passed OR auth is loading
+  if (!hydrated || !minLoadingComplete || authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 shadow-lg animate-pulse">
+            <span className="text-2xl font-bold text-white">C</span>
+          </div>
+          <div className="text-gray-600 font-medium">
+            {authLoading ? "Signing you in..." : "Loading portfolio..."}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Show piano loading only in debug mode
   if (debugMode) {
     return (
-      <PianoLoading
-        onComplete={() => {}}
-        duration={1200}
-        debugMode={debugMode}
-      />
+      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-pulse">Loading debug mode...</div></div>}>
+        <PianoLoading
+          onComplete={() => {}}
+          duration={1200}
+          debugMode={debugMode}
+        />
+      </Suspense>
     );
   }
 
   const handleVisitorSignIn = () => {
     setIsVisitor(true);
+    setSignInState('complete');
   };
 
-  // Show loading bar during transition
-  if (!session && !isVisitor && signInState === 'signin') {
-    return (
-      <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center transition-all duration-500 ease-out ${fadeClass}`}>
-        <div className="max-w-md w-full mx-4">
-          <div className="bg-white rounded-2xl shadow-xl p-8 backdrop-blur-sm border border-white/20">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 shadow-lg">
-                <h1 className="text-2xl font-bold text-white">
-                  C
-                </h1>
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Welcome Back
-              </h1>
-              <p className="text-gray-600 text-sm">
-                Sign in to explore the interactive portfolio
-              </p>
-            </div>
+  return (
+    <>
+      {/* Persistent background to prevent layout jump */}
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />
+      
+      {/* Animated screen transitions */}
+      <AnimatePresence mode="wait">
+        {!session && !isVisitor && signInState === 'signin' ? (
+          <motion.div
+            key="auth"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10"
+          >
+            <AuthScreen onVisitorSignIn={handleVisitorSignIn} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="welcome"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10"
+          >
+            <WelcomeScreen 
+              isVisitor={isVisitor} 
+              setIsVisitor={setIsVisitor}
+              setSignInState={setSignInState}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
 
-            <Suspense
-              fallback={
-                <LoadingFallback
-                  height={128}
-                  message="Loading authentication..."
-                />
-              }
-            >
+// Auth Screen Component
+const AuthScreen: React.FC<{ onVisitorSignIn: () => void }> = ({ onVisitorSignIn }) => {
+  const handleAuthClick = () => {
+    // Set loading state immediately when auth button is clicked
+    // This will be handled by the parent component
+    const event = new CustomEvent('authStarted');
+    window.dispatchEvent(event);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-md w-full mx-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 backdrop-blur-sm border border-white/20">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 shadow-lg">
+              <h1 className="text-2xl font-bold text-white">C</h1>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-gray-600 text-sm">Sign in to explore the interactive portfolio</p>
+          </div>
+
+          <Suspense
+            fallback={
+              <div className="h-32 flex items-center justify-center">
+                <div className="animate-pulse text-gray-400 text-sm">Loading authentication...</div>
+              </div>
+            }
+          >
+            <div onClick={handleAuthClick}>
               <Auth
                 supabaseClient={supabase}
                 appearance={{ 
@@ -155,100 +231,70 @@ function App() {
                 providers={["google"]}
                 onlyThirdPartyProviders={true}
               />
-            </Suspense>
+            </div>
+          </Suspense>
 
-            <div className="mt-6 text-center">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-white text-gray-500 font-medium">or</span>
-                </div>
-              </div>
-
-              <button
-                onClick={handleVisitorSignIn}
-                className="mt-4 w-full flex justify-center py-3 px-4 border border-gray-200 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
-              >
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                </svg>
-                Continue as Visitor
-              </button>
+        <div className="mt-6 text-center">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-white text-gray-500 font-medium">or</span>
             </div>
           </div>
+
+          <button
+            onClick={onVisitorSignIn}
+            className="mt-4 w-full flex justify-center py-3 px-4 border border-gray-200 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+          >
+            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+            Continue as Visitor
+          </button>
         </div>
       </div>
-    );
-  } else {
-    return (
-      <LogoutButton
-        supabase={supabase}
-        isVisitor={isVisitor}
-        setIsVisitor={setIsVisitor}
-        setSignInState={setSignInState}
-        setFadeClass={setFadeClass}
-      />
-    );
-  }
-}
+    </div>
+  </div>
+  );
+};
 
-const LogoutButton: React.FC<{
-  supabase: typeof supabase;
+// Welcome Screen Component
+const WelcomeScreen: React.FC<{
   isVisitor: boolean;
   setIsVisitor: (value: boolean) => void;
-  setSignInState: (value: 'signin' | 'complete') => void;
-  setFadeClass: (value: string) => void;
-}> = ({ supabase, isVisitor, setIsVisitor, setSignInState, setFadeClass }) => {
-  const [pageVisible, setPageVisible] = useState(false);
-  const [sphereExpanded, setSphereExpanded] = useState(false); // Start with sphere closed
-
-  useEffect(() => {
-    // Trigger fade-in animation when component mounts
-    const timer = setTimeout(() => {
-      setPageVisible(true);
-    }, 100); // Brief delay for smooth transition
-
-    return () => clearTimeout(timer);
-  }, []);
+  setSignInState: (value: 'signin' | 'transitioning' | 'complete') => void;
+}> = ({ isVisitor, setIsVisitor, setSignInState }) => {
+  const [sphereExpanded, setSphereExpanded] = useState(false);
 
   const handleLogout = async () => {
     if (isVisitor) {
       setIsVisitor(false);
-      // Reset sign-in state for visitors
       setSignInState('signin');
-      setFadeClass('opacity-100');
     } else {
       await supabase.auth.signOut();
-      // Reset sign-in state for Google users
       setSignInState('signin');
-      setFadeClass('opacity-100');
     }
   };
 
   const toggleSphere = (event: React.MouseEvent<HTMLElement>) => {
-    console.log('Skills button clicked! Current sphereExpanded:', sphereExpanded);
-    
-    // Get the exact button position when clicked
     const buttonRect = event.currentTarget.getBoundingClientRect();
     const buttonCenterX = buttonRect.left + buttonRect.width / 2;
     const buttonCenterY = buttonRect.top + buttonRect.height / 2;
     
-    console.log('Button position:', { x: buttonCenterX, y: buttonCenterY });
-    
-    // Store button position for the animation
     setSkillsButtonPosition({ x: buttonCenterX, y: buttonCenterY });
-    
     setSphereExpanded(!sphereExpanded);
-    console.log('Setting sphereExpanded to:', !sphereExpanded);
+  };
+
+  const handleModalToggle = () => {
+    setSphereExpanded(!sphereExpanded);
   };
 
   return (
     <>
       {/* Main Page Content */}
-      <div className={`flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 transition-all duration-700 ease-out ${pageVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-        {/* Large text - this should be the LCP element and render immediately */}
+      <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-6 shadow-xl">
             <span className="text-3xl font-bold text-white">C</span>
@@ -256,7 +302,7 @@ const LogoutButton: React.FC<{
           <h1 className="text-center text-7xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text">
             Welcome
           </h1>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto" />
         </div>
 
         <div className="text-center mb-8">
@@ -272,7 +318,7 @@ const LogoutButton: React.FC<{
         </div>
       </div>
 
-      {/* Skills Toggle Button - positioned absolutely in top right */}
+      {/* Skills Toggle Button */}
       <button
         onClick={toggleSphere}
         className="fixed top-6 right-6 z-[60] px-6 py-3 bg-white text-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-300 font-medium text-sm tracking-wide uppercase cursor-pointer"
@@ -285,55 +331,13 @@ const LogoutButton: React.FC<{
         Skills
       </button>
 
-      {/* Sphere Overlay Modal */}
-      <AnimatePresence>
-        {sphereExpanded && (
-          <>
-            {/* White overlay background */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-white z-40"
-              onClick={toggleSphere}
-            />
-            
-            {/* Sphere container */}
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ 
-                duration: 0.5, 
-                ease: [0.25, 0.46, 0.45, 0.94],
-                scale: { duration: 0.5 },
-                opacity: { duration: 0.3 }
-              }}
-              className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-            >
-              <div className="pointer-events-auto">
-                <Suspense
-                  fallback={
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-gray-600">Loading 3D Experience...</div>
-                    </div>
-                  }
-                >
-                  <InteractiveThreeDBall
-                    options={{
-                      width: window.innerWidth,
-                      height: window.innerHeight,
-                      radius: Math.min(window.innerWidth, window.innerHeight) * 0.30,
-                    }}
-                    // Use all icons with cascading load effect
-                  />
-                </Suspense>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Sphere Modal */}
+      <Suspense fallback={null}>
+        <SphereModal 
+          sphereExpanded={sphereExpanded} 
+          onToggle={handleModalToggle} 
+        />
+      </Suspense>
     </>
   );
 };
