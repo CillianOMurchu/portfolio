@@ -19,7 +19,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isVisitor, setIsVisitor] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [debugMode, setDebugMode] = useState(false);
 
   useEffect(() => {
@@ -55,20 +54,20 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleVisitorSignIn = () => {
-    setIsVisitor(true);
-  };
-
-  // Show piano loading screen initially or in debug mode
-  if (debugMode || isInitialLoading) {
+  // Show piano loading only in debug mode
+  if (debugMode) {
     return (
       <PianoLoading 
-        onComplete={() => setIsInitialLoading(false)}
-        duration={3500}
+        onComplete={() => {}}
+        duration={1200}
         debugMode={debugMode}
       />
     );
   }
+
+  const handleVisitorSignIn = () => {
+    setIsVisitor(true);
+  };
 
   if (!session && !isVisitor) {
     return (
