@@ -1,11 +1,16 @@
 import "./index.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { ShimmerEffect } from "./features/visual-effects";
-import { RotatingIcons3D } from "./features/three-d-effects";
-import { ThreeDBall } from "./features";
+import { LoadingFallback } from "./components/LoadingFallback";
+import { PianoLoading } from "./components/PianoLoading";
+
+// Lazy load heavy components
+const Auth = lazy(() => import("@supabase/auth-ui-react").then(module => ({ default: module.Auth })));
+const ThreeDBall = lazy(() => import("./features").then(module => ({ default: module.ThreeDBall })));
+
+// Import ThemeSupa normally since it's just a theme object, not a component
+import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -14,6 +19,27 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isVisitor, setIsVisitor] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [debugMode, setDebugMode] = useState(false);
+
+  useEffect(() => {
+    // Check for debug mode in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDebugMode = urlParams.get('debug') === 'loading';
+    setDebugMode(isDebugMode);
+
+    // Handle ESC key in debug mode
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isDebugMode) {
+        window.location.href = window.location.pathname;
+      }
+    };
+
+    if (isDebugMode) {
+      document.addEventListener('keydown', handleKeyPress);
+      return () => document.removeEventListener('keydown', handleKeyPress);
+    }
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,6 +59,17 @@ export default function App() {
     setIsVisitor(true);
   };
 
+  // Show piano loading screen initially or in debug mode
+  if (debugMode || isInitialLoading) {
+    return (
+      <PianoLoading 
+        onComplete={() => setIsInitialLoading(false)}
+        duration={3500}
+        debugMode={debugMode}
+      />
+    );
+  }
+
   if (!session && !isVisitor) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -46,12 +83,14 @@ export default function App() {
             </p>
           </div>
 
-          <Auth
-            supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
-            providers={["google"]}
-            onlyThirdPartyProviders={true}
-          />
+          <Suspense fallback={<LoadingFallback height={128} message="Loading authentication..." />}>
+            <Auth
+              supabaseClient={supabase}
+              appearance={{ theme: ThemeSupa }}
+              providers={["google"]}
+              onlyThirdPartyProviders={true}
+            />
+          </Suspense>
 
           <div className="mt-6 text-center">
             <div className="relative">
@@ -107,9 +146,11 @@ const LogoutButton: React.FC<{
 
       {/* Canvas-based Word Sphere */}
       <div className="mb-8 flex justify-center" style={{ marginLeft: '-10px' }}>
-        <ThreeDBall 
-          options={{ width: 352, height: 352, radius: 120 }}
-        />
+        <Suspense fallback={<LoadingFallback message="Loading 3D Sphere..." />}>
+          <ThreeDBall 
+            options={{ width: 352, height: 352, radius: 120 }}
+          />
+        </Suspense>
       </div>
 
       <p className="text-lg text-gray-600 mb-6">
