@@ -5,8 +5,12 @@ import { LoadingFallback } from "./components/LoadingFallback";
 import { PianoLoading } from "./components/PianoLoading";
 
 // Lazy load heavy components
-const Auth = lazy(() => import("@supabase/auth-ui-react").then(module => ({ default: module.Auth })));
-const ThreeDBall = lazy(() => import("./features").then(module => ({ default: module.ThreeDBall })));
+const Auth = lazy(() =>
+  import("@supabase/auth-ui-react").then((module) => ({ default: module.Auth }))
+);
+const ThreeDBall = lazy(() =>
+  import("./features").then((module) => ({ default: module.ThreeDBall }))
+);
 
 // Import ThemeSupa normally since it's just a theme object, not a component
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -19,44 +23,82 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isVisitor, setIsVisitor] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
+  const [signInState, setSignInState] = useState<'signin' | 'loading' | 'complete'>('signin');
+  const [fadeClass, setFadeClass] = useState('opacity-100');
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
     // Check for debug mode in URL
     const urlParams = new URLSearchParams(window.location.search);
-    const isDebugMode = urlParams.get('debug') === 'loading';
+    const isDebugMode = urlParams.get("debug") === "loading";
     setDebugMode(isDebugMode);
 
     // Handle ESC key in debug mode
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isDebugMode) {
+      if (event.key === "Escape" && isDebugMode) {
         window.location.href = window.location.pathname;
       }
     };
 
     if (isDebugMode) {
-      document.addEventListener('keydown', handleKeyPress);
-      return () => document.removeEventListener('keydown', handleKeyPress);
+      document.addEventListener("keydown", handleKeyPress);
+      return () => document.removeEventListener("keydown", handleKeyPress);
     }
   }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+      if (session) {
+        // If we already have a session, set it directly (returning user)
+        setSession(session);
+        setSignInState('complete');
+      }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        // User just signed in, trigger the transition sequence
+        handleSignInSuccess(session);
+      } else if (event === 'SIGNED_OUT') {
+        // Reset everything on sign out
+        setSession(null);
+        setSignInState('signin');
+        setFadeClass('opacity-100');
+        setLoadingProgress(0);
+      } else {
+        setSession(session);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleSignInSuccess = (session: Session) => {
+    // Start the transition sequence
+    setSignInState('loading');
+    setFadeClass('opacity-0'); // Fade out sign-in form
+    
+    // Immediate progress - auth request completed
+    setLoadingProgress(70);
+    
+    // Quick processing simulation for smooth UX
+    setTimeout(() => {
+      setLoadingProgress(100); // Processing complete
+      
+      // Very brief pause to show completion
+      setTimeout(() => {
+        setSignInState('complete');
+        setSession(session);
+      }, 150);
+    }, 200); // Minimal delay - auth is already done
+  };
+
   // Show piano loading only in debug mode
   if (debugMode) {
     return (
-      <PianoLoading 
+      <PianoLoading
         onComplete={() => {}}
         duration={1200}
         debugMode={debugMode}
@@ -68,9 +110,34 @@ export default function App() {
     setIsVisitor(true);
   };
 
-  if (!session && !isVisitor) {
+  // Loading Bar Component
+  const LoadingBar = () => (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Signing you in...</h2>
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full transition-all duration-200 ease-out"
+              style={{ width: `${loadingProgress}%` }}
+            />
+          </div>
+          <p className="text-sm text-gray-600 mt-4">
+            {loadingProgress >= 100 ? 'Complete!' : `${Math.round(loadingProgress)}% complete`}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Show loading bar during transition
+  if (signInState === 'loading') {
+    return <LoadingBar />;
+  }
+
+  if (!session && !isVisitor && signInState === 'signin') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className={`min-h-screen bg-gray-50 flex items-center justify-center transition-opacity duration-500 ${fadeClass}`}>
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
           <div className="text-center mb-8">
             <h1 className="text-center text-2xl font-bold text-gray-900 mb-2">
@@ -81,7 +148,14 @@ export default function App() {
             </p>
           </div>
 
-          <Suspense fallback={<LoadingFallback height={128} message="Loading authentication..." />}>
+          <Suspense
+            fallback={
+              <LoadingFallback
+                height={128}
+                message="Loading authentication..."
+              />
+            }
+          >
             <Auth
               supabaseClient={supabase}
               appearance={{ theme: ThemeSupa }}
@@ -116,6 +190,9 @@ export default function App() {
         supabase={supabase}
         isVisitor={isVisitor}
         setIsVisitor={setIsVisitor}
+        setSignInState={setSignInState}
+        setFadeClass={setFadeClass}
+        setLoadingProgress={setLoadingProgress}
       />
     );
   }
@@ -125,14 +202,17 @@ const LogoutButton: React.FC<{
   supabase: typeof supabase;
   isVisitor: boolean;
   setIsVisitor: (value: boolean) => void;
-}> = ({ supabase, isVisitor, setIsVisitor }) => {
-  const [show3D, setShow3D] = useState(false);
+  setSignInState: (value: 'signin' | 'loading' | 'complete') => void;
+  setFadeClass: (value: string) => void;
+  setLoadingProgress: (value: number) => void;
+}> = ({ supabase, isVisitor, setIsVisitor, setSignInState, setFadeClass, setLoadingProgress }) => {
+  const [pageVisible, setPageVisible] = useState(false);
 
   useEffect(() => {
-    // Delay 3D component loading significantly to improve LCP
+    // Trigger fade-in animation when component mounts
     const timer = setTimeout(() => {
-      setShow3D(true);
-    }, 1000); // Increased delay to 1 second for better LCP
+      setPageVisible(true);
+    }, 100); // Brief delay for smooth transition
 
     return () => clearTimeout(timer);
   }, []);
@@ -140,13 +220,21 @@ const LogoutButton: React.FC<{
   const handleLogout = async () => {
     if (isVisitor) {
       setIsVisitor(false);
+      // Reset sign-in state for visitors
+      setSignInState('signin');
+      setFadeClass('opacity-100');
+      setLoadingProgress(0);
     } else {
       await supabase.auth.signOut();
+      // Reset sign-in state for Google users
+      setSignInState('signin');
+      setFadeClass('opacity-100');
+      setLoadingProgress(0);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className={`flex flex-col items-center justify-center min-h-screen bg-gray-50 transition-opacity duration-700 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
       {/* Large text - this should be the LCP element and render immediately */}
       <div className="mb-6">
         <h1 className="text-center text-8xl font-bold text-gray-900">
@@ -154,20 +242,26 @@ const LogoutButton: React.FC<{
         </h1>
       </div>
 
-      {/* 3D Component with optimized loading */}
-      <div className="mb-8 flex justify-center" style={{ marginLeft: '-10px', minHeight: '352px' }}>
-        {show3D ? (
-          <Suspense fallback={null}>
-            <ThreeDBall 
-              options={{ 
-                width: 352, 
-                height: 352, 
-                radius: 120
-              }}
-              // Use all icons with cascading load effect
-            />
-          </Suspense>
-        ) : null}
+      <div
+        className="mb-8 flex justify-center"
+        style={{ marginLeft: "-10px", minHeight: "352px" }}
+      >
+        <Suspense
+          fallback={
+            <div className="w-[352px] h-[352px] flex items-center justify-center bg-gray-100 rounded-lg">
+              <div className="text-gray-600">Loading 3D Experience...</div>
+            </div>
+          }
+        >
+          <ThreeDBall
+            options={{
+              width: 352,
+              height: 352,
+              radius: 120,
+            }}
+            // Use all icons with cascading load effect
+          />
+        </Suspense>
       </div>
 
       <p className="text-lg text-gray-600 mb-6">

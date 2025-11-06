@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Critical styles for immediate rendering */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure immediate text rendering */
+h1, h2, h3, p {
+  font-display: swap;
+  will-change: auto;
+}
+
+/* Critical layout utilities */
+.text-8xl {
+  font-size: 6rem;
+  line-height: 1;
+  font-weight: 700;
+  will-change: auto;
+  contain: layout style paint;
+}
+
 /* Piano Loading Animations */
 @keyframes piano-key {
   0% {

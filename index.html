@@ -80,35 +80,20 @@
   </head>
   <body>
     <div id="root">
-      <!-- Instant fallback content for LCP optimization -->
+      <!-- Instant fallback content for immediate FCP -->
       <div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
-        <!-- This large text should be the LCP element -->
         <div class="mb-6">
-          <h1 class="lcp-text text-center">Welcome</h1>
+          <h1 class="lcp-text text-center">
+            Welcome
+          </h1>
         </div>
-        
-        <!-- Placeholder for 3D content -->
-        <div class="mb-8 flex justify-center" style="width: 352px; height: 352px; min-height: 352px;">
-          <div class="flex items-center justify-center w-full bg-gray-100 rounded-lg" style="border: 2px dashed #d1d5db;">
-            <div class="text-center">
-              <div style="width: 2rem; height: 2rem; border: 4px solid #9ca3af; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 0.5rem;"></div>
-              <p style="font-size: 0.875rem; color: #6b7280;">Loading 3D Experience...</p>
-            </div>
-          </div>
-        </div>
-        
-        <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1.5rem;">Creative Developer Portfolio</p>
-        <div style="padding: 1.5rem 2rem; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;">
-          Continue as Visitor
+        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">COM</h2>
+          <p class="text-gray-600">Creative Developer Portfolio</p>
+          <div class="mb-4" style="height: 32px;"></div>
+          <p class="text-gray-600">Loading interactive experience...</p>
         </div>
       </div>
-      
-      <!-- Add spinner animation -->
-      <style>
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      </style>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

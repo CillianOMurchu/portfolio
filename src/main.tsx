@@ -3,16 +3,13 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
-// Remove instant loader when React starts
-const instantLoader = document.getElementById('instant-loader');
-if (instantLoader) {
-  instantLoader.style.opacity = '0';
-  instantLoader.style.transition = 'opacity 0.3s ease';
-  setTimeout(() => instantLoader.remove(), 300);
-}
+// Get the root element and create React root
+const rootElement = document.getElementById('root')!;
+const root = createRoot(rootElement);
 
-createRoot(document.getElementById('root')!).render(
+// Render React app immediately
+root.render(
   <StrictMode>
     <App />
   </StrictMode>,
-)
+);

@@ -227,7 +227,12 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
     lastMouseX: 0,
     lastMouseY: 0,
     autoRotationDirectionX: 1,
-    autoRotationDirectionZ: 1
+    autoRotationDirectionZ: 1,
+    pausedRx: 0,
+    pausedRz: 0,
+    hoverStartTime: 0,
+    prevMouseX: 0,
+    prevMouseY: 0
   });
 
   useEffect(() => {
@@ -328,6 +333,11 @@ function setupCanvas(
     lastMouseY: number;
     autoRotationDirectionX: number;
     autoRotationDirectionZ: number;
+    pausedRx: number;
+    pausedRz: number;
+    hoverStartTime: number;
+    prevMouseX: number;
+    prevMouseY: number;
   }>
 ): () => void {
   const {
@@ -356,10 +366,6 @@ function setupCanvas(
     rotationRef.current.lastY = event.screenY;
   };
 
-  const handleMouseEnter = () => {
-    rotationRef.current.hovering = true;
-  };
-
   const handleMouseMove = (event: MouseEvent) => {
     const rect = canvas.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -369,19 +375,53 @@ function setupCanvas(
     rotationRef.current.lastMouseX = event.clientX;
     rotationRef.current.lastMouseY = event.clientY;
     
-    if (!rotationRef.current.clicked && rotationRef.current.hovering) {
-      // Gentle opposite movement on hover
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
+    // Calculate distance from center to determine if cursor is over sphere
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+    const deltaX = mouseX - centerX;
+    const deltaY = mouseY - centerY;
+    const distanceFromCenter = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    // Use sphere radius for hit detection (assuming sphere takes up most of the canvas)
+    const sphereRadius = Math.min(rect.width, rect.height) * 0.4; // Adjust this value as needed
+    const isOverSphere = distanceFromCenter <= sphereRadius;
+    
+    // If we're starting to hover, store the current rotation position and time
+    if (isOverSphere && !rotationRef.current.hovering) {
+      rotationRef.current.pausedRx = rotationRef.current.rx;
+      rotationRef.current.pausedRz = rotationRef.current.rz;
+      rotationRef.current.hoverStartTime = Date.now();
+    }
+    
+    // Track previous mouse position for velocity calculation
+    if (rotationRef.current.hovering) {
+      rotationRef.current.prevMouseX = rotationRef.current.lastMouseX;
+      rotationRef.current.prevMouseY = rotationRef.current.lastMouseY;
+    }
+    
+    // Update hovering state based on sphere hit detection
+    rotationRef.current.hovering = isOverSphere;
+    
+    if (!rotationRef.current.clicked && isOverSphere) {
+      // Calculate smooth pause transition
+      const hoverDuration = Date.now() - rotationRef.current.hoverStartTime;
+      const pauseTransitionTime = 300; // 300ms to smoothly transition to paused state
+      const pauseProgress = Math.min(1, hoverDuration / pauseTransitionTime);
+      const smoothPause = 1 - Math.pow(1 - pauseProgress, 3); // Cubic ease-out for smooth transition
       
+      // Gentle opposite movement on hover (only when over sphere)
       // Calculate distance from center (normalized to -1 to 1)
-      const deltaX = (mouseX - centerX) / (rect.width / 2);
-      const deltaY = (mouseY - centerY) / (rect.height / 2);
+      const normalizedDeltaX = deltaX / sphereRadius;
+      const normalizedDeltaY = deltaY / sphereRadius;
       
-      // Apply gentle opposite rotation (much smaller multiplier for subtle effect)
-      const sensitivity = 0.3; // Reduced sensitivity for gentle movement
-      rotationRef.current.rx = -deltaX * sensitivity;
-      rotationRef.current.rz = deltaY * sensitivity;
+      // Apply small adjustments to the paused position, with smooth transition
+      const sensitivity = 0.08; // Even smaller for gentler movement
+      const targetRx = rotationRef.current.pausedRx + (-normalizedDeltaX * sensitivity);
+      const targetRz = rotationRef.current.pausedRz + (normalizedDeltaY * sensitivity);
+      
+      // Smoothly interpolate to target position during pause transition
+      rotationRef.current.rx = rotationRef.current.rx + (targetRx - rotationRef.current.rx) * 0.1 * smoothPause;
+      rotationRef.current.rz = rotationRef.current.rz + (targetRz - rotationRef.current.rz) * 0.1 * smoothPause;
       
       return;
     }
@@ -407,27 +447,37 @@ function setupCanvas(
   
   const handleMouseLeave = () => {
     rotationRef.current.clicked = false;
+    
+    // Only calculate exit direction and reset if we were actually hovering over the sphere
+    if (rotationRef.current.hovering) {
+      // Calculate exit velocity based on recent mouse movement
+      const mouseVelocityX = rotationRef.current.lastMouseX - rotationRef.current.prevMouseX;
+      const mouseVelocityY = rotationRef.current.lastMouseY - rotationRef.current.prevMouseY;
+      
+      // Set continuous rotation direction based on exit velocity
+      // Positive velocity = moving right/down, so continue in that direction
+      rotationRef.current.autoRotationDirectionX = mouseVelocityX >= 0 ? 1 : -1;
+      rotationRef.current.autoRotationDirectionZ = mouseVelocityY >= 0 ? 1 : -1;
+      
+      // If no significant movement, use fallback based on final position
+      if (Math.abs(mouseVelocityX) < 2 && Math.abs(mouseVelocityY) < 2) {
+        const rect = canvas.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const deltaX = rotationRef.current.lastMouseX - centerX;
+        const deltaY = rotationRef.current.lastMouseY - centerY;
+        
+        // Continue in the direction of final position
+        rotationRef.current.autoRotationDirectionX = deltaX >= 0 ? 1 : -1;
+        rotationRef.current.autoRotationDirectionZ = deltaY >= 0 ? 1 : -1;
+      }
+    }
+    
     rotationRef.current.hovering = false;
-    
-    // Calculate exit direction and set opposite auto-rotation direction
-    const rect = canvas.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    // Get the last mouse position relative to center
-    const deltaX = rotationRef.current.lastMouseX - centerX;
-    const deltaY = rotationRef.current.lastMouseY - centerY;
-    
-    // Set auto-rotation to go opposite to exit direction
-    // If cursor was to the right (positive deltaX), rotate left (negative direction)
-    rotationRef.current.autoRotationDirectionX = deltaX > 0 ? -1 : 1;
-    // If cursor was below (positive deltaY), rotate up (negative direction) 
-    rotationRef.current.autoRotationDirectionZ = deltaY > 0 ? -1 : 1;
   };
 
   // Add event listeners
   canvas.addEventListener("mousedown", handleMouseDown);
-  canvas.addEventListener("mouseenter", handleMouseEnter);
   canvas.addEventListener("mousemove", handleMouseMove);
   canvas.addEventListener("mouseup", handleMouseUp);
   canvas.addEventListener("mouseleave", handleMouseLeave);
@@ -435,7 +485,6 @@ function setupCanvas(
   // Return cleanup function to remove event listeners
   return () => {
     canvas.removeEventListener("mousedown", handleMouseDown);
-    canvas.removeEventListener("mouseenter", handleMouseEnter);
     canvas.removeEventListener("mousemove", handleMouseMove);
     canvas.removeEventListener("mouseup", handleMouseUp);
     canvas.removeEventListener("mouseleave", handleMouseLeave);
@@ -463,6 +512,11 @@ function drawCanvasWithFadeIn(
     lastMouseY: number;
     autoRotationDirectionX: number;
     autoRotationDirectionZ: number;
+    pausedRx: number;
+    pausedRz: number;
+    hoverStartTime: number;
+    prevMouseX: number;
+    prevMouseY: number;
   },
   deltaTime: number
 ): void {

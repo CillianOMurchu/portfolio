@@ -22,7 +22,7 @@ describe('ShimmerEffect', () => {
 
   it('should start animation on mount', () => {
     // This test verifies the shimmer motion element exists and has correct styling
-    render(<ShimmerEffect speed="normal" />)
+    render(<ShimmerEffect />)
     
     const shimmerElement = screen.getByTestId('shimmer-effect')
     const shimmerOverlay = shimmerElement.querySelector('div')
