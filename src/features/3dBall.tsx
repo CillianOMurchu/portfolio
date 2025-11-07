@@ -239,6 +239,7 @@ interface ThreeDBallProps {
   words?: string[];
   options?: WordSphereOptions;
   onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
+  onIconHover?: (iconKey: string | null, position: { x: number; y: number } | null) => void;
   isInteractionDisabled?: boolean;
 }
 
@@ -249,6 +250,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
   words = defaultWords, // Use all available icons by default
   options = {},
   onIconClick,
+  onIconHover,
   isInteractionDisabled = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -319,6 +321,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       {
         isInteractionDisabled,
         onIconClick,
+        onIconHover,
         iconPositionsRef
       }
     );
@@ -349,7 +352,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       }
       cleanup();
     };
-  }, [words, options, isInteractionDisabled, onIconClick]);
+  }, [words, options, isInteractionDisabled, onIconClick, onIconHover]);
 
   return (
     <canvas
@@ -389,12 +392,13 @@ function setupCanvas(
   interactionProps?: {
     isInteractionDisabled?: boolean;
     onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
+    onIconHover?: (iconKey: string | null, position: { x: number; y: number } | null) => void;
     iconPositionsRef: React.MutableRefObject<Record<string, { x: number; y: number; size: number; visible: boolean }>>;
   }
 ): () => void {
   const {
-    width = 500,
-    height = 500,
+    width = 240,
+    height = 240,
   } = options;
 
   // canvas setup
@@ -607,9 +611,9 @@ function drawCanvasWithFadeIn(
   }
 ): void {
   const {
-    width = 500,
-    height = 500,
-    radius = 150,
+    width = 240,
+    height = 240,
+    radius = 100,
     iconSize = 32,
     tilt = 0,
   } = options;

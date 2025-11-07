@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TechInfo } from '../types/interactiveIcon';
 
@@ -80,6 +80,23 @@ export const InteractiveIconSystem: React.FC<InteractiveIconSystemProps> = ({
     setInfoPanelVisible(false);
     setAnimationPhase('idle');
   }, []);
+
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && infoPanelVisible) {
+        handlePanelClose();
+      }
+    };
+
+    if (infoPanelVisible) {
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [infoPanelVisible, handlePanelClose]);
 
   const selectedTechInfo = selectedIcon ? iconData[selectedIcon] : null;
 

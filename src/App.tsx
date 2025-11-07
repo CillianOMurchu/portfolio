@@ -1,14 +1,15 @@
 import "./index.css";
 import { useState, useEffect, Suspense, lazy } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
-import { setSkillsButtonPosition } from "./utils/skillsButtonPosition";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Lazy load heavy components only when needed
 const Auth = lazy(() =>
   import("@supabase/auth-ui-react").then((module) => ({ default: module.Auth }))
 );
-const SphereModal = lazy(() => import("./components/SphereModal"));
+const HolographicSkillsSphere = lazy(() => 
+  import("./features").then((module) => ({ default: module.HolographicSkillsSphere }))
+);
 const PianoLoading = lazy(() => import("./components/PianoLoading").then(module => ({ default: module.PianoLoading })));
 
 // Import only lightweight theme object
@@ -266,7 +267,6 @@ const WelcomeScreen: React.FC<{
   setIsVisitor: (value: boolean) => void;
   setSignInState: (value: 'signin' | 'transitioning' | 'complete') => void;
 }> = ({ isVisitor, setIsVisitor, setSignInState }) => {
-  const [sphereExpanded, setSphereExpanded] = useState(false);
 
   const handleLogout = async () => {
     if (isVisitor) {
@@ -276,19 +276,6 @@ const WelcomeScreen: React.FC<{
       await supabase.auth.signOut();
       setSignInState('signin');
     }
-  };
-
-  const toggleSphere = (event: React.MouseEvent<HTMLElement>) => {
-    const buttonRect = event.currentTarget.getBoundingClientRect();
-    const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-    const buttonCenterY = buttonRect.top + buttonRect.height / 2;
-    
-    setSkillsButtonPosition({ x: buttonCenterX, y: buttonCenterY });
-    setSphereExpanded(!sphereExpanded);
-  };
-
-  const handleModalToggle = () => {
-    setSphereExpanded(!sphereExpanded);
   };
 
   return (
@@ -318,26 +305,16 @@ const WelcomeScreen: React.FC<{
         </div>
       </div>
 
-      {/* Skills Toggle Button */}
-      <button
-        onClick={toggleSphere}
-        className="fixed top-6 right-6 z-[60] px-6 py-3 bg-white text-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-300 font-medium text-sm tracking-wide uppercase cursor-pointer"
-        style={{
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-          pointerEvents: 'auto',
-        }}
-        aria-label={sphereExpanded ? "Close skills" : "View skills"}
-      >
-        Skills
-      </button>
-
-      {/* Sphere Modal */}
-      <Suspense fallback={null}>
-        <SphereModal 
-          sphereExpanded={sphereExpanded} 
-          onToggle={handleModalToggle} 
-        />
-      </Suspense>
+      {/* Holographic Skills Projector */}
+      <div className="fixed top-6 right-6 z-[60]">
+        <Suspense fallback={
+          <div className="px-6 py-3 bg-gray-200 rounded-lg animate-pulse">
+            Loading...
+          </div>
+        }>
+          <HolographicSkillsSphere buttonText="View Skills" />
+        </Suspense>
+      </div>
     </>
   );
 };
