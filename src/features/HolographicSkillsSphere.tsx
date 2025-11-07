@@ -1,13 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HolographicProjector } from './components/HolographicProjector';
 import { DiagonalDescriptions } from './components/DiagonalDescriptions';
 import { techInfoData } from './data/techInfo';
 import { ThreeDBall } from './3dBall';
-
-interface HolographicSkillsSphereProps {
-  buttonText?: string;
-}
 
 interface IconLine {
   id: string;
@@ -41,9 +36,7 @@ const MemoizedHolographicThreeDBall = React.memo<{
 
 MemoizedHolographicThreeDBall.displayName = 'MemoizedHolographicThreeDBall';
 
-export const HolographicSkillsSphere: React.FC<HolographicSkillsSphereProps> = ({
-  buttonText = "View Skills"
-}) => {
+export const HolographicSkillsSphere: React.FC = () => {
   const [iconLines, setIconLines] = useState<IconLine[]>([]);
 
   const handleIconClick = useCallback((iconName: string, position: { x: number; y: number }) => {
@@ -67,19 +60,14 @@ export const HolographicSkillsSphere: React.FC<HolographicSkillsSphereProps> = (
   }, []);
 
   return (
-    <div className="flex items-center justify-center">
-      <HolographicProjector 
-        buttonText={buttonText}
-        projectionSize={{ width: 150, height: 150 }}
+    <div className="relative w-[150px] h-[150px]">
+      {/* SVG Overlay for Icon Lines */}
+      <svg 
+        className="absolute inset-0 pointer-events-none z-10"
+        width={170} // 150 + 20 for left extension
+        height={150}
+        style={{ left: -20 }} // Offset to show lines to the left
       >
-        <div className="relative w-full h-full">
-          {/* SVG Overlay for Icon Lines */}
-          <svg 
-            className="absolute inset-0 pointer-events-none z-10"
-            width={170} // 150 + 20 for left extension
-            height={150}
-            style={{ left: -20 }} // Offset to show lines to the left
-          >
             <defs>
               <filter id="iconLineGlow" x="-50%" y="-50%" width="200%" height="200%">
                 <feMorphology operator="dilate" radius="2"/>
@@ -157,16 +145,14 @@ export const HolographicSkillsSphere: React.FC<HolographicSkillsSphereProps> = (
             </AnimatePresence>
           </svg>
 
-          <DiagonalDescriptions iconData={techInfoData}>
-            {({ handleIconHover }) => (
-              <MemoizedHolographicThreeDBall 
-                onIconHover={handleIconHover}
-                onIconClick={handleIconClick}
-              />
-            )}
-          </DiagonalDescriptions>
-        </div>
-      </HolographicProjector>
+      <DiagonalDescriptions iconData={techInfoData}>
+        {({ handleIconHover }) => (
+          <MemoizedHolographicThreeDBall 
+            onIconHover={handleIconHover}
+            onIconClick={handleIconClick}
+          />
+        )}
+      </DiagonalDescriptions>
     </div>
   );
 };

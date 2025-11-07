@@ -332,7 +332,7 @@ const WelcomeScreen: React.FC<{
       </div>
 
       {/* Top Navigation */}
-      <div className="fixed top-6 left-0 right-0 z-[60] flex justify-between items-center px-6">
+      <div className="fixed top-6 left-6 z-[60]">
         {/* Music Page Button */}
         <button
           onClick={onMusicClick}
@@ -340,8 +340,10 @@ const WelcomeScreen: React.FC<{
         >
           🎵 Music
         </button>
-        
-        {/* Skills Orb */}
+      </div>
+
+      {/* Skills Orb - Top Right Corner */}
+      <div className="fixed top-6 right-6 z-[60]">
         <Suspense fallback={
           <div className="w-12 h-12 bg-blue-200 rounded-full animate-pulse"></div>
         }>
