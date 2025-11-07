@@ -242,6 +242,7 @@ interface ThreeDBallProps {
   onIconHover?: (iconKey: string | null, position: { x: number; y: number } | null) => void;
   onIconCentered?: (iconKey: string) => void; // Callback when icon is centered
   isInteractionDisabled?: boolean;
+  allowDragRotation?: boolean; // Controls whether mouse drag can rotate the sphere
 }
 
 // Extract just the names for the default words array
@@ -254,6 +255,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
   onIconHover,
   onIconCentered,
   isInteractionDisabled = false,
+  allowDragRotation = true,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
@@ -370,6 +372,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       rotationRef,
       {
         isInteractionDisabled,
+        allowDragRotation,
         onIconClick,
         onIconHover,
         iconPositionsRef,
@@ -404,12 +407,12 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       }
       cleanup();
     };
-  }, [words, options, isInteractionDisabled, onIconClick, onIconHover, centerIcon, onIconCentered]);
+  }, [words, options, isInteractionDisabled, allowDragRotation, onIconClick, onIconHover, centerIcon, onIconCentered]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="block cursor-pointer"
+      className="block"
       style={{ width: "352px", height: "352px" }}
     />
   );
@@ -451,6 +454,7 @@ function setupCanvas(
   }>,
   interactionProps?: {
     isInteractionDisabled?: boolean;
+    allowDragRotation?: boolean;
     onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
     onIconHover?: (iconKey: string | null, position: { x: number; y: number } | null) => void;
     iconPositionsRef: React.MutableRefObject<Record<string, { x: number; y: number; size: number; visible: boolean }>>;
@@ -476,48 +480,6 @@ function setupCanvas(
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
   ctx.scale(2, 2);
-
-  // Create event handlers as named functions for proper cleanup
-  const handleMouseDown = (event: MouseEvent) => {
-    if (interactionProps?.isInteractionDisabled) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const clickY = event.clientY - rect.top;
-    
-    // Check if click is on any icon
-    if (interactionProps?.iconPositionsRef && interactionProps?.onIconClick) {
-      const clickedIcon = Object.entries(interactionProps.iconPositionsRef.current).find(([, pos]) => {
-        if (!pos.visible) return false;
-        
-        const distance = Math.sqrt(
-          Math.pow(clickX - pos.x, 2) + Math.pow(clickY - pos.y, 2)
-        );
-        return distance <= pos.size / 2;
-      });
-      
-      if (clickedIcon) {
-        const [techName] = clickedIcon;
-        
-        // Start centering animation
-        if (interactionProps.centerIcon) {
-          interactionProps.centerIcon(techName);
-        }
-        
-        // Call original click handler
-        if (interactionProps.onIconClick) {
-          interactionProps.onIconClick(techName, { x: clickX, y: clickY });
-        }
-        
-        return; // Don't start drag rotation if icon was clicked
-      }
-    }
-    
-    // Original drag behavior
-    rotationRef.current.clicked = true;
-    rotationRef.current.lastX = event.screenX;
-    rotationRef.current.lastY = event.screenY;
-  };
 
   const handleMouseMove = (event: MouseEvent) => {
     if (interactionProps?.isInteractionDisabled) return;
@@ -586,29 +548,9 @@ function setupCanvas(
         // The velocity and auto rotation direction are already set from the last mouse position
       }
     }
-    
-    // Original drag behavior when clicked
-    if (rotationRef.current.clicked) {
-      const dx = event.screenX - rotationRef.current.lastX;
-      const dy = event.screenY - rotationRef.current.lastY;
-      rotationRef.current.lastX = event.screenX;
-      rotationRef.current.lastY = event.screenY;
-
-      // rotation update
-      rotationRef.current.rz += -dy * 0.01;
-      rotationRef.current.rx += dx * 0.01;
-
-      // velocity update
-      rotationRef.current.vx = dx * 0.1;
-      rotationRef.current.vy = dy * 0.1;
-    }
   };
 
-  const handleMouseUp = () => (rotationRef.current.clicked = false);
-  
   const handleMouseLeave = () => {
-    rotationRef.current.clicked = false;
-    
     // Only calculate exit direction and reset if we were actually hovering over the sphere
     if (rotationRef.current.hovering) {
       // Calculate exit velocity based on recent mouse movement
@@ -637,17 +579,13 @@ function setupCanvas(
     rotationRef.current.hovering = false;
   };
 
-  // Add event listeners
-  canvas.addEventListener("mousedown", handleMouseDown);
+  // Add event listeners - only mouse move and leave for hover detection
   canvas.addEventListener("mousemove", handleMouseMove);
-  canvas.addEventListener("mouseup", handleMouseUp);
   canvas.addEventListener("mouseleave", handleMouseLeave);
 
   // Return cleanup function to remove event listeners
   return () => {
-    canvas.removeEventListener("mousedown", handleMouseDown);
     canvas.removeEventListener("mousemove", handleMouseMove);
-    canvas.removeEventListener("mouseup", handleMouseUp);
     canvas.removeEventListener("mouseleave", handleMouseLeave);
   };
 }
