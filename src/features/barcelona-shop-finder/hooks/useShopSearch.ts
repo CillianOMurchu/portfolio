@@ -56,7 +56,7 @@ export const useShopSearch = () => {
       };
 
       // Perform text search
-      placesService.textSearch(request, (results: any[], status: any) => {
+      (placesService as any).textSearch(request, (results: any[], status: any) => {
         if (status === (window as any).google.maps.places.PlacesServiceStatus.OK && results) {
           // Process and format results
           const formattedResults: ShopResult[] = results

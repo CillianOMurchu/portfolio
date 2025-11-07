@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { allIcons, techIconMap } from "./3dBall.const";
 import { skillsButtonPosition } from '../utils/skillsButtonPosition';
 
@@ -240,6 +240,7 @@ interface ThreeDBallProps {
   options?: WordSphereOptions;
   onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
   onIconHover?: (iconKey: string | null, position: { x: number; y: number } | null) => void;
+  onIconCentered?: (iconKey: string) => void; // Callback when icon is centered
   isInteractionDisabled?: boolean;
 }
 
@@ -251,13 +252,14 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
   options = {},
   onIconClick,
   onIconHover,
+  onIconCentered,
   isInteractionDisabled = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const lastFrameTime = useRef<number>(0);
   const iconPositionsRef = useRef<Record<string, { x: number; y: number; size: number; visible: boolean }>>({});
-  const rotationRef = useRef({
+    const rotationRef = useRef({
     rx: 0,
     rz: 0,
     vx: 0,
@@ -268,14 +270,62 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
     hovering: false,
     lastMouseX: 0,
     lastMouseY: 0,
-    autoRotationDirectionX: 1,
-    autoRotationDirectionZ: 1,
+    autoRotationDirectionX: Math.random() > 0.5 ? 1 : -1,
+    autoRotationDirectionZ: Math.random() > 0.5 ? 1 : -1,
+    currentMouseX: 0,
+    currentMouseY: 0,
+    prevMouseX: 0,
+    prevMouseY: 0,
     pausedRx: 0,
     pausedRz: 0,
     hoverStartTime: 0,
-    prevMouseX: 0,
-    prevMouseY: 0
-  });
+    // Icon centering properties
+    isRotatingToCenter: false,
+    targetRx: 0,
+    targetRz: 0,
+    centeringSpeed: 0.1,
+    centeringIconName: null as string | null,
+    // Stop automatic rotation once icon is clicked
+    autoRotationStopped: false,
+  })
+
+  // Function to center an icon by rotating sphere
+  const centerIcon = useCallback((iconName: string) => {
+    const iconIndex = words.indexOf(iconName);
+    if (iconIndex === -1) return;
+
+    // Use the same fibonacci sphere generation as the rendering
+    const count = words.length;
+    const positions: { x: number; y: number; z: number }[] = [];
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+    for (let i = 0; i < count; i++) {
+      const y = 1 - (i / (count - 1)) * 2;
+      const radiusAtY = Math.sqrt(1 - y * y);
+      const theta = goldenAngle * i;
+
+      const x = Math.cos(theta) * radiusAtY;
+      const z = Math.sin(theta) * radiusAtY;
+
+      positions.push({ x, y, z });
+    }
+
+    const iconPos = positions[iconIndex];
+    if (!iconPos) return;
+
+    // Calculate required rotation to center the icon
+    const targetRx = Math.atan2(-iconPos.y, iconPos.z);
+    const targetRz = -Math.atan2(iconPos.x, Math.sqrt(iconPos.y * iconPos.y + iconPos.z * iconPos.z));
+
+    // Start centering animation
+    rotationRef.current.isRotatingToCenter = true;
+    rotationRef.current.targetRx = targetRx;
+    rotationRef.current.targetRz = targetRz;
+    rotationRef.current.centeringIconName = iconName;
+    rotationRef.current.vx = 0; // Stop any existing rotation
+    rotationRef.current.vy = 0;
+    rotationRef.current.autoRotationStopped = true; // Stop all automatic rotation forever
+  }, [words]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -322,7 +372,9 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
         isInteractionDisabled,
         onIconClick,
         onIconHover,
-        iconPositionsRef
+        iconPositionsRef,
+        centerIcon,
+        onIconCentered
       }
     );
 
@@ -352,7 +404,7 @@ export const ThreeDBall: React.FC<ThreeDBallProps> = ({
       }
       cleanup();
     };
-  }, [words, options, isInteractionDisabled, onIconClick, onIconHover]);
+  }, [words, options, isInteractionDisabled, onIconClick, onIconHover, centerIcon, onIconCentered]);
 
   return (
     <canvas
@@ -388,12 +440,22 @@ function setupCanvas(
     hoverStartTime: number;
     prevMouseX: number;
     prevMouseY: number;
+    // Icon centering properties
+    isRotatingToCenter: boolean;
+    targetRx: number;
+    targetRz: number;
+    centeringSpeed: number;
+    centeringIconName: string | null;
+    // Stop automatic rotation once icon is clicked
+    autoRotationStopped: boolean;
   }>,
   interactionProps?: {
     isInteractionDisabled?: boolean;
     onIconClick?: (iconKey: string, position: { x: number; y: number }) => void;
     onIconHover?: (iconKey: string | null, position: { x: number; y: number } | null) => void;
     iconPositionsRef: React.MutableRefObject<Record<string, { x: number; y: number; size: number; visible: boolean }>>;
+    centerIcon?: (iconName: string) => void;
+    onIconCentered?: (iconName: string) => void;
   }
 ): () => void {
   const {
@@ -436,7 +498,17 @@ function setupCanvas(
       
       if (clickedIcon) {
         const [techName] = clickedIcon;
-        interactionProps.onIconClick(techName, { x: clickX, y: clickY });
+        
+        // Start centering animation
+        if (interactionProps.centerIcon) {
+          interactionProps.centerIcon(techName);
+        }
+        
+        // Call original click handler
+        if (interactionProps.onIconClick) {
+          interactionProps.onIconClick(techName, { x: clickX, y: clickY });
+        }
+        
         return; // Don't start drag rotation if icon was clicked
       }
     }
@@ -491,18 +563,20 @@ function setupCanvas(
       // Calculate direction based on mouse position relative to center
       const angle = Math.atan2(deltaY, deltaX);
       
-      // Apply rotation in opposite direction
-      rotationRef.current.rx -= Math.cos(angle) * rotationSpeed;
-      rotationRef.current.rz -= Math.sin(angle) * rotationSpeed;
-      
-      // Store current rotation speed and direction for when mouse leaves
-      const velocityScale = 150; // Scale up for momentum
-      rotationRef.current.vx = -Math.cos(angle) * rotationSpeed * velocityScale;
-      rotationRef.current.vy = -Math.sin(angle) * rotationSpeed * velocityScale;
-      
-      // Set auto rotation direction based on current movement
-      rotationRef.current.autoRotationDirectionX = rotationRef.current.vx >= 0 ? 1 : -1;
-      rotationRef.current.autoRotationDirectionZ = rotationRef.current.vy >= 0 ? 1 : -1;
+      // Apply rotation in opposite direction (only if auto rotation hasn't been stopped)
+      if (!rotationRef.current.autoRotationStopped) {
+        rotationRef.current.rx -= Math.cos(angle) * rotationSpeed;
+        rotationRef.current.rz -= Math.sin(angle) * rotationSpeed;
+        
+        // Store current rotation speed and direction for when mouse leaves
+        const velocityScale = 150; // Scale up for momentum
+        rotationRef.current.vx = -Math.cos(angle) * rotationSpeed * velocityScale;
+        rotationRef.current.vy = -Math.sin(angle) * rotationSpeed * velocityScale;
+        
+        // Set auto rotation direction based on current movement
+        rotationRef.current.autoRotationDirectionX = rotationRef.current.vx >= 0 ? 1 : -1;
+        rotationRef.current.autoRotationDirectionZ = rotationRef.current.vy >= 0 ? 1 : -1;
+      }
       
       return;
     } else {
@@ -604,10 +678,19 @@ function drawCanvasWithFadeIn(
     hoverStartTime: number;
     prevMouseX: number;
     prevMouseY: number;
+    // Icon centering properties
+    isRotatingToCenter: boolean;
+    targetRx: number;
+    targetRz: number;
+    centeringSpeed: number;
+    centeringIconName: string | null;
+    // Stop automatic rotation once icon is clicked
+    autoRotationStopped: boolean;
   },
   deltaTime: number,
   interactionProps?: {
     iconPositionsRef: React.MutableRefObject<Record<string, { x: number; y: number; size: number; visible: boolean }>>;
+    onIconCentered?: (iconName: string) => void;
   }
 ): void {
   const {
@@ -718,6 +801,35 @@ function drawCanvasWithFadeIn(
   // Add continuous auto-rotation when not hovering, using stored velocity and direction
   if (!rotation.hovering) {
     // Use stored velocity from mouse interaction for smoother continuation
+  // Handle centering animation - takes priority over other rotations
+  if (rotation.isRotatingToCenter) {
+    const deltaRx = rotation.targetRx - rotation.rx;
+    const deltaRz = rotation.targetRz - rotation.rz;
+    
+    // Use shortest angle path (handle 2π wrapping)
+    const adjustedDeltaRx = ((deltaRx + Math.PI) % (2 * Math.PI)) - Math.PI;
+    const adjustedDeltaRz = ((deltaRz + Math.PI) % (2 * Math.PI)) - Math.PI;
+    
+    const threshold = 0.05; // Stop when close enough
+    
+    if (Math.abs(adjustedDeltaRx) < threshold && Math.abs(adjustedDeltaRz) < threshold) {
+      // Centering complete
+      rotation.rx = rotation.targetRx;
+      rotation.rz = rotation.targetRz;
+      rotation.isRotatingToCenter = false;
+      
+      // Notify that centering is complete
+      if (rotation.centeringIconName && interactionProps?.onIconCentered) {
+        interactionProps.onIconCentered(rotation.centeringIconName);
+      }
+      rotation.centeringIconName = null;
+    } else {
+      // Continue centering animation
+      rotation.rx += adjustedDeltaRx * rotation.centeringSpeed;
+      rotation.rz += adjustedDeltaRz * rotation.centeringSpeed;
+    }
+  } else if (!rotation.autoRotationStopped) {
+    // Normal rotation logic - only if auto rotation hasn't been stopped
     const autoRotationSpeed = 0.022;
     const velocityDecay = 0.98; // Gradual slowdown
     
@@ -732,6 +844,7 @@ function drawCanvasWithFadeIn(
     // Apply velocity decay for gradual slowdown
     rotation.vx *= velocityDecay;
     rotation.vy *= velocityDecay;
+  }
   }
 }
 
