@@ -161,6 +161,15 @@ function App() {
       {/* Persistent background to prevent layout jump */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />
       
+      {/* Skills Orb - Persistent across all pages */}
+      <div className="fixed top-6 right-6 z-[70]">
+        <Suspense fallback={
+          <div className="w-12 h-12 bg-blue-200 rounded-full animate-pulse"></div>
+        }>
+          <SkillsOrb />
+        </Suspense>
+      </div>
+      
       {/* Animated screen transitions */}
       <AnimatePresence mode="wait">
         {!session && !isVisitor && signInState === 'signin' ? (
@@ -351,15 +360,6 @@ const WelcomeScreen: React.FC<{
             isAnimatingOut={isMusicIconAnimatingOut}
           />
         </div>
-      </div>
-
-      {/* Skills Orb - Top Right Corner */}
-      <div className="fixed top-6 right-6 z-[60]">
-        <Suspense fallback={
-          <div className="w-12 h-12 bg-blue-200 rounded-full animate-pulse"></div>
-        }>
-          <SkillsOrb />
-        </Suspense>
       </div>
     </>
   );
