@@ -2,6 +2,7 @@ import "./index.css";
 import { useState, useEffect, Suspense, lazy } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
+import { MusicalIcon } from "./components/MusicalIcon";
 
 // Lazy load heavy components only when needed
 const Auth = lazy(() =>
@@ -29,6 +30,7 @@ function App() {
   
   // New state for page navigation
   const [currentPage, setCurrentPage] = useState<'home' | 'music'>('home');
+  const [isMusicIconAnimatingOut, setIsMusicIconAnimatingOut] = useState(false);
 
   useEffect(() => {
     // Ensure minimum loading time of 1 second for smooth experience
@@ -108,7 +110,12 @@ function App() {
 
   // Page navigation functions
   const handleMusicPageTransition = () => {
+    setIsMusicIconAnimatingOut(true);
+  };
+
+  const handleMusicIconExitComplete = () => {
     setCurrentPage('music');
+    setIsMusicIconAnimatingOut(false);
   };
 
   const handleBackToHome = () => {
@@ -194,6 +201,8 @@ function App() {
               setIsVisitor={setIsVisitor}
               setSignInState={setSignInState}
               onMusicClick={handleMusicPageTransition}
+              isMusicIconAnimatingOut={isMusicIconAnimatingOut}
+              onMusicIconExitComplete={handleMusicIconExitComplete}
             />
           </motion.div>
         )}
@@ -292,7 +301,9 @@ const WelcomeScreen: React.FC<{
   setIsVisitor: (value: boolean) => void;
   setSignInState: (value: 'signin' | 'transitioning' | 'complete') => void;
   onMusicClick: () => void;
-}> = ({ isVisitor, setIsVisitor, setSignInState, onMusicClick }) => {
+  isMusicIconAnimatingOut: boolean;
+  onMusicIconExitComplete: () => void;
+}> = ({ isVisitor, setIsVisitor, setSignInState, onMusicClick, isMusicIconAnimatingOut, onMusicIconExitComplete }) => {
 
   const handleLogout = async () => {
     if (isVisitor) {
@@ -333,13 +344,13 @@ const WelcomeScreen: React.FC<{
 
       {/* Top Navigation */}
       <div className="fixed top-6 left-6 z-[60]">
-        {/* Music Page Button */}
-        <button
-          onClick={onMusicClick}
-          className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium flex items-center gap-2"
-        >
-          🎵 Music
-        </button>
+        {/* Musical Icon */}
+        <div onClick={onMusicClick}>
+          <MusicalIcon 
+            onExitComplete={onMusicIconExitComplete}
+            isAnimatingOut={isMusicIconAnimatingOut}
+          />
+        </div>
       </div>
 
       {/* Skills Orb - Top Right Corner */}

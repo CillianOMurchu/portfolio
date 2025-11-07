@@ -68,16 +68,6 @@ export const HolographicSkillsSphere: React.FC = () => {
         height={150}
         style={{ left: -20 }} // Offset to show lines to the left
       >
-            <defs>
-              <filter id="iconLineGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feMorphology operator="dilate" radius="2"/>
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge> 
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
             
             <AnimatePresence>
               {iconLines.map(line => (
@@ -90,7 +80,6 @@ export const HolographicSkillsSphere: React.FC = () => {
                     y2={line.startY}
                     stroke="#3b82f6"
                     strokeWidth="3"
-                    filter="url(#iconLineGlow)"
                     initial={{ x2: line.startX + 20 }}
                     animate={{ x2: 0 }} // End 20px to the left
                     exit={{ opacity: 0 }}
