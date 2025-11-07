@@ -7,10 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 const Auth = lazy(() =>
   import("@supabase/auth-ui-react").then((module) => ({ default: module.Auth }))
 );
-const HolographicSkillsSphere = lazy(() => 
-  import("./features").then((module) => ({ default: module.HolographicSkillsSphere }))
-);
 const PianoLoading = lazy(() => import("./components/PianoLoading").then(module => ({ default: module.PianoLoading })));
+const MusicPage = lazy(() => import("./components/MusicPage").then(module => ({ default: module.MusicPage })));
+const SkillsOrb = lazy(() => import("./components/SkillsOrb"));
 
 // Import only lightweight theme object
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -27,6 +26,9 @@ function App() {
   const [hydrated, setHydrated] = useState(false);
   const [minLoadingComplete, setMinLoadingComplete] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  
+  // New state for page navigation
+  const [currentPage, setCurrentPage] = useState<'home' | 'music'>('home');
 
   useEffect(() => {
     // Ensure minimum loading time of 1 second for smooth experience
@@ -104,6 +106,15 @@ function App() {
     setAuthLoading(false);
   };
 
+  // Page navigation functions
+  const handleMusicPageTransition = () => {
+    setCurrentPage('music');
+  };
+
+  const handleBackToHome = () => {
+    setCurrentPage('home');
+  };
+
   // Show loading if not yet hydrated OR minimum loading time hasn't passed OR auth is loading
   if (!hydrated || !minLoadingComplete || authLoading) {
     return (
@@ -148,27 +159,41 @@ function App() {
         {!session && !isVisitor && signInState === 'signin' ? (
           <motion.div
             key="auth"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
             className="relative z-10"
           >
             <AuthScreen onVisitorSignIn={handleVisitorSignIn} />
           </motion.div>
+        ) : currentPage === 'music' ? (
+          <motion.div
+            key="music"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="relative z-10"
+          >
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading Music Page...</div>}>
+              <MusicPage onBack={handleBackToHome} />
+            </Suspense>
+          </motion.div>
         ) : (
           <motion.div
             key="welcome"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
             className="relative z-10"
           >
             <WelcomeScreen 
               isVisitor={isVisitor} 
               setIsVisitor={setIsVisitor}
               setSignInState={setSignInState}
+              onMusicClick={handleMusicPageTransition}
             />
           </motion.div>
         )}
@@ -266,7 +291,8 @@ const WelcomeScreen: React.FC<{
   isVisitor: boolean;
   setIsVisitor: (value: boolean) => void;
   setSignInState: (value: 'signin' | 'transitioning' | 'complete') => void;
-}> = ({ isVisitor, setIsVisitor, setSignInState }) => {
+  onMusicClick: () => void;
+}> = ({ isVisitor, setIsVisitor, setSignInState, onMusicClick }) => {
 
   const handleLogout = async () => {
     if (isVisitor) {
@@ -305,14 +331,21 @@ const WelcomeScreen: React.FC<{
         </div>
       </div>
 
-      {/* Holographic Skills Projector */}
-      <div className="fixed top-6 right-6 z-[60]">
+      {/* Top Navigation */}
+      <div className="fixed top-6 left-0 right-0 z-[60] flex justify-between items-center px-6">
+        {/* Music Page Button */}
+        <button
+          onClick={onMusicClick}
+          className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium flex items-center gap-2"
+        >
+          🎵 Music
+        </button>
+        
+        {/* Skills Orb */}
         <Suspense fallback={
-          <div className="px-6 py-3 bg-gray-200 rounded-lg animate-pulse">
-            Loading...
-          </div>
+          <div className="w-12 h-12 bg-blue-200 rounded-full animate-pulse"></div>
         }>
-          <HolographicSkillsSphere buttonText="View Skills" />
+          <SkillsOrb />
         </Suspense>
       </div>
     </>

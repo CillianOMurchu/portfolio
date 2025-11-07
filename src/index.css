@@ -207,3 +207,26 @@ h1, h2, h3, p {
 .animate-rainbow-border {
   animation: rainbow-border 3s linear infinite;
 }
+
+/* Musical Notes Rain Animation */
+@keyframes rain-drop {
+  0% {
+    transform: translateY(-200px) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100vh + 100px)) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+.animate-rain-drop {
+  animation: rain-drop linear infinite;
+  margin-top: -100px; /* Extra negative margin to start even higher */
+}
