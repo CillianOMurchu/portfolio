@@ -1,5 +1,6 @@
 import React from "react";
 import UnifiedNavbar from "../UnifiedNavbar";
+import HeroTitle from "../HeroTitle";
 import type { NavItem } from "../UnifiedNavbar";
 
 interface WelcomeScreenProps {
@@ -55,14 +56,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     <>
       {/* Main Page Content */}
       <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-6 shadow-xl">
-            <span className="text-3xl font-bold text-white">C</span>
-          </div>
-          <h1 className="text-center text-7xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text">
-            Welcome
-          </h1>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto" />
+        <div className="mb-8">
+          <HeroTitle />
         </div>
 
         <div className="text-center mb-8">
