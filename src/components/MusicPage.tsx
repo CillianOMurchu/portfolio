@@ -23,7 +23,7 @@ export const MusicPage: React.FC<MusicPageProps> = ({ onBack }) => {
         {/* Back Button */}
         <motion.button
           onClick={onBack}
-          className="absolute top-8 left-8 px-6 py-3 bg-black/30 backdrop-blur-sm text-rose-200 rounded-xl hover:bg-black/50 transition-all duration-300 border border-rose-400/20"
+          className="absolute top-8 left-8 px-6 py-3 btn-glass rounded-xl font-medium"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >

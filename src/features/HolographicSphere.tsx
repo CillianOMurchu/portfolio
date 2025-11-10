@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ThreeDBall } from './3dBall';
+import { ThreeDBall } from './3d-ball';
 import type { SphereItem, HolographicSphereProps, SphereOptions } from './types/holographicSphere';
 
 interface ItemLine {

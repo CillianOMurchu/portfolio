@@ -1,4 +1,4 @@
-export { ThreeDBall } from './3dBall';
+export { ThreeDBall } from './3d-ball';
 export { HolographicSkillsSphere } from './HolographicSkillsSphere';
 
 // Generic sphere exports

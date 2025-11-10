@@ -2,13 +2,84 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Unified Theme Variables */
+:root {
+  /* Primary theme colors */
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #5b21b6 0%, #9333ea 50%, #db2777 100%);
+  
+  /* Glass morphism effects */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-bg-hover: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-hover: rgba(255, 255, 255, 0.3);
+  --glass-backdrop: blur(12px);
+  
+  /* Text colors */
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-accent: rgba(255, 255, 255, 0.95);
+  
+  /* Shadow effects */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-glass-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+  
+  /* Button transitions */
+  --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Unified Button Components */
+.btn-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-backdrop);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  transition: var(--transition-standard);
+  box-shadow: var(--shadow-glass);
+}
+
+.btn-glass:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glass-hover);
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  transition: var(--transition-standard);
+  box-shadow: var(--shadow-glass);
+}
+
+.btn-primary:hover {
+  background: var(--primary-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glass-hover);
+}
+
+/* Additional utility classes */
+.text-glass {
+  color: var(--text-primary);
+}
+
+.text-glass-secondary {
+  color: var(--text-secondary);
+}
+
+.border-glass {
+  border-color: var(--glass-border);
+}
+
 /* Critical styles for immediate rendering */
-body {
+html, body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeSpeed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  height: 100vh;
 }
 
 /* Ensure immediate text rendering */

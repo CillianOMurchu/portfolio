@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
-import { ThreeDBall } from '../3dBall'
+import { ThreeDBall } from '../3d-ball'
 
 // Mock canvas context
 const mockContext = {
