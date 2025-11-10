@@ -1,15 +1,28 @@
 import React, { useMemo } from 'react';
 import { HolographicSphere } from './HolographicSphere';
-import { convertTechDataToSphereItems } from './utils/sphereData';
-import { techInfoData } from './data/techInfo';
+import { allIcons } from './3dBall.const';
 import type { SphereItem } from './types/holographicSphere';
 
 export const HolographicSkillsSphere: React.FC = React.memo(() => {
-  // Memoize the converted tech data to prevent recreation on re-renders
-  const skillsItems: SphereItem[] = useMemo(
-    () => convertTechDataToSphereItems(techInfoData), 
-    [] // Empty dependency array since techInfoData is static
-  );
+  // Create sphere items directly from the manual icon list
+  const skillsItems: SphereItem[] = useMemo(() => {
+    return allIcons.map(icon => {
+      // Format display name
+      const displayName = icon.name
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      return {
+        id: icon.name,
+        name: displayName,
+        description: `${displayName} technology`,
+        image: `/src/assets/programming-icons/${icon.name}.svg`,
+        details: [`${displayName} development`],
+        category: 'technology'
+      };
+    });
+  }, []);
 
   // Memoize sphere options to prevent object recreation
   const sphereOptions = useMemo(() => ({
