@@ -6,6 +6,7 @@ import type { NavItem } from "../UnifiedNavbar";
 interface WelcomeScreenProps {
   onMusicClick: () => void;
   onBarebellsClick: () => void;
+  onSpheresClick: () => void;
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
   isBarebellsIconAnimatingOut: boolean;
@@ -17,6 +18,7 @@ interface WelcomeScreenProps {
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onMusicClick,
   onBarebellsClick,
+  onSpheresClick,
   isMusicIconAnimatingOut,
   onMusicIconExitComplete,
   isBarebellsIconAnimatingOut,
@@ -49,6 +51,16 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       onClick: onBarebellsClick,
       onExitComplete: onBarebellsIconExitComplete,
       isAnimatingOut: isBarebellsIconAnimatingOut
+    },
+    {
+      id: 'spheres',
+      icon: '🌐',
+      glowColor: '#3b82f6',
+      shadowColor: 'rgba(59, 130, 246, 0.6)',
+      textColor: 'text-blue-200',
+      onClick: onSpheresClick,
+      onExitComplete: () => {}, // No animation needed for direct navigation
+      isAnimatingOut: false
     }
   ];
 

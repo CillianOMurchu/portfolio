@@ -27,6 +27,7 @@ function App() {
     handleMusicIconExitComplete,
     handleBarebellsPageTransition,
     handleBarebellsIconExitComplete,
+    handleSpheresPageTransition,
     handleBackToHome,
   } = usePageNavigation();
 
@@ -67,6 +68,7 @@ function App() {
         onLogout={handleLogout}
         onMusicClick={handleMusicPageTransition}
         onBarebellsClick={handleBarebellsPageTransition}
+        onSpheresClick={handleSpheresPageTransition}
         isMusicIconAnimatingOut={isMusicIconAnimatingOut}
         onMusicIconExitComplete={handleMusicIconExitComplete}
         isBarebellsIconAnimatingOut={isBarebellsIconAnimatingOut}
