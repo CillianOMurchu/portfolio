@@ -133,7 +133,7 @@ export const ItemSphere: React.FC<Props> = (props) => {
         // Cascade fade-in calculation
         const iconDelay = icon.index * fadeInStagger;
         const elapsed = now - mountTimeRef.current;
-        let fadeInAlpha = Math.min(1, Math.max(0, (elapsed - iconDelay) / fadeInDuration));
+        const fadeInAlpha = Math.min(1, Math.max(0, (elapsed - iconDelay) / fadeInDuration));
         // 3D fade as before
         const fade3d = 0.4 + 0.6 * ((icon.z + 1) / 2);
         const finalAlpha = fade3d * fadeInAlpha;
@@ -196,7 +196,7 @@ export const ItemSphere: React.FC<Props> = (props) => {
       window.removeEventListener("pointerup", onPointerUp);
       ro.disconnect();
     };
-  }, [positions]);
+  });
 
   return (
     <div

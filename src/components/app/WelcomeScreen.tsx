@@ -1,27 +1,20 @@
 import React from "react";
 import UnifiedNavbar from "../UnifiedNavbar";
 import HeroTitle from "../HeroTitle";
-import type { NavItem } from "../UnifiedNavbar";
 import ItemSphere from "../../features/ItemSphere";
 
 interface WelcomeScreenProps {
   onMusicClick: () => void;
-  onBarebellsClick: () => void;
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
-  isBarebellsIconAnimatingOut: boolean;
-  onBarebellsIconExitComplete: () => void;
-  clickedIcon: "music" | "barebells" | null;
+  clickedIcon: "music" | null;
   onLogout: () => Promise<void>;
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onMusicClick,
-  onBarebellsClick,
   isMusicIconAnimatingOut,
   onMusicIconExitComplete,
-  isBarebellsIconAnimatingOut,
-  onBarebellsIconExitComplete,
   clickedIcon,
   onLogout,
 }) => {
@@ -29,27 +22,17 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     await onLogout();
   };
 
-  // Define navigation items
-  const navItems: NavItem[] = [
+  // Define navigation items (music only)
+  const navItems = [
     {
       id: "music",
-      icon: "🎵",
+      icon: "\ud83c\udfb5",
       glowColor: "#a855f7",
       shadowColor: "rgba(168, 85, 247, 0.6)",
       textColor: "text-white",
       onClick: onMusicClick,
       onExitComplete: onMusicIconExitComplete,
       isAnimatingOut: isMusicIconAnimatingOut,
-    },
-    {
-      id: "barebells",
-      icon: "🍫",
-      glowColor: "#f59e0b",
-      shadowColor: "rgba(245, 158, 11, 0.6)",
-      textColor: "text-amber-200",
-      onClick: onBarebellsClick,
-      onExitComplete: onBarebellsIconExitComplete,
-      isAnimatingOut: isBarebellsIconAnimatingOut,
     },
   ];
 

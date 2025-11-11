@@ -10,12 +10,9 @@ interface PageRouterProps {
   currentPage: Page;
   onLogout: () => Promise<void>;
   onMusicClick: () => void;
-  onBarebellsClick: () => void;
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
-  isBarebellsIconAnimatingOut: boolean;
-  onBarebellsIconExitComplete: () => void;
-  clickedIcon: 'music' | 'barebells' | null;
+  clickedIcon: 'music' | null;
   onBackToHome: () => void;
 }
 

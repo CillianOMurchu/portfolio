@@ -6,7 +6,7 @@ import type { Page } from '../../hooks/usePageNavigation';
 import AuthScreen from './AuthScreen';
 import WelcomeScreen from './WelcomeScreen';
 import MusicPage from '../MusicPage';
-import BarebellsPage from '../BarebellsPage';
+
 
 interface AppRoutesProps {
   session: Session | null;
@@ -14,12 +14,9 @@ interface AppRoutesProps {
   currentPage: Page;
   onLogout: () => Promise<void>;
   onMusicClick: () => void;
-  onBarebellsClick: () => void;
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
-  isBarebellsIconAnimatingOut: boolean;
-  onBarebellsIconExitComplete: () => void;
-  clickedIcon: 'music' | 'barebells' | null;
+  clickedIcon: 'music' | null;
   onBackToHome: () => void;
 }
 
@@ -28,11 +25,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
   signInState,
   onLogout,
   onMusicClick,
-  onBarebellsClick,
   isMusicIconAnimatingOut,
   onMusicIconExitComplete,
-  isBarebellsIconAnimatingOut,
-  onBarebellsIconExitComplete,
   clickedIcon,
   onBackToHome,
 }) => {
@@ -67,11 +61,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
           >
             <WelcomeScreen 
               onMusicClick={onMusicClick}
-              onBarebellsClick={onBarebellsClick}
               isMusicIconAnimatingOut={isMusicIconAnimatingOut}
               onMusicIconExitComplete={onMusicIconExitComplete}
-              isBarebellsIconAnimatingOut={isBarebellsIconAnimatingOut}
-              onBarebellsIconExitComplete={onBarebellsIconExitComplete}
               clickedIcon={clickedIcon}
               onLogout={onLogout}
             />
@@ -93,21 +84,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
           </motion.div>
         }
       />
-      <Route
-        path="/barebells"
-        element={
-          <motion.div
-            key="barebells"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
-            className="relative z-10"
-          >
-            <BarebellsPage onBack={onBackToHome} />
-          </motion.div>
-        }
-      />
+      {/* Barebells route removed */}
     </Routes>
   );
 };
