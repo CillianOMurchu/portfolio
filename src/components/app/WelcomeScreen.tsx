@@ -46,6 +46,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         <div className="mb-8">
           <HeroTitle />
         </div>
+        <div className="text-center mb-8">
+          <a
+            href="/critical-thinking"
+            className="inline-block px-8 py-3 rounded-xl font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 shadow hover:from-blue-200 hover:to-purple-200 transition mb-2"
+          >
+            Try a Critical Thinking Question
+          </a>
+        </div>
 
         <div className="text-center mb-8">
           <p className="text-lg text-gray-600 mb-6 font-medium">

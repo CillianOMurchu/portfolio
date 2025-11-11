@@ -5,7 +5,9 @@ import type { Session } from '@supabase/supabase-js';
 import type { Page } from '../../hooks/usePageNavigation';
 import AuthScreen from './AuthScreen';
 import WelcomeScreen from './WelcomeScreen';
+
 import MusicPage from '../MusicPage';
+import CriticalThinkingPage from '../CriticalThinkingPage';
 
 
 interface AppRoutesProps {
@@ -84,7 +86,21 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
           </motion.div>
         }
       />
-      {/* Barebells route removed */}
+      <Route
+        path="/critical-thinking"
+        element={
+          <motion.div
+            key="critical-thinking"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="relative z-10"
+          >
+            <CriticalThinkingPage />
+          </motion.div>
+        }
+      />
     </Routes>
   );
 };
