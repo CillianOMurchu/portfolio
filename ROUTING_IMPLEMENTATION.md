@@ -28,7 +28,6 @@ npm install react-router-dom
   - `/` → Home page
   - `/music` → Music page  
   - `/barebells` → Barebells page
-  - `/spheres` → Spheres page
 
 ### 4. Created Route Definitions (`src/components/app/AppRoutes.tsx`)
 - Extracted routing logic from PageRouter into dedicated component
@@ -46,7 +45,6 @@ npm install react-router-dom
 - **Home**: `http://localhost:5174/`
 - **Music**: `http://localhost:5174/music`
 - **Barebells**: `http://localhost:5174/barebells`  
-- **Spheres**: `http://localhost:5174/spheres`
 
 ### ✅ Preserved Functionality
 - All icon animations (rocket takeoff effects)
@@ -94,7 +92,6 @@ const handleMusicIconExitComplete = () => {
 
 The routing system is now active on the development server. You can:
 - Navigate using the UI and see URL changes
-- Type URLs directly: `/music`, `/barebells`, `/spheres`
 - Use browser back/forward buttons
 - Refresh pages and maintain current route
 - Bookmark specific pages

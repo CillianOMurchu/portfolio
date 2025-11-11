@@ -27,14 +27,23 @@ function generateFibonacciSphere(count: number) {
   return positions;
 }
 
-export const ItemSphere: React.FC = () => {
+interface Props {
+  iconSize: number;
+}
+
+export const ItemSphere: React.FC<Props> = (props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const sizeRef = useRef(100); // Will be set by ResizeObserver
-  const iconSize = 40;
+  const iconSize = props.iconSize || 40;
   const positions = generateFibonacciSphere(iconNames.length);
   // Preload all SVG images as HTMLImageElement
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
+
+  // Cascade fade-in timing
+  const fadeInDuration = 400; // ms for each icon to fade in
+  const fadeInStagger = 60; // ms delay between each icon
+  const mountTimeRef = useRef<number>(0);
 
   useEffect(() => {
     // Only load once
@@ -72,7 +81,7 @@ export const ItemSphere: React.FC = () => {
     if (!ctx) return;
 
     // Responsive: observe container size
-  //
+    //
     const resize = () => {
       const rect = container.getBoundingClientRect();
       const min = Math.min(rect.width, rect.height);
@@ -81,14 +90,23 @@ export const ItemSphere: React.FC = () => {
       canvas.height = min * window.devicePixelRatio;
       canvas.style.width = `${min}px`;
       canvas.style.height = `${min}px`;
-      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+      ctx.setTransform(
+        window.devicePixelRatio,
+        0,
+        0,
+        window.devicePixelRatio,
+        0,
+        0
+      );
     };
     resize();
     const ro = new window.ResizeObserver(resize);
     ro.observe(container);
 
     let animationId: number;
+    if (!mountTimeRef.current) mountTimeRef.current = performance.now();
     function draw() {
+      const now = performance.now();
       const size = sizeRef.current;
       if (!ctx) return;
       ctx.clearRect(0, 0, size, size);
@@ -102,7 +120,7 @@ export const ItemSphere: React.FC = () => {
         const z1 = y * Math.sin(state.current.rx) + z * Math.cos(state.current.rx);
         const x2 = x * Math.cos(state.current.rz) - z1 * Math.sin(state.current.rz);
         const z2 = x * Math.sin(state.current.rz) + z1 * Math.cos(state.current.rz);
-        return { name: iconNames[i], x: x2, y: y1, z: z2 };
+        return { name: iconNames[i], x: x2, y: y1, z: z2, index: i };
       });
       projected.sort((a, b) => b.z - a.z);
       for (const icon of projected) {
@@ -112,10 +130,16 @@ export const ItemSphere: React.FC = () => {
         const scale = perspective;
         const scaledIconSize = iconSize * scale;
         const img = imagesRef.current[icon.name];
-        if (img && img.complete) {
+        // Cascade fade-in calculation
+        const iconDelay = icon.index * fadeInStagger;
+        const elapsed = now - mountTimeRef.current;
+        let fadeInAlpha = Math.min(1, Math.max(0, (elapsed - iconDelay) / fadeInDuration));
+        // 3D fade as before
+        const fade3d = 0.4 + 0.6 * ((icon.z + 1) / 2);
+        const finalAlpha = fade3d * fadeInAlpha;
+        if (img && img.complete && finalAlpha > 0.01) {
           ctx.save();
-          const fade = 0.4 + 0.6 * ((icon.z + 1) / 2);
-          ctx.globalAlpha = fade;
+          ctx.globalAlpha = finalAlpha;
           ctx.drawImage(
             img,
             x2d - scaledIconSize / 2,
@@ -149,7 +173,10 @@ export const ItemSphere: React.FC = () => {
       lastY = e.clientY;
       state.current.rz += dx * 0.01;
       state.current.rx += dy * 0.01;
-      state.current.rx = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, state.current.rx));
+      state.current.rx = Math.max(
+        -Math.PI / 2,
+        Math.min(Math.PI / 2, state.current.rx)
+      );
     }
     function onPointerUp() {
       dragging = false;

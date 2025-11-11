@@ -7,7 +7,6 @@ import AuthScreen from './AuthScreen';
 import WelcomeScreen from './WelcomeScreen';
 import MusicPage from '../MusicPage';
 import BarebellsPage from '../BarebellsPage';
-import SphereShowcase from '../SphereShowcase';
 
 interface AppRoutesProps {
   session: Session | null;
@@ -16,7 +15,6 @@ interface AppRoutesProps {
   onLogout: () => Promise<void>;
   onMusicClick: () => void;
   onBarebellsClick: () => void;
-  onSpheresClick: () => void;
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
   isBarebellsIconAnimatingOut: boolean;
@@ -31,7 +29,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
   onLogout,
   onMusicClick,
   onBarebellsClick,
-  onSpheresClick,
   isMusicIconAnimatingOut,
   onMusicIconExitComplete,
   isBarebellsIconAnimatingOut,
@@ -71,7 +68,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             <WelcomeScreen 
               onMusicClick={onMusicClick}
               onBarebellsClick={onBarebellsClick}
-              onSpheresClick={onSpheresClick}
               isMusicIconAnimatingOut={isMusicIconAnimatingOut}
               onMusicIconExitComplete={onMusicIconExitComplete}
               isBarebellsIconAnimatingOut={isBarebellsIconAnimatingOut}
@@ -109,21 +105,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             className="relative z-10"
           >
             <BarebellsPage onBack={onBackToHome} />
-          </motion.div>
-        }
-      />
-      <Route
-        path="/spheres"
-        element={
-          <motion.div
-            key="spheres"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
-            className="relative z-10"
-          >
-            <SphereShowcase onBack={onBackToHome} />
           </motion.div>
         }
       />

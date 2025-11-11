@@ -11,7 +11,6 @@ interface PageRouterProps {
   onLogout: () => Promise<void>;
   onMusicClick: () => void;
   onBarebellsClick: () => void;
-  onSpheresClick: () => void;
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
   isBarebellsIconAnimatingOut: boolean;

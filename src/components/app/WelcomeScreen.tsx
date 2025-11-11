@@ -2,23 +2,22 @@ import React from "react";
 import UnifiedNavbar from "../UnifiedNavbar";
 import HeroTitle from "../HeroTitle";
 import type { NavItem } from "../UnifiedNavbar";
+import ItemSphere from "../../features/ItemSphere";
 
 interface WelcomeScreenProps {
   onMusicClick: () => void;
   onBarebellsClick: () => void;
-  onSpheresClick: () => void;
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
   isBarebellsIconAnimatingOut: boolean;
   onBarebellsIconExitComplete: () => void;
-  clickedIcon: 'music' | 'barebells' | null;
+  clickedIcon: "music" | "barebells" | null;
   onLogout: () => Promise<void>;
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onMusicClick,
   onBarebellsClick,
-  onSpheresClick,
   isMusicIconAnimatingOut,
   onMusicIconExitComplete,
   isBarebellsIconAnimatingOut,
@@ -33,40 +32,33 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   // Define navigation items
   const navItems: NavItem[] = [
     {
-      id: 'music',
-      icon: '🎵',
-      glowColor: '#a855f7',
-      shadowColor: 'rgba(168, 85, 247, 0.6)',
-      textColor: 'text-white',
+      id: "music",
+      icon: "🎵",
+      glowColor: "#a855f7",
+      shadowColor: "rgba(168, 85, 247, 0.6)",
+      textColor: "text-white",
       onClick: onMusicClick,
       onExitComplete: onMusicIconExitComplete,
-      isAnimatingOut: isMusicIconAnimatingOut
+      isAnimatingOut: isMusicIconAnimatingOut,
     },
     {
-      id: 'barebells',
-      icon: '🍫',
-      glowColor: '#f59e0b',
-      shadowColor: 'rgba(245, 158, 11, 0.6)',
-      textColor: 'text-amber-200',
+      id: "barebells",
+      icon: "🍫",
+      glowColor: "#f59e0b",
+      shadowColor: "rgba(245, 158, 11, 0.6)",
+      textColor: "text-amber-200",
       onClick: onBarebellsClick,
       onExitComplete: onBarebellsIconExitComplete,
-      isAnimatingOut: isBarebellsIconAnimatingOut
+      isAnimatingOut: isBarebellsIconAnimatingOut,
     },
-    {
-      id: 'spheres',
-      icon: '🌐',
-      glowColor: '#3b82f6',
-      shadowColor: 'rgba(59, 130, 246, 0.6)',
-      textColor: 'text-blue-200',
-      onClick: onSpheresClick,
-      onExitComplete: () => {}, // No animation needed for direct navigation
-      isAnimatingOut: false
-    }
   ];
 
   return (
     <>
       {/* Main Page Content */}
+      <div className="w-100 h-100 absolute top-0 right-0 -z-10 background-gradient-animation opacity-70">
+        <ItemSphere iconSize={20} />
+      </div>
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="mb-8">
           <HeroTitle />
@@ -86,10 +78,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       </div>
 
       {/* Unified Navigation Navbar */}
-      <UnifiedNavbar 
-        items={navItems}
-        clickedIcon={clickedIcon}
-      />
+      <UnifiedNavbar items={navItems} clickedIcon={clickedIcon} />
     </>
   );
 };

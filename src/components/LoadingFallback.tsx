@@ -1,5 +1,4 @@
 import React from 'react';
-import { ShimmerEffect } from '../features/visual-effects';
 
 interface LoadingFallbackProps {
   width?: number;
@@ -23,13 +22,6 @@ export const LoadingFallback: React.FC<LoadingFallbackProps> = ({
           <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
           <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-blue-300 rounded-full animate-ping"></div>
         </div>
-        
-        {/* Shimmer text */}
-        <ShimmerEffect className="opacity-75">
-          <div className="text-gray-600 font-medium">
-            {message}
-          </div>
-        </ShimmerEffect>
         
         {/* Progress dots */}
         <div className="flex space-x-1">

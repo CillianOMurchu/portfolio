@@ -7,7 +7,6 @@ import LoadingScreen from "./components/app/LoadingScreen";
 import PageRouter from "./components/app/PageRouter";
 
 // Lazy load components
-const SkillsOrb = lazy(() => import("./components/SkillsOrb"));
 
 function App() {
   const {
@@ -27,7 +26,6 @@ function App() {
     handleMusicIconExitComplete,
     handleBarebellsPageTransition,
     handleBarebellsIconExitComplete,
-    handleSpheresPageTransition,
     handleBackToHome,
   } = usePageNavigation();
 
@@ -41,7 +39,6 @@ function App() {
       {/* Persistent background */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />
       
-      {/* Skills Orb - Only show on home page when logged in */}
       <AnimatePresence>
         {currentPage === 'home' && session && (
           <motion.div 
@@ -54,7 +51,6 @@ function App() {
             <Suspense fallback={
               <div className="w-12 h-12 bg-blue-200 rounded-full animate-pulse"></div>
             }>
-              <SkillsOrb />
             </Suspense>
           </motion.div>
         )}
@@ -68,7 +64,6 @@ function App() {
         onLogout={handleLogout}
         onMusicClick={handleMusicPageTransition}
         onBarebellsClick={handleBarebellsPageTransition}
-        onSpheresClick={handleSpheresPageTransition}
         isMusicIconAnimatingOut={isMusicIconAnimatingOut}
         onMusicIconExitComplete={handleMusicIconExitComplete}
         isBarebellsIconAnimatingOut={isBarebellsIconAnimatingOut}
