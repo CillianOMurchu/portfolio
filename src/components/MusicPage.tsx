@@ -9,10 +9,6 @@ interface MusicPageProps {
 export const MusicPage: React.FC<MusicPageProps> = ({ onBack }) => {
   return (
     <RedVelvetBackground 
-      noteCount={350}
-      // noteColor="text-rose-300"
-      // noteOpacity={0.7}
-      // rainSpeed="medium"
     >
       <motion.div
         initial={{ opacity: 0, y: 50 }}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HolographicSkillsSphere } from '../features/HolographicSkillsSphere';
+import { ItemSphere } from '../features/ItemSphere';
 
 interface SphereShowcaseProps {
   onBack?: () => void;
@@ -16,6 +17,13 @@ const SphereShowcase: React.FC<SphereShowcaseProps> = ({ onBack }) => {
       description: 'Interactive 3D sphere displaying programming technologies and skills',
       component: <HolographicSkillsSphere />,
       features: ['28 Programming Icons', 'SVG Loading', 'Hover Effects', 'Click Interactions']
+    },
+    {
+      id: 'minimal',
+      name: 'Minimal Item Sphere',
+      description: 'Bare minimum rotating sphere with programming icons (no extra logic)',
+      component: <ItemSphere width={200} height={200} radius={80} iconSize={32} />, // slightly larger for demo
+      features: ['Minimal Logic', 'Direct Icon List', 'No Hover/Click', 'Fast Load']
     }
   ];
 
