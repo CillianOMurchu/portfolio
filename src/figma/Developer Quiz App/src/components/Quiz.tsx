@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 import { FilterPanel } from './FilterPanel';
-import { quizData, QuestionType } from '../data/quizData';
+import { quizData, type QuestionType } from '../data/quizData';
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 
 interface QuizProps {

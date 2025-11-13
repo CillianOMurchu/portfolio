@@ -28,7 +28,7 @@ function generateFibonacciSphere(count: number) {
 }
 
 interface Props {
-  iconSize: number;
+  iconSize?: number;
 }
 
 export const ItemSphere: React.FC<Props> = (props) => {
@@ -219,7 +219,6 @@ export const ItemSphere: React.FC<Props> = (props) => {
           height: "100%",
           background: "transparent",
           borderRadius: "50%",
-          boxShadow: "0 2px 16px #0001",
           display: "block",
         }}
       />

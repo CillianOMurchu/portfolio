@@ -3,7 +3,7 @@ import { serve } from "https://esm.sh/serve@1.1.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
 
 // @ts-expect-error Deno global is available in Edge Functions runtime
-const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseUrl = Deno.env.get('VITE_SUPABASE_URL');
 // @ts-expect-error Deno global is available in Edge Functions runtime
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 export const supabase = createClient(supabaseUrl, supabaseKey);

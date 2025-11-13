@@ -5,6 +5,13 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+const { data, error } = await supabase.functions.invoke("validate_answer", {
+  body: { name: "Functions"   },
+});
+
+console.log('data is ', data);
+console.log('error is ', error);
+
 interface UseAuthReturn {
   session: Session | null;
   authLoading: boolean;
