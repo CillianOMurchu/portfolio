@@ -1,79 +1,55 @@
 import "./index.css";
-import { Suspense, createContext, useContext } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "./hooks/useAuth";
 import { usePageNavigation } from "./hooks/usePageNavigation";
 import LoadingScreen from "./components/app/LoadingScreen";
 import PageRouter from "./components/app/PageRouter";
+import UnifiedNavbar from "./components/UnifiedNavbar";
 
-// Lazy load components
-
-// AuthContext for global auth actions
-interface AuthContextType {
-  onLogout: () => Promise<void>;
-}
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-// eslint-disable-next-line react-refresh/only-export-components
-export function useAuthContext() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuthContext must be used within AuthProvider");
-  return ctx;
-}
+import { AuthContext } from "./context/AuthContext";
 
 function App() {
-  const {
-    session,
-    authLoading,
-    signInState,
-    hydrated,
-    handleLogout,
-  } = useAuth();
+  const { session, authLoading, signInState, hydrated, handleLogout } =
+    useAuth();
 
-  const {
-    currentPage,
-    isMusicIconAnimatingOut,
-    clickedIcon,
-    handleMusicPageTransition,
-    handleMusicIconExitComplete,
-    handleBackToHome,
-  } = usePageNavigation();
+  const { currentPage } = usePageNavigation();
 
   // Loading state - just check auth and hydration
   if (!hydrated || authLoading) {
     return <LoadingScreen authLoading={authLoading} />;
   }
 
+  // Define navigation items
+  const navItems = [
+    {
+      id: "critical-thinking",
+      icon: "🧠",
+      glowColor: "#10b981",
+      shadowColor: "rgba(16, 185, 129, 0.6)",
+      textColor: "text-white",
+      onClick: () => {},
+    },
+    {
+      id: "music",
+      icon: "\ud83c\udfb5",
+      glowColor: "#a855f7",
+      shadowColor: "rgba(168, 85, 247, 0.6)",
+      textColor: "text-white",
+      onClick: () => {},
+    },
+  ];
+
   return (
-    <AuthContext.Provider value={{ onLogout: handleLogout }}>
-      {/* Persistent background */}
+    <AuthContext.Provider
+      value={{ onLogout: handleLogout, isLoggedIn: signInState === "complete" }}
+    >
       <div className="fixed inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />
-      <AnimatePresence>
-        {currentPage === 'home' && session && (
-          <motion.div 
-            className="fixed top-6 right-6 z-[70]"
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -20 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <Suspense fallback={
-              <div className="w-12 h-12 bg-blue-200 rounded-full animate-pulse"></div>
-            }>
-            </Suspense>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <UnifiedNavbar items={navItems} />
+
       {/* Page Router */}
       <PageRouter
         session={session}
         signInState={signInState}
         currentPage={currentPage}
-        onLogout={handleLogout}
-        onMusicClick={handleMusicPageTransition}
-        isMusicIconAnimatingOut={isMusicIconAnimatingOut}
-        onMusicIconExitComplete={handleMusicIconExitComplete}
-        clickedIcon={clickedIcon}
-        onBackToHome={handleBackToHome}
       />
     </AuthContext.Provider>
   );

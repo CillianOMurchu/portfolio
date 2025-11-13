@@ -22,7 +22,7 @@ export const RedVelvetBackground: React.FC<RedVelvetBackgroundProps> = ({
 }) => {
   return (
     <div 
-      className={`relative size-full bg-gradient-to-br from-slate-900 via-red-950 to-slate-950 ${className}`}
+      className={`red-velvet-background relative h-[100vh] bg-gradient-to-br from-slate-900 via-red-950 to-slate-950 ${className}`}
       style={style}
     >
       {/* Red velvet texture overlay */}

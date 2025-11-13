@@ -1,4 +1,4 @@
-// import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 // import { supabase } from "../utils/supabaseClient";
 // import { QuestionCard } from "../figma/Developer Quiz App/src/components/QuestionCard";
 // import { FilterPanel } from "../figma/Developer Quiz App/src/components/FilterPanel";
@@ -7,7 +7,6 @@
 // import QuizQuestion from "./QuizQuestion";
 
 import { RedVelvetBackground } from "../features/visual-effects";
-import { BackButton } from "./BackButton";
 
 // // Helper to call Edge Function for answer validation
 // async function validateAnswer(questionId: string, selectedIdx: number) {
@@ -45,11 +44,12 @@ import { BackButton } from "./BackButton";
 // };
 
 const CriticalThinkingPage: React.FC = () => {
+  const [isDark, setIsDark] = useState(true);
 
-  
+  return (
+    <div>Test</div>
+  )
 
-
-  return <BackButton />;
   //   const [answerResult, setAnswerResult] = useState<{
   //     correct: boolean;
   //     explanation: string;

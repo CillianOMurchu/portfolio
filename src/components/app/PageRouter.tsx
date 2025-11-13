@@ -8,12 +8,6 @@ interface PageRouterProps {
   session: Session | null;
   signInState: 'signin' | 'transitioning' | 'complete';
   currentPage: Page;
-  onLogout: () => Promise<void>;
-  onMusicClick: () => void;
-  isMusicIconAnimatingOut: boolean;
-  onMusicIconExitComplete: () => void;
-  clickedIcon: 'music' | null;
-  onBackToHome: () => void;
 }
 
 const PageRouter: React.FC<PageRouterProps> = (props) => {
