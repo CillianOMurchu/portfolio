@@ -60,7 +60,7 @@ export default function AnimatedGrid() {
   }, [dimensions]);
 
   return (
-  <div className="relative w-full h-full pointer-events-none z-0">
+  <div className="absolute w-full h-full pointer-events-none z-0">
       <svg
         className="w-full h-full"
         width={dimensions.width}

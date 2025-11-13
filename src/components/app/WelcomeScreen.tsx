@@ -1,12 +1,9 @@
 import React from "react";
 import ItemSphere from "../ItemSphere";
-import AnimatedGrid from "../AnimatedGrid";
 
 const WelcomeScreen: React.FC = () => {
   return (
     <>
-      <AnimatedGrid />
-
       <div className="smoke w-100 h-100 absolute top-[90px] right-[10px] -z-10 background-gradient-animation opacity-70 ">
         <ItemSphere iconSize={20} />
       </div>
