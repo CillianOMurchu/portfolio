@@ -1,7 +1,12 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
+import { QuestionCard } from '../figma/Developer Quiz App/src/components/QuestionCard';
+import { FilterPanel } from '../figma/Developer Quiz App/src/components/FilterPanel';
+import { Sun, Moon } from 'lucide-react';
 
-interface Question {
+// Supabase Question type
+interface SupabaseQuestion {
   id: string;
   question_text: string;
   question_images: string[];
@@ -11,160 +16,136 @@ interface Question {
   time_limit_seconds: number | null;
   difficulty: number | null;
   category: string | null;
+  explanation?: string;
+  code?: string;
 }
 
+type QuestionType = 'critical-thinking' | 'pattern-recognition' | 'numeral';
+
+const typeMap: Record<string, QuestionType> = {
+  'Critical Thinking': 'critical-thinking',
+  'Pattern Recognition': 'pattern-recognition',
+  'Numerical Reasoning': 'numeral',
+};
+
 const CriticalThinkingPage: React.FC = () => {
-  const [question, setQuestion] = useState<Question | null>(null);
+  const [question, setQuestion] = useState<SupabaseQuestion | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
-  const [result, setResult] = useState<'success' | 'fail' | null>(null);
-  // filter: 'all' | 'numerical' | 'pattern'
-  const [filter, setFilter] = useState<'all' | 'numerical' | 'pattern'>('all');
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>(['critical-thinking', 'pattern-recognition', 'numeral']);
   const [reloadKey, setReloadKey] = useState(0);
+  const [isDark, setIsDark] = useState(false);
 
+  // Fetch a random question from Supabase, filtered by selectedTypes
   useEffect(() => {
     setLoading(true);
-    setSelectedIdx(null);
-    setResult(null);
-    let query = supabase.from('questions').select('id');
-    if (filter === 'numerical') {
-      query = query.eq('category', 'Numerical Reasoning');
-    } else if (filter === 'pattern') {
-      query = query.eq('category', 'Pattern Recognition');
-    }
-    query.then(({ data: ids, error: idError }) => {
-      if (idError || !ids || ids.length === 0) {
-        setError('Failed to load question');
-        setLoading(false);
-        return;
-      }
-      const randomIdx = Math.floor(Math.random() * ids.length);
-      const randomId = ids[randomIdx].id;
-      supabase
-        .from('questions')
-        .select('*')
-        .eq('id', randomId)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error || !data) {
-            setError('Failed to load question');
-          } else {
-            setQuestion(data as Question);
-          }
-          setLoading(false);
-        });
+    setSelectedAnswer(null);
+    setShowAnswer(false);
+    setError(null);
+    // Map selectedTypes to Supabase categories
+    const categories = selectedTypes.map(type => {
+      if (type === 'critical-thinking') return 'Critical Thinking';
+      if (type === 'pattern-recognition') return 'Pattern Recognition';
+      if (type === 'numeral') return 'Numerical Reasoning';
+      return '';
     });
-  }, [filter, reloadKey]);
+    supabase
+      .from('questions')
+      .select('id')
+      .in('category', categories)
+      .then(({ data: ids, error: idError }) => {
+        if (idError || !ids || ids.length === 0) {
+          setError('Failed to load question');
+          setLoading(false);
+          return;
+        }
+        const randomIdx = Math.floor(Math.random() * ids.length);
+        const randomId = ids[randomIdx].id;
+        supabase
+          .from('questions')
+          .select('*')
+          .eq('id', randomId)
+          .maybeSingle()
+          .then(({ data, error }) => {
+            if (error || !data) {
+              setError('Failed to load question');
+            } else {
+              setQuestion(data as SupabaseQuestion);
+            }
+            setLoading(false);
+          });
+      });
+  }, [selectedTypes, reloadKey]);
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
-  if (!question) return <div className="p-8 text-center">No question found.</div>;
+  const handleTypeToggle = (type: QuestionType) => {
+    if (selectedTypes.includes(type)) {
+      if (selectedTypes.length > 1) {
+        setSelectedTypes(selectedTypes.filter((t) => t !== type));
+      }
+    } else {
+      setSelectedTypes([...selectedTypes, type]);
+    }
+  };
+
+  if (loading) return <div className={`p-8 text-center ${isDark ? 'text-gray-200 bg-slate-900' : ''}`}>Loading...</div>;
+  if (error) return <div className={`p-8 text-center text-red-500 ${isDark ? 'bg-slate-900' : ''}`}>{error}</div>;
+  if (!question) return <div className={`p-8 text-center ${isDark ? 'text-gray-200 bg-slate-900' : ''}`}>No question found.</div>;
+
+  // Map Supabase question to Figma UI question shape
+  const figmaQuestion = {
+    type: typeMap[question.category || 'Critical Thinking'] || 'critical-thinking',
+    question: question.question_text,
+    code: question.code,
+    options: question.possible_answers.map(a => a.text),
+    correctAnswer: question.correct_answer_indices[0],
+    explanation: question.explanation || '',
+  };
 
   return (
-    <div className="max-w-xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-lg">
-      <div className="flex flex-wrap gap-2 justify-end mb-4">
-        <button
-          className={`px-4 py-2 rounded font-medium border-2 transition-colors duration-150 ${filter === 'all' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'bg-gray-100 border-gray-300 text-gray-700'}`}
-          onClick={() => setFilter('all')}
-        >
-          All Questions
-        </button>
-        <button
-          className={`px-4 py-2 rounded font-medium border-2 transition-colors duration-150 ${filter === 'numerical' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'bg-gray-100 border-gray-300 text-gray-700'}`}
-          onClick={() => setFilter('numerical')}
-        >
-          Numerical Only
-        </button>
-        <button
-          className={`px-4 py-2 rounded font-medium border-2 transition-colors duration-150 ${filter === 'pattern' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'bg-gray-100 border-gray-300 text-gray-700'}`}
-          onClick={() => setFilter('pattern')}
-        >
-          Pattern Recognition
-        </button>
-        <button
-          className="px-4 py-2 rounded font-medium border-2 border-green-500 text-green-700 bg-green-50 ml-auto"
-          onClick={() => setReloadKey((k) => k + 1)}
-        >
-          Next
-        </button>
-      </div>
-      <h1 className="text-2xl font-bold mb-4 text-center">Critical Thinking</h1>
-      <div className="mb-4">
-        <div className="font-medium mb-2">{question.question_text}</div>
-        {question.question_images && question.question_images.length > 0 && (
-          <div className="flex flex-wrap gap-2 justify-center mb-2">
-            {question.question_images.map((img, i) => (
-              <img key={i} src={img} alt="question visual" className="max-h-32 rounded shadow" />
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="space-y-3">
-        {question.possible_answers.map((ans, idx) => {
-          const isCorrect = question.correct_answer_indices.includes(idx);
-          const isSelected = selectedIdx === idx;
-          let border = 'border-gray-300';
-          if (selectedIdx !== null) {
-            if (isSelected && isCorrect) border = 'border-green-500';
-            else if (isSelected && !isCorrect) border = 'border-red-500';
-            else if (isCorrect) border = 'border-green-300';
-          }
-          return (
-            <button
-              key={idx}
-              className={`w-full flex items-center gap-3 p-2 border-2 rounded transition-colors duration-200 focus:outline-none ${border} ${selectedIdx === null ? 'hover:bg-gray-50' : ''}`}
-              disabled={selectedIdx !== null}
-              onClick={() => {
-                if (selectedIdx !== null) return;
-                setSelectedIdx(idx);
-                if (isCorrect) setResult('success');
-                else setResult('fail');
-              }}
-            >
-              {ans.text && <span>{ans.text}</span>}
-              {ans.images && ans.images.length > 0 && (
-                <div className="flex gap-1">
-                  {ans.images.map((img, j) => (
-                    <img key={j} src={img} alt="answer visual" className="max-h-12 rounded" />
-                  ))}
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-      {selectedIdx !== null && (
-        <div className="mt-6 text-center">
-          {result === 'success' ? (
-            <span className="text-green-600 font-bold text-lg">Success!</span>
-          ) : (
-            <>
-              <span className="text-red-600 font-bold text-lg">Fail.</span>
-              <div className="mt-2 text-sm text-gray-700">
-                Correct answer:
-                <ul className="mt-1">
-                  {question.correct_answer_indices.map((idx) => {
-                    const ans = question.possible_answers[idx];
-                    return (
-                      <li key={idx} className="inline-flex items-center gap-2">
-                        {ans.text && <span className="font-semibold text-green-700">{ans.text}</span>}
-                        {ans.images && ans.images.length > 0 && (
-                          <span className="flex gap-1">
-                            {ans.images.map((img, j) => (
-                              <img key={j} src={img} alt="correct answer visual" className="max-h-8 rounded inline" />
-                            ))}
-                          </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </>
-          )}
+    <div className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-gradient-to-br from-white to-blue-50'}`}>
+      <div className="w-full max-w-2xl p-4">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Critical Thinking Quiz</h1>
+          <button
+            className={`rounded-full p-2 border transition-colors duration-200 ${isDark ? 'bg-slate-800 border-slate-700 text-yellow-300' : 'bg-white border-gray-300 text-gray-700'}`}
+            onClick={() => setIsDark(d => !d)}
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
         </div>
-      )}
+        <FilterPanel
+          isDark={isDark}
+          selectedTypes={selectedTypes}
+          onTypeToggle={handleTypeToggle}
+        />
+        <div className="mt-8">
+          <QuestionCard
+            question={figmaQuestion}
+            isDark={isDark}
+            showAnswer={showAnswer}
+            selectedAnswer={selectedAnswer}
+            onAnswerSelect={idx => {
+              setSelectedAnswer(idx);
+              setShowAnswer(true);
+            }}
+          />
+        </div>
+        <div className="flex justify-end gap-4 mt-8">
+          <button
+            className={`mat-button px-6 py-2 rounded-md font-semibold transition-all duration-200 ${isDark ? 'bg-green-900/40 text-green-200 border-green-700/70 hover:bg-green-900/60' : 'bg-green-100 text-green-900 border-green-400 hover:bg-green-200'}`}
+            onClick={() => {
+              setReloadKey(k => k + 1);
+              setSelectedAnswer(null);
+              setShowAnswer(false);
+            }}
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
