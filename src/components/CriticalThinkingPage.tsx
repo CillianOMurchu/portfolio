@@ -5,6 +5,17 @@ import { QuestionCard } from '../figma/Developer Quiz App/src/components/Questio
 import { FilterPanel } from '../figma/Developer Quiz App/src/components/FilterPanel';
 import { Sun, Moon } from 'lucide-react';
 
+// Helper to call Edge Function for answer validation
+async function validateAnswer(questionId: string, selectedIdx: number) {
+  const res = await fetch('/functions/v1/validate-answer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ questionId, selectedIdx }),
+  });
+  if (!res.ok) throw new Error('Failed to validate answer');
+  return res.json(); // { correct: boolean, explanation: string, correctAnswer: number }
+}
+
 // Supabase Question type
 interface SupabaseQuestion {
   id: string;
@@ -34,6 +45,7 @@ const CriticalThinkingPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [answerResult, setAnswerResult] = useState<{ correct: boolean; explanation: string; correctAnswer: number } | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>(['critical-thinking', 'pattern-recognition', 'numeral']);
   const [reloadKey, setReloadKey] = useState(0);
   const [isDark, setIsDark] = useState(false);
@@ -93,14 +105,15 @@ const CriticalThinkingPage: React.FC = () => {
   if (error) return <div className={`p-8 text-center text-red-500 ${isDark ? 'bg-slate-900' : ''}`}>{error}</div>;
   if (!question) return <div className={`p-8 text-center ${isDark ? 'text-gray-200 bg-slate-900' : ''}`}>No question found.</div>;
 
-  // Map Supabase question to Figma UI question shape
+  // Map Supabase question to Figma UI question shape (no answer/explanation)
   const figmaQuestion = {
     type: typeMap[question.category || 'Critical Thinking'] || 'critical-thinking',
     question: question.question_text,
     code: question.code,
     options: question.possible_answers.map(a => a.text),
-    correctAnswer: question.correct_answer_indices[0],
-    explanation: question.explanation || '',
+    // correctAnswer and explanation are not sent until answer is validated
+    correctAnswer: answerResult?.correctAnswer ?? -1,
+    explanation: answerResult?.explanation ?? '',
   };
 
   return (
@@ -127,9 +140,15 @@ const CriticalThinkingPage: React.FC = () => {
             isDark={isDark}
             showAnswer={showAnswer}
             selectedAnswer={selectedAnswer}
-            onAnswerSelect={idx => {
+            onAnswerSelect={async idx => {
               setSelectedAnswer(idx);
               setShowAnswer(true);
+              try {
+                const result = await validateAnswer(question.id, idx);
+                setAnswerResult(result);
+              } catch (e) {
+                setAnswerResult({ correct: false, explanation: 'Error validating answer.', correctAnswer: -1 });
+              }
             }}
           />
         </div>
@@ -140,6 +159,7 @@ const CriticalThinkingPage: React.FC = () => {
               setReloadKey(k => k + 1);
               setSelectedAnswer(null);
               setShowAnswer(false);
+              setAnswerResult(null);
             }}
           >
             Next
