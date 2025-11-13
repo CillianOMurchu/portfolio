@@ -1,8 +1,9 @@
 import React from "react";
-import { RedVelvetBackground } from "../features/visual-effects";
 
 export const MusicPage: React.FC = () => {
-  return <RedVelvetBackground></RedVelvetBackground>;
+  return (
+    <div className="music-page bg-gradient-to-br from-slate-900 via-red-950 to-slate-950 "></div>
+  );
 };
 
 export default MusicPage;

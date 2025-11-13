@@ -6,7 +6,7 @@ import React, { useState } from "react";
 // import { Quiz } from "../figma/Developer Quiz App/src/components/Quiz";
 // import QuizQuestion from "./QuizQuestion";
 
-import { RedVelvetBackground } from "../features/visual-effects";
+
 
 // // Helper to call Edge Function for answer validation
 // async function validateAnswer(questionId: string, selectedIdx: number) {

@@ -18,32 +18,11 @@ function App() {
     return <LoadingScreen authLoading={authLoading} />;
   }
 
-  // Define navigation items
-  const navItems = [
-    {
-      id: "critical-thinking",
-      icon: "🧠",
-      glowColor: "#10b981",
-      shadowColor: "rgba(16, 185, 129, 0.6)",
-      textColor: "text-white",
-      onClick: () => {},
-    },
-    {
-      id: "music",
-      icon: "\ud83c\udfb5",
-      glowColor: "#a855f7",
-      shadowColor: "rgba(168, 85, 247, 0.6)",
-      textColor: "text-white",
-      onClick: () => {},
-    },
-  ];
-
   return (
     <AuthContext.Provider
       value={{ onLogout: handleLogout, isLoggedIn: signInState === "complete" }}
     >
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />
-      <UnifiedNavbar items={navItems} />
+      {signInState === "complete" && <UnifiedNavbar />}
 
       {/* Page Router */}
       <PageRouter

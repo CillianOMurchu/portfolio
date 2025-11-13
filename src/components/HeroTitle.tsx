@@ -21,7 +21,6 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
         </div>
       </div>
 
-      {/*  */}
     </div>
   );
 };

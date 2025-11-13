@@ -1,17 +1,16 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { Session } from "@supabase/supabase-js";
-import type { Page } from "../../hooks/usePageNavigation";
 import AuthScreen from "./AuthScreen";
-import WelcomeScreen from "./WelcomeScreen";
-import MusicPage from "../MusicPage";
+const WelcomeScreen = React.lazy(() => import("./WelcomeScreen"));
+const MusicPage = React.lazy(() => import("../MusicPage"));
 import CriticalThinkingPage from "../CriticalThinkingPage";
 
 interface AppRoutesProps {
   session: Session | null;
   signInState: "signin" | "transitioning" | "complete";
-  currentPage: Page;
+  currentPage: string;
 }
 
 const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
@@ -51,16 +50,24 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
       <Route
         path="/music"
         element={
-          <motion.div
-            key="music"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="relative z-10"
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-screen">
+                Loading music page...
+              </div>
+            }
           >
-            <MusicPage />
-          </motion.div>
+            <motion.div
+              key="music"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="relative z-10"
+            >
+              <MusicPage />
+            </motion.div>
+          </Suspense>
         }
       />
       <Route
