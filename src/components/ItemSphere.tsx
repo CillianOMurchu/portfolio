@@ -116,10 +116,14 @@ export const ItemSphere: React.FC<Props> = (props) => {
       }
       const projected = positions.map((pos, i) => {
         const { x, y, z } = pos;
-        const y1 = y * Math.cos(state.current.rx) - z * Math.sin(state.current.rx);
-        const z1 = y * Math.sin(state.current.rx) + z * Math.cos(state.current.rx);
-        const x2 = x * Math.cos(state.current.rz) - z1 * Math.sin(state.current.rz);
-        const z2 = x * Math.sin(state.current.rz) + z1 * Math.cos(state.current.rz);
+        const y1 =
+          y * Math.cos(state.current.rx) - z * Math.sin(state.current.rx);
+        const z1 =
+          y * Math.sin(state.current.rx) + z * Math.cos(state.current.rx);
+        const x2 =
+          x * Math.cos(state.current.rz) - z1 * Math.sin(state.current.rz);
+        const z2 =
+          x * Math.sin(state.current.rz) + z1 * Math.cos(state.current.rz);
         return { name: iconNames[i], x: x2, y: y1, z: z2, index: i };
       });
       projected.sort((a, b) => b.z - a.z);
@@ -133,7 +137,10 @@ export const ItemSphere: React.FC<Props> = (props) => {
         // Cascade fade-in calculation
         const iconDelay = icon.index * fadeInStagger;
         const elapsed = now - mountTimeRef.current;
-        const fadeInAlpha = Math.min(1, Math.max(0, (elapsed - iconDelay) / fadeInDuration));
+        const fadeInAlpha = Math.min(
+          1,
+          Math.max(0, (elapsed - iconDelay) / fadeInDuration)
+        );
         // 3D fade as before
         const fade3d = 0.4 + 0.6 * ((icon.z + 1) / 2);
         const finalAlpha = fade3d * fadeInAlpha;
@@ -200,28 +207,39 @@ export const ItemSphere: React.FC<Props> = (props) => {
 
   return (
     <div
-      ref={containerRef}
+      className="sphere"
       style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "transparent",
-        overflow: "hidden",
+        width: "100vw",
+        height: "100vh",
+        opacity: 0.8,
+        position: "absolute",
+        zIndex: -1,
       }}
     >
-      <canvas
-        ref={canvasRef}
+      <div
+        ref={containerRef}
         style={{
+          position: "relative",
           width: "100%",
           height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           background: "transparent",
-          borderRadius: "50%",
-          display: "block",
+          overflow: "hidden",
         }}
-      />
+      >
+        <canvas
+          ref={canvasRef}
+          style={{
+            width: "100%",
+            height: "100%",
+            background: "transparent",
+            borderRadius: "50%",
+            display: "block",
+          }}
+        />
+      </div>
     </div>
   );
 };

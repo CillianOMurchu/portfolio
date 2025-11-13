@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 export default function AnimatedGrid() {
   const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 });
-  const spacing = 10;
 
   type Line = {
     x1: number;
@@ -61,7 +60,7 @@ export default function AnimatedGrid() {
   }, [dimensions]);
 
   return (
-    <div className="fixed inset-0 w-screen h-screen pointer-events-none z-0">
+  <div className="relative w-full h-full pointer-events-none z-0">
       <svg
         className="w-full h-full"
         width={dimensions.width}

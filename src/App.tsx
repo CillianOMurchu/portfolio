@@ -6,7 +6,6 @@ import PageRouter from "./components/app/PageRouter";
 import UnifiedNavbar from "./components/UnifiedNavbar";
 
 import { AuthContext } from "./context/AuthContext";
-import AnimatedGrid from "./components/AnimatedGrid";
 
 function App() {
   const { session, authLoading, signInState, hydrated, handleLogout } =
@@ -26,7 +25,6 @@ function App() {
         boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
       }}
     >
-      <AnimatedGrid />
       <AuthContext.Provider
         value={{
           onLogout: handleLogout,

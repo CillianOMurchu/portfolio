@@ -15,8 +15,6 @@ const AuthScreen: React.FC = () => {
   };
 
   const [showShine, setShowShine] = useState(true);
-  const name = "Cillian O Murchu";
-  const letters = name.split("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -31,12 +29,8 @@ const AuthScreen: React.FC = () => {
         <HeroTitle />
       </div>
 
-      <div
-        className="
-    absolute left-0 top-0  pointer-events-none
-      "
-      >
-        <Name showShine={showShine} letters={letters} />
+      <div className="absolute left-0 top-0  pointer-events-none">
+        <Name />
       </div>
 
       <div

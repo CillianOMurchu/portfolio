@@ -1,3 +1,5 @@
+import AnimatedGrid from "./AnimatedGrid";
+
 const hexagonClip =
   "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
 
@@ -21,6 +23,9 @@ export function Name() {
           }
         }
       `}</style>
+
+      <AnimatedGrid />
+
 
       <div className="absolute inset-0" style={{ /* clipPath: hexagonClip */ }} />
       <div className="absolute inset-3 border border-emerald-500/25" style={{ clipPath: hexagonClip }} />
