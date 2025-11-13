@@ -17,7 +17,6 @@ export interface NavItem {
   url: string;
 }
 
-
 const navItems = [
   {
     id: "home",
@@ -42,7 +41,11 @@ interface NavItemsProps {
   onNavigate: (url: string) => void;
 }
 
-const NavItems: React.FC<NavItemsProps> = ({ navItems, currentPage, onNavigate }) => (
+const NavItems: React.FC<NavItemsProps> = ({
+  navItems,
+  currentPage,
+  onNavigate,
+}) => (
   <>
     {navItems
       .filter((item) => item.url !== currentPage)
@@ -79,21 +82,21 @@ export const UnifiedNavbar: React.FC = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: .2 }}
-        className="relative flex items-center w-full py-3 px-5"
+        transition={{ duration: 0.7, delay: .1 }}
+        className="relative flex items-center w-full py-3 px-5 justify-between"
       >
         <div className="flex items-center gap-6">
           <Name />
         </div>
-        <motion.nav className="flex-1 flex justify-center gap-4" {...fadeUpPreset}>
-          <NavItems navItems={navItems} currentPage={currentPage} onNavigate={navigate} />
-        </motion.nav>
-        {/* Show Sign Out if signed in, else show Google Auth on desktop */}
-        {session ? (
-          <Button onClick={onLogout} value="Sign Out" />
-        ) : (
-          !isMobile && (
-            <div className="flex items-center ml-auto">
+        {/* <motion.nav className="flex-1 flex justify-center gap-4" {...fadeUpPreset}> */}
+        {/* <NavItems navItems={navItems} currentPage={currentPage} onNavigate={navigate} /> */}
+        {/* </motion.nav> */}
+        <div className="flex items-center ml-auto">
+          {/* Show Sign Out if signed in, else show Google Auth on desktop */}
+          {session ? (
+            <Button onClick={onLogout} value="Sign Out" />
+          ) : (
+            !isMobile && (
               <Auth
                 onlyThirdPartyProviders
                 supabaseClient={supabase}
@@ -123,9 +126,9 @@ export const UnifiedNavbar: React.FC = () => {
                 showLinks={false}
                 redirectTo={`${window.location.origin}/`}
               />
-            </div>
-          )
-        )}
+            )
+          )}
+        </div>
       </motion.div>
     </>
   );

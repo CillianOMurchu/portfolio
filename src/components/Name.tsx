@@ -60,7 +60,7 @@ export function Name() {
         <span
           className={
             isShortCOM
-              ? "text-emerald-400 text-[13px] tracking-[0.5em]"
+              ? "text-emerald-400 text-[13px] tracking-[0.25em]"
               : "text-emerald-400 text-[11px] tracking-wider"
           }
           style={{
