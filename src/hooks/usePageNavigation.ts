@@ -6,8 +6,7 @@ export type Page = 'home' | 'music' | 'barebells' | 'spheres';
 interface UsePageNavigationReturn {
   currentPage: Page;
   isMusicIconAnimatingOut: boolean;
-  isBarebellsIconAnimatingOut: boolean;
-  clickedIcon: 'music' | 'barebells' | null;
+  clickedIcon: 'music' | null;
   handleMusicPageTransition: () => void;
   handleMusicIconExitComplete: () => void;
   handleBarebellsPageTransition: () => void;

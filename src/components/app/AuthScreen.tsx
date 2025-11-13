@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "../../hooks/useAuth";
-import ItemSphere from "../../features/ItemSphere";
+import ItemSphere from "../ItemSphere";
 
 const AuthScreen: React.FC = () => {
   const handleAuthClick = () => {

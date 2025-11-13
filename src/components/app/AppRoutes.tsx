@@ -5,7 +5,6 @@ import type { Session } from '@supabase/supabase-js';
 import type { Page } from '../../hooks/usePageNavigation';
 import AuthScreen from './AuthScreen';
 import WelcomeScreen from './WelcomeScreen';
-
 import MusicPage from '../MusicPage';
 import CriticalThinkingPage from '../CriticalThinkingPage';
 
@@ -19,7 +18,6 @@ interface AppRoutesProps {
   isMusicIconAnimatingOut: boolean;
   onMusicIconExitComplete: () => void;
   clickedIcon: 'music' | null;
-  onBackToHome: () => void;
 }
 
 const AppRoutes: React.FC<AppRoutesProps> = ({
@@ -30,7 +28,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
   isMusicIconAnimatingOut,
   onMusicIconExitComplete,
   clickedIcon,
-  onBackToHome,
 }) => {
   // Show auth screen if not signed in
   if (!session && signInState === 'signin') {
@@ -82,7 +79,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             className="relative z-10"
           >
-            <MusicPage onBack={onBackToHome} />
+            <MusicPage />
           </motion.div>
         }
       />

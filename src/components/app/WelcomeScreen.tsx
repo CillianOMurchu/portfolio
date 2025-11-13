@@ -1,7 +1,7 @@
 import React from "react";
 import UnifiedNavbar from "../UnifiedNavbar";
 import HeroTitle from "../HeroTitle";
-import ItemSphere from "../../features/ItemSphere";
+import ItemSphere from "../ItemSphere";
 
 interface WelcomeScreenProps {
   onMusicClick: () => void;
@@ -22,8 +22,20 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     await onLogout();
   };
 
-  // Define navigation items (music only)
+  // Define navigation items
   const navItems = [
+    {
+      id: "critical-thinking",
+      icon: "🧠",
+      glowColor: "#10b981",
+      shadowColor: "rgba(16, 185, 129, 0.6)",
+      textColor: "text-white",
+      onClick: () => {
+        window.location.href = "/critical-thinking";
+      },
+      onExitComplete: () => {},
+      isAnimatingOut: false,
+    },
     {
       id: "music",
       icon: "\ud83c\udfb5",
@@ -38,21 +50,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
   return (
     <>
-      {/* Main Page Content */}
+      <UnifiedNavbar items={navItems} clickedIcon={clickedIcon} />
+
       <div className="w-100 h-100 absolute top-0 right-0 -z-10 background-gradient-animation opacity-70">
         <ItemSphere iconSize={20} />
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="mb-8">
           <HeroTitle />
-        </div>
-        <div className="text-center mb-8">
-          <a
-            href="/critical-thinking"
-            className="inline-block px-8 py-3 rounded-xl font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 shadow hover:from-blue-200 hover:to-purple-200 transition mb-2"
-          >
-            Try a Critical Thinking Question
-          </a>
         </div>
 
         <div className="text-center mb-8">
@@ -67,9 +72,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Unified Navigation Navbar */}
-      <UnifiedNavbar items={navItems} clickedIcon={clickedIcon} />
     </>
   );
 };

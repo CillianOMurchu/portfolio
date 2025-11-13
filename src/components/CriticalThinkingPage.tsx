@@ -6,6 +6,9 @@
 // import { Quiz } from "../figma/Developer Quiz App/src/components/Quiz";
 // import QuizQuestion from "./QuizQuestion";
 
+import { RedVelvetBackground } from "../features/visual-effects";
+import { BackButton } from "./BackButton";
+
 // // Helper to call Edge Function for answer validation
 // async function validateAnswer(questionId: string, selectedIdx: number) {
 //   const res = await fetch("/functions/v1/validate-answer", {
@@ -43,14 +46,10 @@
 
 const CriticalThinkingPage: React.FC = () => {
 
-  return (
-    <h1>Critical Thinking</h1>
-  );
-  //   const [question, setQuestion] = useState<SupabaseQuestion | null>(null);
-  //   const [loading, setLoading] = useState(true);
-  //   const [error, setError] = useState<string | null>(null);
-  //   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  //   const [showAnswer, setShowAnswer] = useState(false);
+  
+
+
+  return <BackButton />;
   //   const [answerResult, setAnswerResult] = useState<{
   //     correct: boolean;
   //     explanation: string;

@@ -4,7 +4,7 @@ interface HeroTitleProps {
   className?: string;
 }
 
-const HeroTitle: React.FC<HeroTitleProps> = ({ className = "" }) => {
+const HeroTitle: React.FC<HeroTitleProps> = () => {
   return (
     <div className="text-center px-4 sm:px-6">
       <h1 className="font-incognito font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-snug text-gray-900 mb-6">

@@ -1,5 +1,5 @@
 import "./index.css";
-import { Suspense, lazy } from "react";
+import { Suspense, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "./hooks/useAuth";
 import { usePageNavigation } from "./hooks/usePageNavigation";
@@ -7,6 +7,18 @@ import LoadingScreen from "./components/app/LoadingScreen";
 import PageRouter from "./components/app/PageRouter";
 
 // Lazy load components
+
+// AuthContext for global auth actions
+interface AuthContextType {
+  onLogout: () => Promise<void>;
+}
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuthContext() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuthContext must be used within AuthProvider");
+  return ctx;
+}
 
 function App() {
   const {
@@ -20,12 +32,9 @@ function App() {
   const {
     currentPage,
     isMusicIconAnimatingOut,
-    isBarebellsIconAnimatingOut,
     clickedIcon,
     handleMusicPageTransition,
     handleMusicIconExitComplete,
-    handleBarebellsPageTransition,
-    handleBarebellsIconExitComplete,
     handleBackToHome,
   } = usePageNavigation();
 
@@ -35,10 +44,9 @@ function App() {
   }
 
   return (
-    <>
+    <AuthContext.Provider value={{ onLogout: handleLogout }}>
       {/* Persistent background */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />
-      
       <AnimatePresence>
         {currentPage === 'home' && session && (
           <motion.div 
@@ -55,7 +63,6 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
-      
       {/* Page Router */}
       <PageRouter
         session={session}
@@ -63,15 +70,12 @@ function App() {
         currentPage={currentPage}
         onLogout={handleLogout}
         onMusicClick={handleMusicPageTransition}
-        onBarebellsClick={handleBarebellsPageTransition}
         isMusicIconAnimatingOut={isMusicIconAnimatingOut}
         onMusicIconExitComplete={handleMusicIconExitComplete}
-        isBarebellsIconAnimatingOut={isBarebellsIconAnimatingOut}
-        onBarebellsIconExitComplete={handleBarebellsIconExitComplete}
         clickedIcon={clickedIcon}
         onBackToHome={handleBackToHome}
       />
-    </>
+    </AuthContext.Provider>
   );
 }
 
