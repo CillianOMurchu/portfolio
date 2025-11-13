@@ -1,10 +1,11 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "../../hooks/useAuth";
 import ItemSphere from "../ItemSphere";
 import HeroTitle from "../HeroTitle";
 import { motion } from "framer-motion";
+import { Name } from "../Name";
 
 const AuthScreen: React.FC = () => {
   const handleAuthClick = () => {
@@ -13,10 +14,29 @@ const AuthScreen: React.FC = () => {
     window.dispatchEvent(event);
   };
 
+  const [showShine, setShowShine] = useState(true);
+  const name = "Cillian O Murchu";
+  const letters = name.split("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowShine(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen place-items-center">
       <div className="name w-full">
         <HeroTitle />
+      </div>
+
+      <div
+        className="
+    absolute left-0 top-0  pointer-events-none
+      "
+      >
+        <Name showShine={showShine} letters={letters} />
       </div>
 
       <div

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "./Button";
 import { fadeUpPreset } from "../utils/animations";
+import { Name } from "./Name";
 import { AuthContext } from "../context/AuthContext";
 import { usePageNavigation } from "../hooks/usePageNavigation";
 
@@ -39,21 +40,24 @@ export const UnifiedNavbar: React.FC = () => {
 
   return (
     <div className="flex items-center justify-between w-full py-3 px-5">
-      <motion.nav className="flex gap-4" {...fadeUpPreset}>
-        {navItems
-          .filter((item) => item.url !== currentPage)
-          .map((item) => (
-            <motion.div
-              onClick={() => navigate(item.url)}
-              key={item.id}
-              className="cursor-pointer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="text-3xl">{item.icon}</span>
-            </motion.div>
-          ))}
-      </motion.nav>
+      <div className="flex items-center gap-6">
+        <Name showShine={true} letters={[...'Cillian']} />
+        <motion.nav className="flex gap-4" {...fadeUpPreset}>
+          {navItems
+            .filter((item) => item.url !== currentPage)
+            .map((item) => (
+              <motion.div
+                onClick={() => navigate(item.url)}
+                key={item.id}
+                className="cursor-pointer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="text-3xl">{item.icon}</span>
+              </motion.div>
+            ))}
+        </motion.nav>
+      </div>
       <Button onClick={onLogout} value="Sign Out" />
     </div>
   );

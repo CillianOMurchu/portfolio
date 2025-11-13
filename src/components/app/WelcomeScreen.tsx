@@ -4,7 +4,7 @@ import ItemSphere from "../ItemSphere";
 const WelcomeScreen: React.FC = () => {
   return (
     <>
-      <div className="smoke w-100 h-100 absolute top-[90px] right-[10px] -z-10 background-gradient-animation opacity-70">
+      <div className="smoke w-100 h-100 absolute top-[90px] right-[10px] -z-10 background-gradient-animation opacity-70 ">
         <ItemSphere iconSize={20} />
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen">

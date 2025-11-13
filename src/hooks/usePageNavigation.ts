@@ -1,10 +1,10 @@
 import { useLocation } from "react-router-dom";
 
-interface UsePageNavigationReturn {
+export interface Page {
   currentPage: string;
 }
 
-export function usePageNavigation(): UsePageNavigationReturn {
+export function usePageNavigation(): Page {
   const location = useLocation();
   return {
     currentPage: location.pathname,

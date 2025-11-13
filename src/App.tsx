@@ -6,11 +6,11 @@ import PageRouter from "./components/app/PageRouter";
 import UnifiedNavbar from "./components/UnifiedNavbar";
 
 import { AuthContext } from "./context/AuthContext";
+import AnimatedGrid from "./components/AnimatedGrid";
 
 function App() {
   const { session, authLoading, signInState, hydrated, handleLogout } =
     useAuth();
-
   const { currentPage } = usePageNavigation();
 
   // Loading state - just check auth and hydration
@@ -19,18 +19,28 @@ function App() {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ onLogout: handleLogout, isLoggedIn: signInState === "complete" }}
+    <div
+      className="min-h-screen w-full  bg-fixed"
+      style={{
+        background: "#0a0e1a",
+        boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)",
+      }}
     >
-      {signInState === "complete" && <UnifiedNavbar />}
-
-      {/* Page Router */}
-      <PageRouter
-        session={session}
-        signInState={signInState}
-        currentPage={currentPage}
-      />
-    </AuthContext.Provider>
+      <AnimatedGrid />
+      <AuthContext.Provider
+        value={{
+          onLogout: handleLogout,
+          isLoggedIn: signInState === "complete",
+        }}
+      >
+        {signInState === "complete" && <UnifiedNavbar />}
+        <PageRouter
+          session={session}
+          signInState={signInState}
+          currentPage={currentPage}
+        />
+      </AuthContext.Provider>
+    </div>
   );
 }
 
