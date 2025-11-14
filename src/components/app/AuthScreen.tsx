@@ -48,8 +48,8 @@ const AuthScreen: React.FC = () => {
         <div className="fixed right-6 z-30">
           <Suspense
             fallback={
-              <div className="h-12 flex items-center justify-center">
-                <div className="animate-pulse text-gray-400 text-sm">
+              <div className="h-12 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-lg px-4">
+                <div className="animate-pulse text-emerald-400 text-sm">
                   Loading authentication...
                 </div>
               </div>
@@ -85,7 +85,7 @@ const AuthScreen: React.FC = () => {
                     },
                   },
                 }}
-                theme="light"
+                theme="dark"
                 providers={["google"]}
                 view="sign_in"
                 showLinks={false}
@@ -100,8 +100,8 @@ const AuthScreen: React.FC = () => {
         <div className="fixed bottom-0 left-0 w-full z-30 px-4 py-6 backdrop-blur-md">
           <Suspense
             fallback={
-              <div className="h-12 flex items-center justify-center">
-                <div className="animate-pulse text-gray-400 text-sm">
+              <div className="h-12 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-lg px-4">
+                <div className="animate-pulse text-emerald-400 text-sm">
                   Loading authentication...
                 </div>
               </div>
@@ -138,7 +138,7 @@ const AuthScreen: React.FC = () => {
                     },
                   },
                 }}
-                theme="light"
+                theme="dark"
                 providers={["google"]}
                 view="sign_in"
                 showLinks={false}

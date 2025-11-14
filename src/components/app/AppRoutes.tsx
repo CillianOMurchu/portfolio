@@ -68,7 +68,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
         element={
           <Suspense
             fallback={
-              <div className="flex items-center justify-center min-h-screen">
+              <div className="flex items-center justify-center min-h-screen bg-black text-emerald-400">
                 Loading music page...
               </div>
             }
