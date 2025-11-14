@@ -44,7 +44,6 @@ const AuthScreen: React.FC = () => {
       >
         <ItemSphere />
       </div>
-      {/* Auth button: top right on desktop, bottom on mobile */}
       {!session && !isMobile && (
         <div className="fixed right-6 z-30">
           <Suspense
