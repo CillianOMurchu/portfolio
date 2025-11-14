@@ -84,6 +84,7 @@ export const UnifiedNavbar: React.FC = () => {
   const { currentPage } = usePageNavigation();
   const { session } = useAuth();
   const [isMobile, setIsMobile] = React.useState(false);
+  const [isLogoutHovered, setIsLogoutHovered] = React.useState(false);
 
   React.useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -161,7 +162,31 @@ export const UnifiedNavbar: React.FC = () => {
         <div className="flex items-center ml-auto">
           {/* Show Sign Out if signed in, else show Google Auth on desktop */}
           {session ? (
-            <Button onClick={onLogout} value="Sign Out" />
+            <div className="relative flex items-center">
+              {/* Animated LOGOUT letters */}
+              <motion.div
+                className="flex items-center mr-2 overflow-hidden"
+                initial={{ width: 0 }}
+                animate={isLogoutHovered ? { width: "auto" } : { width: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
+                <span
+                  className="text-emerald-400 font-mono text-lg font-bold whitespace-nowrap"
+                  style={{
+                    textShadow: `0 0 5px rgba(16,185,129,0.8),0 0 10px rgba(16,185,129,0.6),0 0 15px rgba(16,185,129,0.4),0 0 20px rgba(16,185,129,0.3)`,
+                  }}
+                >
+                  LOGOUT
+                </span>
+              </motion.div>
+              
+              <Button 
+                onClick={onLogout} 
+                onMouseEnter={() => setIsLogoutHovered(true)}
+                onMouseLeave={() => setIsLogoutHovered(false)}
+                value="Sign Out" 
+              />
+            </div>
           ) : (
             !isMobile && (
               <Auth

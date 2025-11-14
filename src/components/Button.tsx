@@ -4,16 +4,20 @@ import { fadeUpPreset } from "../utils/animations";
 
 interface ButtonProps {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
   value?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({ onClick, value }) => {
+export const Button: React.FC<ButtonProps> = ({ onClick, onMouseEnter, onMouseLeave, value }) => {
   // If value is 'Sign Out', show only neon green SVG, no background
   if (value === "Sign Out") {
     return (
       <motion.div {...fadeUpPreset}>
         <motion.button
           onClick={onClick}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
           className="p-2 rounded-md bg-transparent flex items-center focus-visible:ring-emerald-400"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
@@ -42,6 +46,8 @@ export const Button: React.FC<ButtonProps> = ({ onClick, value }) => {
     <motion.div {...fadeUpPreset}>
       <motion.button
         onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         className="px-4 py-2 rounded-md text-white font-medium shadow-md focus-visible:ring-indigo-400 active:shadow-sm transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600  antialiased flex items-center gap-2"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
