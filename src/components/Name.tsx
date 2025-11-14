@@ -85,12 +85,12 @@ export function Name() {
 
   return (
     <div className="relative w-fit-content h-20">
-      <div
+      <div 
         ref={nameRef}
         className={
           isShortCOM
             ? "relative w-fit min-w-[4.5rem] px-2 h-10"
-            : "relative w-64 "
+            : "relative w-64 h-20"
         }
         onClick={() => setClickActive(!clickActive)}
         onMouseEnter={!isMobile ? () => setHoverActive(true) : undefined}
@@ -195,8 +195,15 @@ export function Name() {
           }
 
           .fade-out {
-            opacity: 0;
-            transition: opacity 0.6s ease-in-out;
+            animation: exit-sequence 0.8s ease-out forwards;
+            overflow: hidden;
+          }
+
+          @keyframes exit-sequence {
+            0% { width: 320px; height: auto; opacity: 1; }
+            30% { width: 320px; height: auto; opacity: 0; }
+            60% { width: 0px; height: auto; opacity: 0; }
+            100% { width: 0px; height: 0px; opacity: 0; }
           }
         `}</style>
 
@@ -248,7 +255,7 @@ export function Name() {
 
       {isVisible && (
         <div
-          className={`info-box border-draw relative left-1/2 -translate-x-1/2 mt-8 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded ${
+          className={`info-box border-draw relative left-1/2 -translate-x-1/2 mt-2 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded ${
             isActive ? "" : "fade-out"
           }`}
           style={{

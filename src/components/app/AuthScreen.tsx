@@ -24,12 +24,12 @@ const AuthScreen: React.FC = () => {
     return () => window.removeEventListener("resize", check);
   }, []);
   return (
-    <div className="min-h-screen place-items-center">
-      <div className="name w-full">
+    <div className="min-h-screen">
+      <div className="name">
         <HeroTitle />
       </div>
 
-      <div className={`absolute top-0 ${session ? "left-0" : ""}`}>
+      <div className="cillywilly absolute ml-2">
         <Name />
       </div>
 
