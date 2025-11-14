@@ -101,7 +101,7 @@ export const UnifiedNavbar: React.FC = () => {
         transition={{ duration: 0.7, delay: 0.1 }}
         className="relative flex items-center w-full py-3 px-5 justify-between"
       >
-        <div className="flex items-center gap-6 border-2 border-white relative name-container absoloute bottom-0">
+        <div className="flex items-center gap-6 border-2relative name-container absoloute bottom-0">
           <Name />
         </div>
         <motion.nav className="absolute left-1/2 transform -translate-x-1/2 flex justify-center gap-4 z-20">
