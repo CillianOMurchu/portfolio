@@ -104,7 +104,7 @@ export const UnifiedNavbar: React.FC = () => {
           <Name />
         </div>
         <motion.nav
-          className="flex-1 flex justify-center gap-4"
+          className="absolute left-1/2 transform -translate-x-1/2 flex justify-center gap-4 z-20"
         >
           {currentPage === "/" ? (
             <NavItems
@@ -113,42 +113,33 @@ export const UnifiedNavbar: React.FC = () => {
               onNavigate={navigate}
             />
           ) : (
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, y: -48 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -48 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="absolute left-0 top-0 w-full flex justify-center pointer-events-none z-30 mt-3"
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="group relative pointer-events-auto text-emerald-400 text-xl font-semibold tracking-wide drop-shadow-[0_0_6px_#10b981] capitalize px-8 py-3 outline-none bg-transparent mt-0"
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              <button
-                type="button"
-                onClick={() => navigate("/")}
-                className="group relative pointer-events-auto text-emerald-400 text-xl font-semibold tracking-wide drop-shadow-[0_0_6px_#10b981] capitalize px-8 py-3 outline-none bg-transparent mt-0"
-                style={{ WebkitTapHighlightColor: "transparent" }}
+              <span className="relative z-10">
+                {(() => {
+                  if (currentPage === "/music") return "Music";
+                  if (currentPage === "/critical-thinking") return "Critical Thinking";
+                  return currentPage.replace(/^\//, "").replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+                })()}
+              </span>
+              {/* Animated border and arrow */}
+              <span
+                className="pointer-events-none absolute inset-0 rounded-xl border-2 border-emerald-400 opacity-0 group-hover:opacity-100 group-hover:shadow-[0_0_16px_#10b981] transition-all duration-300 ease-out"
+                style={{ zIndex: 1, padding: '0.25rem' }}
+              ></span>
+              <span
+                className="pointer-events-none absolute left-[-2.5rem] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out"
+                style={{ zIndex: 2 }}
               >
-                <span className="relative z-10">
-                  {(() => {
-                    if (currentPage === "/music") return "Music";
-                    if (currentPage === "/critical-thinking") return "Critical Thinking";
-                    return currentPage.replace(/^\//, "").replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-                  })()}
-                </span>
-                {/* Animated border and arrow */}
-                <span
-                  className="pointer-events-none absolute inset-0 rounded-xl border-2 border-emerald-400 opacity-0 group-hover:opacity-100 group-hover:shadow-[0_0_16px_#10b981] transition-all duration-300 ease-out"
-                  style={{ zIndex: 1, padding: '0.25rem' }}
-                ></span>
-                <span
-                  className="pointer-events-none absolute left-[-2.5rem] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out"
-                  style={{ zIndex: 2 }}
-                >
-                  <svg width="32" height="32" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-emerald-400">
-                    <polygon points="18,6 8,14 18,22" fill="#10b981" className="drop-shadow-[0_0_6px_#10b981]" />
-                  </svg>
-                </span>
-              </button>
-            </motion.div>
+                <svg width="32" height="32" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-emerald-400">
+                  <polygon points="18,6 8,14 18,22" fill="#10b981" className="drop-shadow-[0_0_6px_#10b981]" />
+                </svg>
+              </span>
+            </button>
           )}
         </motion.nav>
         <div className="flex items-center ml-auto">
