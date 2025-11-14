@@ -92,7 +92,7 @@ export function Name() {
             ? "relative w-fit min-w-[4.5rem] px-2 h-10"
             : "relative w-64 h-20"
         }
-        onClick={() => setClickActive(!clickActive)}
+        onClick={isMobile ? () => setClickActive(!clickActive) : undefined}
         onMouseEnter={!isMobile ? () => setHoverActive(true) : undefined}
         onMouseLeave={!isMobile ? () => setHoverActive(false) : undefined}
         onMouseDown={() => setIsPressed(true)}
