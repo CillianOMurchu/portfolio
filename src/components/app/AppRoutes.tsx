@@ -51,16 +51,24 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
       <Route
         path="/"
         element={
-          <motion.div
-            key="welcome"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
-            className="relative z-10"
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-screen bg-black text-emerald-400">
+                Loading...
+              </div>
+            }
           >
-            <WelcomeScreen />
-          </motion.div>
+            <motion.div
+              key="welcome"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
+              className="relative z-10"
+            >
+              <WelcomeScreen />
+            </motion.div>
+          </Suspense>
         }
       />
       <Route
