@@ -251,7 +251,8 @@ export const ItemSphere: React.FC<Props> = (props) => {
         );
         // 3D fade as before
         const fade3d = 0.4 + 0.6 * ((icon.z + 1) / 2);
-        const finalAlpha = fade3d * fadeInAlpha;
+        const isFrontAndLarge = icon.z > 0.8;
+        const finalAlpha = isFrontAndLarge ? 1 : fade3d * fadeInAlpha;
         if (img && img.complete && finalAlpha > 0.01) {
           ctx.save();
           ctx.globalAlpha = finalAlpha;
@@ -320,7 +321,6 @@ export const ItemSphere: React.FC<Props> = (props) => {
       style={{
         width: "100vw",
         height: "100vh",
-        opacity: 0.8,
         position: "absolute",
         zIndex: -1,
       }}

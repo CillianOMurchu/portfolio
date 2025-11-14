@@ -38,7 +38,6 @@ const AuthScreen: React.FC = () => {
         style={{
           width: "100vw",
           height: "100vh",
-          opacity: 0.8,
           position: "absolute",
           zIndex: -1,
         }}
