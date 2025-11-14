@@ -326,7 +326,6 @@ export const ItemSphere: React.FC<Props> = (props) => {
       }}
     >
       <VelvetRope onPull={() => setCollapsed(!collapsed)} />
-      {console.log('colapsed is ', collapsed)}
       <div
         ref={containerRef}
         style={{
