@@ -6,6 +6,7 @@ import AuthScreen from "./AuthScreen";
 const WelcomeScreen = React.lazy(() => import("./WelcomeScreen"));
 const MusicPage = React.lazy(() => import("../MusicPage"));
 import CriticalThinkingPage from "../CriticalThinkingPage";
+import LoadingScreen from "./LoadingScreen";
 
 interface AppRoutesProps {
   session: Session | null;
@@ -14,8 +15,8 @@ interface AppRoutesProps {
 }
 
 const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
-  // Show auth screen if not signed in
-  if (!session && signInState === "signin") {
+  // Show auth screen if not signed in, except for loading-test
+  if (!session && signInState === "signin" && window.location.pathname !== "/loading-test") {
     return (
       <motion.div
         key="auth"
@@ -32,6 +33,21 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
 
   return (
     <Routes>
+      <Route
+        path="/loading-test"
+        element={
+          <motion.div
+            key="loading-test"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10"
+          >
+            <LoadingScreen authLoading={false} />
+          </motion.div>
+        }
+      />
       <Route
         path="/"
         element={

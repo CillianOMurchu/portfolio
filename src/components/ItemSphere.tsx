@@ -1,4 +1,86 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+// Velvet rope SVG component
+const VelvetRope: React.FC<{ onPull: () => void }> = ({ onPull }) => (
+  <div
+    style={{
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      zIndex: 10,
+      cursor: "pointer",
+      userSelect: "none",
+      pointerEvents: "auto",
+      filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))",
+    }}
+    onClick={onPull}
+    aria-label="Toggle ItemSphere collapse"
+  >
+    <svg width="50" height="120" viewBox="0 0 50 120" fill="none">
+      {/* Rope body */}
+      <rect
+        x="20"
+        y="10"
+        width="10"
+        height="80"
+        rx="5"
+        fill="#8B0000"
+        stroke="#4A0000"
+        strokeWidth="1"
+      />
+      <rect x="22" y="12" width="6" height="76" rx="3" fill="#B22222" />
+      {/* Tassels at bottom */}
+      <ellipse
+        cx="25"
+        cy="95"
+        rx="15"
+        ry="8"
+        fill="#8B0000"
+        stroke="#4A0000"
+        strokeWidth="1"
+      />
+      <ellipse cx="25" cy="100" rx="12" ry="6" fill="#B22222" />
+      <ellipse cx="25" cy="105" rx="10" ry="4" fill="#8B0000" opacity="0.8" />
+      {/* Knot at top */}
+      <circle
+        cx="25"
+        cy="15"
+        r="8"
+        fill="#8B0000"
+        stroke="#4A0000"
+        strokeWidth="1"
+      />
+      <circle cx="25" cy="15" r="5" fill="#B22222" />
+      {/* Small details */}
+      <rect
+        x="18"
+        y="20"
+        width="14"
+        height="2"
+        rx="1"
+        fill="#4A0000"
+        opacity="0.5"
+      />
+      <rect
+        x="18"
+        y="30"
+        width="14"
+        height="2"
+        rx="1"
+        fill="#4A0000"
+        opacity="0.5"
+      />
+      <rect
+        x="18"
+        y="40"
+        width="14"
+        height="2"
+        rx="1"
+        fill="#4A0000"
+        opacity="0.5"
+      />
+    </svg>
+  </div>
+);
 
 // Vite: Import all SVGs from the programming-icons folder
 const svgModules = import.meta.glob("../assets/programming-icons/*.svg", {
@@ -32,6 +114,7 @@ interface Props {
 }
 
 export const ItemSphere: React.FC<Props> = (props) => {
+  const [collapsed, setCollapsed] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const sizeRef = useRef(100); // Will be set by ResizeObserver
@@ -105,15 +188,40 @@ export const ItemSphere: React.FC<Props> = (props) => {
 
     let animationId: number;
     if (!mountTimeRef.current) mountTimeRef.current = performance.now();
-    function draw() {
-      const now = performance.now();
+    // Collapse animation state
+    const collapseAnim = { progress: 0, target: collapsed ? 1 : 0 };
+    let collapseStart: number | null = null;
+    function draw(now?: number) {
+      const nowVal = typeof now === "number" ? now : performance.now();
       const size = sizeRef.current;
       if (!ctx) return;
       ctx.clearRect(0, 0, size, size);
+      // Apply collapse scale to shrink to center
+      const collapseScale = 1 - 0.8 * collapseAnim.progress;
+      ctx.save();
+      ctx.translate(size / 2, size / 2);
+      ctx.scale(collapseScale, collapseScale);
+      ctx.translate(-size / 2, -size / 2);
       if (state.current.auto && !state.current.dragging) {
         state.current.rx += state.current.vx;
         state.current.rz += state.current.vy;
       }
+      // Animate collapse progress
+      collapseAnim.target = collapsed ? 1 : 0;
+      if (collapseAnim.progress !== collapseAnim.target) {
+        if (collapseStart === null) collapseStart = nowVal;
+        const elapsed = nowVal - collapseStart;
+        const direction = collapseAnim.target > collapseAnim.progress ? 1 : -1;
+        collapseAnim.progress += direction * (elapsed / 700);
+        collapseAnim.progress = Math.max(0, Math.min(1, collapseAnim.progress));
+        if (Math.abs(collapseAnim.progress - collapseAnim.target) < 0.01) {
+          collapseAnim.progress = collapseAnim.target;
+          collapseStart = null;
+        }
+      } else {
+        collapseStart = null;
+      }
+
       const projected = positions.map((pos, i) => {
         const { x, y, z } = pos;
         const y1 =
@@ -136,7 +244,7 @@ export const ItemSphere: React.FC<Props> = (props) => {
         const img = imagesRef.current[icon.name];
         // Cascade fade-in calculation
         const iconDelay = icon.index * fadeInStagger;
-        const elapsed = now - mountTimeRef.current;
+        const elapsed = nowVal - mountTimeRef.current;
         const fadeInAlpha = Math.min(
           1,
           Math.max(0, (elapsed - iconDelay) / fadeInDuration)
@@ -157,6 +265,7 @@ export const ItemSphere: React.FC<Props> = (props) => {
           ctx.restore();
         }
       }
+      ctx.restore(); // Restore after collapse scale
       animationId = requestAnimationFrame(draw);
     }
     draw();
@@ -216,6 +325,8 @@ export const ItemSphere: React.FC<Props> = (props) => {
         zIndex: -1,
       }}
     >
+      <VelvetRope onPull={() => setCollapsed(!collapsed)} />
+      {console.log('colapsed is ', collapsed)}
       <div
         ref={containerRef}
         style={{
