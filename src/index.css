@@ -61,6 +61,25 @@
   }
 }
 
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 15px #10b981, 0 0 30px #10b981, 0 0 45px #10b981, inset 0 0 10px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px #10b981, 0 0 40px #10b981, 0 0 60px #10b981, inset 0 0 15px rgba(16, 185, 129, 0.5);
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
 /* Additional utility classes */
 .text-glass {
   color: var(--text-primary);
