@@ -44,7 +44,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
         }
       `}</style>
       <div
-        className={`info-box border-draw absolute top-full left-0 mt-2 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded ${
+        className={`info-box border-draw absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded ${
           isActive ? "" : "fade-out"
         }`}
         style={{
