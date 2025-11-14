@@ -9,7 +9,7 @@ export function Name() {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showText, setShowText] = useState(false);
-  
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
@@ -31,7 +31,8 @@ export function Name() {
   const letters = name.split("");
   const isShortCOM = isMobile && session;
 
-  const bioText = "Full-stack developer specializing in modern web technologies and creative digital experiences.";
+  const bioText =
+    "Full-stack developer specializing in modern web technologies and creative digital experiences.";
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export function Name() {
   }, [showText]);
 
   return (
-    <div className="relative">
+    <div className="relative w-fit-content h-10">
       <div
         className={
           isShortCOM
@@ -161,12 +162,10 @@ export function Name() {
         )}
 
         <div
-          className={
-            [
-              "absolute inset-0 flex items-center",
-              (isMobile && !session) ? "justify-center" : "justify-center"
-            ].join(" ")
-          }
+          className={[
+            "absolute inset-0 flex items-center",
+            isMobile && !session ? "justify-center" : "justify-center",
+          ].join(" ")}
         >
           <span
             className={
@@ -191,37 +190,40 @@ export function Name() {
         </div>
 
         {/* Animated orbs */}
-        {isHovered && (
-          <>
-            <div className="orb orb-center" />
-            <div className="orb orb-left" />
-            <div className="orb orb-right" />
-          </>
-        )}
+        {/* {isHovered && ( */}
+        <>
+          <div className="orb orb-center" />
+          <div className="orb orb-left" />
+          <div className="orb orb-right" />
+        </>
+        {/* )} */}
       </div>
 
-      {/* Info box */}
-      {isHovered && (
-        <div
-          className="border-draw absolute left-1/2 -translate-x-1/2 mt-8 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded"
+      {/* {isHovered && ( */}
+      <div
+        className="absoloute border-draw mt-10 border border-emerald-500/60 "
+        // className="info-box border-draw absolute left-1/2 -translate-x-1/2 mt-8 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded max-w-screen overflow-x-hidden "
+        style={{
+          boxShadow: `0 0 10px rgba(16,185,129,0.3), 0 0 20px rgba(16,185,129,0.2), inset 0 0 20px rgba(16,185,129,0.05)`,
+          //   transform: "translate(-50%, 0)",
+          //   maxWidth: "calc(100vw - 2rem)", // Ensure it respects screen boundaries
+          //   left: "50%", // Center horizontally
+        }}
+      >
+        <p
+          className="text-emerald-400 text-sm tracking-wide leading-relaxed"
           style={{
-            boxShadow: `0 0 10px rgba(16,185,129,0.3), 0 0 20px rgba(16,185,129,0.2), inset 0 0 20px rgba(16,185,129,0.05)`,
+            textShadow: `0 0 3px rgba(16,185,129,0.5)`,
+            fontFamily: "system-ui, -apple-system, sans-serif",
           }}
         >
-          <p
-            className="text-emerald-400 text-sm tracking-wide leading-relaxed"
-            style={{
-              textShadow: `0 0 3px rgba(16,185,129,0.5)`,
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-            }}
-          >
-            {displayedText}
-            {showText && displayedText.length < bioText.length && (
-              <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
-            )}
-          </p>
-        </div>
-      )}
+          {displayedText}
+          {showText && displayedText.length < bioText.length && (
+            <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
+          )}
+        </p>
+      </div>
+      {/* )} */}
     </div>
   );
 }
