@@ -30,7 +30,7 @@ export default function AnimatedGrid() {
     const gridSpacing = 48;
     // Vertical lines
     for (let x = 0; x <= width; x += gridSpacing) {
-      const delay = Math.random() * 1.2;
+      const delay = 0;
       const duration = 0.7 + Math.random() * 0.7;
       generated.push({
         x1: x,
@@ -44,7 +44,7 @@ export default function AnimatedGrid() {
     }
     // Horizontal lines
     for (let y = 0; y <= height; y += gridSpacing) {
-      const delay = Math.random() * 1.2;
+      const delay = 0;
       const duration = 0.7 + Math.random() * 0.7;
       generated.push({
         x1: 0,
@@ -77,9 +77,9 @@ export default function AnimatedGrid() {
                 y1={line.y1}
                 x2={line.isVertical ? line.x1 : line.x2}
                 y2={line.isVertical ? line.y1 : line.y2}
-                stroke="#065f46"
-                strokeWidth="0.7"
-                opacity="0.45"
+                stroke="#10b981"
+                strokeWidth="1.5"
+                opacity="0.7"
               >
                 {line.isVertical ? (
                   <animate
