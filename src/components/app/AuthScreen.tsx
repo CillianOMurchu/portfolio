@@ -29,7 +29,7 @@ const AuthScreen: React.FC = () => {
         <HeroTitle />
       </div>
 
-      <div className={`absolute top-0 pointer-events-none${session ? " left-0" : ""}`}>
+      <div className={`absolute top-0 ${session ? "left-0" : ""}`}>
         <Name />
       </div>
 
