@@ -1,14 +1,20 @@
 const hexagonClip =
   "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
 
 export function Name() {
   const { session } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoverActive, setHoverActive] = useState(false);
+  const [clickActive, setClickActive] = useState(false);
   const [showText, setShowText] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const nameRef = useRef<HTMLDivElement>(null);
+
+  const isActive = clickActive || hoverActive;
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -18,14 +24,14 @@ export function Name() {
   }, []);
 
   useEffect(() => {
-    if (isHovered) {
+    if (isActive) {
       // Delay text appearance until orbs complete their animation
       const timer = setTimeout(() => setShowText(true), 1200);
       return () => clearTimeout(timer);
     } else {
       setShowText(false);
     }
-  }, [isHovered]);
+  }, [isActive]);
 
   const name = isMobile && session ? "C Ó M" : "CILLIAN Ó MURCHÚ";
   const letters = name.split("");
@@ -51,16 +57,52 @@ export function Name() {
     }
   }, [showText]);
 
+  useEffect(() => {
+    if (isActive) {
+      setIsVisible(true);
+    } else {
+      // Delay hiding to allow fade out
+      const timer = setTimeout(() => setIsVisible(false), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isActive]);
+
+  useEffect(() => {
+    if (isMobile && isActive) {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (nameRef.current && !nameRef.current.contains(e.target as Node)) {
+          // Clicked outside the name
+          setClickActive(false);
+        } else if (e.clientY > window.innerHeight / 2) {
+          // Clicked in bottom 50%
+          setClickActive(false);
+        }
+      };
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [isMobile, isActive]);
+
   return (
-    <div className="relative w-fit-content h-10">
+    <div className="relative w-fit-content h-20">
       <div
+        ref={nameRef}
         className={
           isShortCOM
             ? "relative w-fit min-w-[4.5rem] px-2 h-10"
-            : "relative w-64 h-20"
+            : "relative w-64 "
         }
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => setClickActive(!clickActive)}
+        onMouseEnter={!isMobile ? () => setHoverActive(true) : undefined}
+        onMouseLeave={!isMobile ? () => setHoverActive(false) : undefined}
+        onMouseDown={() => setIsPressed(true)}
+        onMouseUp={() => setIsPressed(false)}
+        style={{
+          cursor: "pointer",
+          transform: isPressed ? "scale(0.95)" : "scale(1)",
+          transition: "transform 0.1s ease-out",
+          height: "100%",
+        }}
       >
         <style>{`
           .fadein-letter {
@@ -151,6 +193,11 @@ export function Name() {
               opacity: 1;
             }
           }
+
+          .fade-out {
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+          }
         `}</style>
 
         <div className="absolute inset-0" />
@@ -190,7 +237,7 @@ export function Name() {
         </div>
 
         {/* Animated orbs */}
-        {isHovered && (
+        {isActive && (
           <>
             <div className="orb orb-center" />
             <div className="orb orb-left" />
@@ -199,9 +246,11 @@ export function Name() {
         )}
       </div>
 
-      {/* {isHovered && ( */}
-        <div                                                                                                                                                                  
-          className="info-box border-draw relative left-1/2 -translate-x-1/2 mt-8 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded"
+      {isVisible && (
+        <div
+          className={`info-box border-draw relative left-1/2 -translate-x-1/2 mt-8 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded ${
+            isActive ? "" : "fade-out"
+          }`}
           style={{
             boxShadow: `0 0 10px rgba(16,185,129,0.3), 0 0 20px rgba(16,185,129,0.2), inset 0 0 20px rgba(16,185,129,0.05)`,
             transform: "translate(-50%, 0)",
@@ -213,16 +262,16 @@ export function Name() {
             className="text-emerald-400 text-sm tracking-wide leading-relaxed"
             style={{
               textShadow: `0 0 3px rgba(16,185,129,0.5)`,
-              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontFamily: "system-ui, -apple-system, sans-serif",
             }}
           >
-            {displayedText}                                                                                                                                                                                                                                                                                                     
+            {displayedText}
             {showText && displayedText.length < bioText.length && (
               <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
             )}
           </p>
         </div>
-      {/* )}                                 */}
+      )}
     </div>
   );
 }

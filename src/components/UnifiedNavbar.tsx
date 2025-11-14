@@ -21,7 +21,6 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "../hooks/useAuth";
 import { useAuth } from "../hooks/useAuth";
-import { fadeUpPreset } from "../utils/animations";
 import { Name } from "./Name";
 import { AuthContext } from "../context/AuthContext";
 import { usePageNavigation } from "../hooks/usePageNavigation";
@@ -99,7 +98,7 @@ export const UnifiedNavbar: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="relative flex items-center w-full py-3 px-5 justify-between"
+        className="relative flex items-center w-full py-3 px-5 justify-between min-h-150px"
       >
         <div className="flex items-center gap-6 border-2relative name-container absoloute bottom-0">
           <Name />
