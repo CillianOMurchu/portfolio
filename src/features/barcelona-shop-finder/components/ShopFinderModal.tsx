@@ -52,7 +52,7 @@ export const ShopFinderModal: React.FC<ShopFinderModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.3, ease: [0.25, 0.75, 0.5, 1.25] }}
             className="relative w-full h-full bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20 overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 50%, #f5f3ff 100%)',

@@ -7,9 +7,9 @@ export default {
   theme: {
     extend: {
       animation: {
-        'slide-in-left': 'slideInLeft 0.6s ease-out',
-        'fade-in': 'fadeIn 0.6s ease-out',
-        'fade-in-up': 'fadeInUp 0.6s ease-out',
+        'slide-in-left': 'slideInLeft 0.6s cubic-bezier(.25,.75,.5,1.25)',
+        'fade-in': 'fadeIn 0.6s cubic-bezier(.25,.75,.5,1.25)',
+        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(.25,.75,.5,1.25)',
       },
       keyframes: {
         slideInLeft: {
@@ -24,6 +24,9 @@ export default {
           '0%': { transform: 'translateY(20px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
+      },
+      transitionTimingFunction: {
+        'bounce-custom': 'cubic-bezier(.25,.75,.5,1.25)',
       },
     },
   },

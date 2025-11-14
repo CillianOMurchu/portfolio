@@ -2,7 +2,6 @@ const hexagonClip =
   "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
 
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { createAnimationQueue, createAnimationStep } from "../utils/animationQueue";
 
@@ -51,11 +50,11 @@ export function Name() {
       // Create new animation sequence
       const queue = createAnimationQueue();
 
-      // Step 1: Show info box (orbs are already animating via CSS)
+      // Step 1: Show info box (wait for orbs animation to finish)
       queue.add(createAnimationStep(
         'show-info-box',
         () => setIsVisible(true),
-        0
+        1200
       ));
 
       // Step 2: Wait for orbs to finish (1.2s total), then start typing
@@ -136,7 +135,7 @@ export function Name() {
           style={{
             cursor: "pointer",
             transform: isPressed ? "scale(0.95)" : "scale(1)",
-            transition: "transform 0.1s ease-out",
+            transition: "transform 0.1s cubic-bezier(.25,.75,.5,1.25)",
             height: "100%",
           }}
         >
@@ -163,29 +162,37 @@ export function Name() {
             border-radius: 50%;
             box-shadow: 0 0 10px #10b981, 0 0 20px #10b981, 0 0 30px #10b981;
             opacity: 0;
+            z-index: 20;
           }
 
           .orb-center {
             left: 50%;
             top: 100%;
             transform: translateX(-50%);
-            animation: orb-down 0.6s ease-out forwards;
+            animation: orb-down 0.4s cubic-bezier(.25,.75,.5,1.25) forwards;
           }
 
           .orb-left {
             left: 50%;
             top: calc(100% + 2rem);
             transform: translateX(-50%);
-            animation: orb-left 0.6s 0.6s ease-out forwards;
+            animation: orb-left-horizontal 0.4s 0.4s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       orb-left-vertical 0.5s 0.8s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       orb-left-bottom 0.4s 1.3s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       orb-fade-out 0.3s 1.7s cubic-bezier(.25,.75,.5,1.25) forwards;
           }
 
           .orb-right {
             left: 50%;
             top: calc(100% + 2rem);
             transform: translateX(-50%);
-            animation: orb-right 0.6s 0.6s ease-out forwards;
+            animation: orb-right-horizontal 0.4s 0.4s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       orb-right-vertical 0.5s 0.8s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       orb-right-bottom 0.4s 1.3s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       orb-fade-out 0.3s 1.7s cubic-bezier(.25,.75,.5,1.25) forwards;
           }
 
+          /* Center orb going down */
           @keyframes orb-down {
             0% {
               opacity: 1;
@@ -197,25 +204,235 @@ export function Name() {
             }
           }
 
-          @keyframes orb-left {
+          /* Left orb - horizontal to left edge */
+          @keyframes orb-left-horizontal {
             0% {
               opacity: 1;
               left: 50%;
+              top: calc(100% + 2rem);
             }
             100% {
-              opacity: 0;
-              left: 0%;
+              opacity: 1;
+              left: calc(50% - 10rem);
+              top: calc(100% + 2rem);
             }
           }
 
-          @keyframes orb-right {
+          /* Left orb - down the left side */
+          @keyframes orb-left-vertical {
+            0% {
+              left: calc(50% - 10rem);
+              top: calc(100% + 2rem);
+            }
+            100% {
+              left: calc(50% - 10rem);
+              top: calc(100% + 2rem + 6rem);
+            }
+          }
+
+          /* Left orb - along bottom to center */
+          @keyframes orb-left-bottom {
+            0% {
+              left: calc(50% - 10rem);
+              top: calc(100% + 2rem + 6rem);
+            }
+            100% {
+              left: calc(50% - 5rem);
+              top: calc(100% + 2rem + 6rem);
+            }
+          }
+
+          /* Right orb - horizontal to right edge */
+          @keyframes orb-right-horizontal {
             0% {
               opacity: 1;
               left: 50%;
+              top: calc(100% + 2rem);
             }
             100% {
+              opacity: 1;
+              left: calc(50% + 10rem);
+              top: calc(100% + 2rem);
+            }
+          }
+
+          /* Right orb - down the right side */
+          @keyframes orb-right-vertical {
+            0% {
+              left: calc(50% + 10rem);
+              top: calc(100% + 2rem);
+            }
+            100% {
+              left: calc(50% + 10rem);
+              top: calc(100% + 2rem + 6rem);
+            }
+          }
+
+          /* Right orb - along bottom to center */
+          @keyframes orb-right-bottom {
+            0% {
+              left: calc(50% + 10rem);
+              top: calc(100% + 2rem + 6rem);
+            }
+            100% {
+              left: calc(50% + 5rem);
+              top: calc(100% + 2rem + 6rem);
+            }
+          }
+
+          @keyframes orb-fade-out {
+            to {
               opacity: 0;
-              left: 100%;
+            }
+          }
+
+          /* Trail lines */
+          .trail-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+            box-shadow: 0 0 10px #10b981, 0 0 20px #10b981;
+            opacity: 0;
+          }
+
+          .trail-vertical-center {
+            left: 50%;
+            top: 100%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 0;
+            animation: trail-vertical-center 0.4s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          .trail-horizontal-left {
+            left: 50%;
+            top: calc(100% + 2rem);
+            transform: translateY(-50%);
+            height: 2px;
+            width: 0;
+            animation: trail-horizontal-left 0.4s 0.4s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       trail-fade 0.3s 2s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          .trail-horizontal-right {
+            left: 50%;
+            top: calc(100% + 2rem);
+            transform: translateY(-50%);
+            height: 2px;
+            width: 0;
+            animation: trail-horizontal-right 0.4s 0.4s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       trail-fade 0.3s 2s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          .trail-vertical-left {
+            left: calc(50% - 10rem);
+            top: calc(100% + 2rem);
+            transform: translateX(-50%);
+            width: 2px;
+            height: 0;
+            animation: trail-vertical-side 0.5s 0.8s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       trail-fade 0.3s 2s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          .trail-vertical-right {
+            left: calc(50% + 10rem);
+            top: calc(100% + 2rem);
+            transform: translateX(-50%);
+            width: 2px;
+            height: 0;
+            animation: trail-vertical-side 0.5s 0.8s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       trail-fade 0.3s 2s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          .trail-bottom-left {
+            left: calc(50% - 10rem);
+            top: calc(100% + 2rem + 6rem);
+            transform: translateY(-50%);
+            height: 2px;
+            width: 0;
+            animation: trail-bottom-segment 0.4s 1.3s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       trail-fade 0.3s 2s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          .trail-bottom-right {
+            right: calc(50% - 10rem);
+            top: calc(100% + 2rem + 6rem);
+            transform: translateY(-50%);
+            height: 2px;
+            width: 0;
+            animation: trail-bottom-segment 0.4s 1.3s cubic-bezier(.25,.75,.5,1.25) forwards,
+                       trail-fade 0.3s 2s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          @keyframes trail-vertical-center {
+            0% {
+              opacity: 1;
+              height: 0;
+            }
+            100% {
+              opacity: 1;
+              height: 2rem;
+            }
+          }
+
+          @keyframes trail-horizontal-left {
+            0% {
+              opacity: 1;
+              width: 0;
+            }
+            100% {
+              opacity: 1;
+              width: 10rem;
+              transform: translateY(-50%) translateX(-100%);
+            }
+          }
+
+          @keyframes trail-horizontal-right {
+            0% {
+              opacity: 1;
+              width: 0;
+            }
+            100% {
+              opacity: 1;
+              width: 10rem;
+            }
+          }
+
+          @keyframes trail-vertical-side {
+            0% {
+              opacity: 1;
+              height: 0;
+            }
+            100% {
+              opacity: 1;
+              height: 6rem;
+            }
+          }
+
+          @keyframes trail-bottom-segment {
+            0% {
+              opacity: 1;
+              width: 0;
+            }
+            100% {
+              opacity: 1;
+              width: 5rem;
+            }
+          }
+
+          @keyframes trail-fade {
+            to {
+              opacity: 0;
+            }
+          }
+
+          .border-draw {
+            opacity: 0;
+            animation: border-appear 0.4s 1.2s cubic-bezier(.25,.75,.5,1.25) forwards;
+          }
+
+          @keyframes border-appear {
+            to {
+              opacity: 1;
             }
           }
 
@@ -257,28 +474,45 @@ export function Name() {
             </span>
           </div>
 
-          {/* Animated orbs */}
+          {/* Animated orbs and trails */}
           {isActive && (
             <>
               <div className="orb orb-center" />
               <div className="orb orb-left" />
               <div className="orb orb-right" />
+              
+              {/* Trail lines */}
+              <div className="trail-line trail-vertical-center" />
+              <div className="trail-line trail-horizontal-left" />
+              <div className="trail-line trail-horizontal-right" />
+              <div className="trail-line trail-vertical-left" />
+              <div className="trail-line trail-vertical-right" />
+              <div className="trail-line trail-bottom-left" />
+              <div className="trail-line trail-bottom-right" />
             </>
           )}
         </div>
 
         {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isFadingOut ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute top-full left-0 mt-4 p-4 bg-black/80 backdrop-blur-sm border border-emerald-500/30 rounded-lg shadow-lg max-w-md"
+          <div
+            className="border-draw absolute left-1/2 -translate-x-1/2 mt-8 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded"
+            style={{
+              boxShadow: `0 0 10px rgba(16,185,129,0.3), 0 0 20px rgba(16,185,129,0.2), inset 0 0 20px rgba(16,185,129,0.05)`,
+            }}
           >
-            <p className="text-emerald-400 font-mono text-lg leading-relaxed">
+            <p
+              className="text-emerald-400 text-sm tracking-wide leading-relaxed"
+              style={{
+                textShadow: `0 0 3px rgba(16,185,129,0.5)`,
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+              }}
+            >
               {displayedText}
-              {!isTypingFinished && !isFadingOut && <span className="animate-pulse">|</span>}
+              {!isTypingFinished && !isFadingOut && (
+                <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
+              )}
             </p>
-          </motion.div>
+          </div>
         )}
       </div>
     </>

@@ -9,7 +9,7 @@ const SideNav: React.FC = () => {
     <>
       <motion.div
         animate={{ x: isOpen ? "calc(100vw - 100%)" : "0%" }}
-        transition={{ ease: "easeInOut", duration: 0.5 }}
+        transition={{ ease: [0.25, 0.75, 0.5, 1.25], duration: 0.5 }}
         className={`fixed left-0 top-1/2 transform -translate-y-1/2 text-white px-4 py-2 shadow-lg cursor-pointer z-50 font-bold overflow-hidden ${
           isOpen ? "rounded-l-lg" : "rounded-r-lg"
         }`}
@@ -29,7 +29,7 @@ const SideNav: React.FC = () => {
       <motion.div
         initial={{ x: "-100%" }}
         animate={{ x: isOpen ? "0%" : "-100%" }}
-        transition={{ ease: "easeInOut", duration: 0.5 }}
+        transition={{ ease: [0.25, 0.75, 0.5, 1.25], duration: 0.5 }}
         className="fixed left-0 top-0 h-full w-full bg-black z-40"
       >
         {isOpen && <AnimatedGrid />}

@@ -38,7 +38,7 @@ const PageTransition: React.FC<PageTransitionProps> = ({ isActive, onComplete })
         animate={{ 
           opacity: stage === 'fade' || stage === 'complete' ? 1 : 0 
         }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
+        transition={{ duration: 0.8, ease: [0.25, 0.75, 0.5, 1.25] }}
         className="absolute inset-0 bg-gradient-to-br from-purple-900/95 to-pink-900/95"
       />
     </div>

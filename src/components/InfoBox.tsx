@@ -32,7 +32,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
         }
 
         .fade-out {
-          animation: exit-sequence 0.8s ease-out forwards;
+          animation: exit-sequence 0.8s cubic-bezier(.25,.75,.5,1.25) forwards;
           overflow: hidden;
         }
 

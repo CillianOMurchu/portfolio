@@ -98,7 +98,7 @@ export const UnifiedNavbar: React.FC = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: 0.1 }}
+        transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.75, 0.5, 1.25] }}
         className="relative flex items-center w-full py-3 px-5 justify-between min-h-150px"
       >
         <div className="flex items-center gap-6 border-2relative name-container absoloute bottom-0">
@@ -131,15 +131,19 @@ export const UnifiedNavbar: React.FC = () => {
               </span>
               {/* Animated border and arrow */}
               <span
-                className="pointer-events-none absolute inset-0 rounded-xl border-2 border-emerald-400 opacity-0 group-hover:opacity-100 group-hover:shadow-[0_0_16px_#10b981] transition-all duration-300 ease-out"
+                className="pointer-events-none absolute inset-0 rounded-xl border-2 border-emerald-400 opacity-0 group-hover:opacity-100 group-hover:shadow-[0_0_16px_#10b981]"
                 style={{
                   zIndex: 1,
                   padding: "0.25rem",
+                  transition: "all 0.3s cubic-bezier(.25,.75,.5,1.25)",
                 }}
               ></span>
               <span
-                className="pointer-events-none absolute left-[-2.5rem] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out"
-                style={{ zIndex: 2 }}
+                className="pointer-events-none absolute left-[-2.5rem] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100"
+                style={{ 
+                  zIndex: 2,
+                  transition: "all 0.3s cubic-bezier(.25,.75,.5,1.25)",
+                }}
               >
                 <svg
                   width="32"
@@ -168,7 +172,7 @@ export const UnifiedNavbar: React.FC = () => {
                 className="flex items-center mr-2 overflow-hidden"
                 initial={{ width: 0 }}
                 animate={isLogoutHovered ? { width: "auto" } : { width: 0 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+                transition={{ duration: 0.3, ease: [0.25, 0.75, 0.5, 1.25] }}
               >
                 <span
                   className="text-emerald-400 font-mono text-lg font-bold whitespace-nowrap"
@@ -203,7 +207,7 @@ export const UnifiedNavbar: React.FC = () => {
                       background: "transparent",
                       border: "1px solid #ccc",
                       cursor: "pointer",
-                      transition: "all 0.2s ease",
+                      transition: "all 0.2s cubic-bezier(.25,.75,.5,1.25)",
                       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                     },
                     container: {

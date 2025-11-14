@@ -58,7 +58,7 @@ const AuthScreen: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
+              transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
               onClick={handleAuthClick}
               className="animated-button"
             >
@@ -76,7 +76,7 @@ const AuthScreen: React.FC = () => {
                       background: "transparent",
                       border: "1px solid #ccc",
                       cursor: "pointer",
-                      transition: "all 0.2s ease",
+                      transition: "all 0.2s cubic-bezier(.25,.75,.5,1.25)",
                       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                     },
                     container: {
@@ -110,7 +110,7 @@ const AuthScreen: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
+              transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
               onClick={handleAuthClick}
               className="animated-button"
             >
@@ -129,7 +129,7 @@ const AuthScreen: React.FC = () => {
                       background: "transparent",
                       border: "1px solid #ccc",
                       cursor: "pointer",
-                      transition: "all 0.2s ease",
+                      transition: "all 0.2s cubic-bezier(.25,.75,.5,1.25)",
                       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                     },
                     container: {

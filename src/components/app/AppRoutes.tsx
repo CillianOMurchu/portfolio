@@ -23,7 +23,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
+        transition={{ duration: 0.4, ease: [0.25, 0.75, 0.5, 1.25] }}
         className="relative z-10"
       >
         <AuthScreen />
@@ -41,7 +41,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.75, 0.5, 1.25] }}
             className="relative z-10"
           >
             <LoadingScreen authLoading={false} />
@@ -56,7 +56,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
+            transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
             className="relative z-10"
           >
             <WelcomeScreen />
@@ -78,7 +78,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+              transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
               className="relative z-10"
             >
               <MusicPage />
@@ -94,7 +94,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
+            transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
             className="relative z-10"
           >
             <CriticalThinkingPage />
