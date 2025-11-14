@@ -201,7 +201,7 @@ export function Name() {
 
       {/* {isHovered && ( */}
       <div
-        className="absoloute border-draw mt-10 border border-emerald-500/60 "
+        className="absoloute border-draw mt-10 border border-emerald-500/60 bg-black/80 rounded backdrop-blur-sm p-2"
         // className="info-box border-draw absolute left-1/2 -translate-x-1/2 mt-8 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded max-w-screen overflow-x-hidden "
         style={{
           boxShadow: `0 0 10px rgba(16,185,129,0.3), 0 0 20px rgba(16,185,129,0.2), inset 0 0 20px rgba(16,185,129,0.05)`,
@@ -218,9 +218,9 @@ export function Name() {
           }}
         >
           {displayedText}
-          {showText && displayedText.length < bioText.length && (
-            <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
-          )}
+          {/* {showText && displayedText.length < bioText.length && ( */}
+          <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
+          {/* )} */}
         </p>
       </div>
       {/* )} */}
