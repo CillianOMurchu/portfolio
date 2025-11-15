@@ -1,14 +1,17 @@
+import { useEffect, useState, useRef } from "react";
+import { useAuth } from "../hooks/useAuth";
+
 const hexagonClip =
   "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
-
-import { useEffect, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
 
 export function Name() {
   const { session } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showText, setShowText] = useState(false);
+  const [orbStart, setOrbStart] = useState({ x: 50, y: 100 });
+  const oCharRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -20,7 +23,7 @@ export function Name() {
   useEffect(() => {
     if (isHovered) {
       // Show info box partway through animation
-      const timer = setTimeout(() => setShowText(true), 300);
+      const timer = setTimeout(() => setShowText(true), 800);
       return () => clearTimeout(timer);
     } else {
       setShowText(false);
@@ -30,6 +33,9 @@ export function Name() {
   const name = isMobile && session ? "C Ó M" : "CILLIAN Ó MURCHÚ";
   const letters = name.split("");
   const isShortCOM = isMobile && session;
+  
+  // Find the index of Ó character
+  const oIndex = name.indexOf("Ó");
 
   const bioText = "Full-stack developer specializing in modern web technologies and creative digital experiences.";
   const [displayedText, setDisplayedText] = useState("");
@@ -50,6 +56,26 @@ export function Name() {
     }
   }, [showText]);
 
+  useEffect(() => {
+    if (isHovered && oCharRef.current && containerRef.current) {
+      const oRect = oCharRef.current.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
+      
+      // Calculate the center of the Ó character
+      const oCenterX = oRect.left + oRect.width / 2;
+      const oCenterY = oRect.top + oRect.height / 2;
+      
+      // Convert to percentage relative to container
+      const xPercent = ((oCenterX - containerRect.left) / containerRect.width) * 100;
+      const yPercent = ((oCenterY - containerRect.top) / containerRect.height) * 100;
+      
+      setOrbStart({
+        x: xPercent,
+        y: yPercent,
+      });
+    }
+  }, [isHovered, name]);
+
   return (
     <div className="relative">
       <div
@@ -60,6 +86,7 @@ export function Name() {
         }
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        ref={containerRef}
       >
         <style>{`
           .fadein-letter {
@@ -88,20 +115,42 @@ export function Name() {
           }
 
           .orb-trace {
-            left: 50%;
-            top: 100%;
             transform: translate(-50%, -50%);
             animation: 
-              orb-down 0.3s ease-out forwards,
-              orb-fade 0.3s 0.3s ease-out forwards;
+              orb-birth 0.2s ease-out forwards,
+              orb-glow 0.5s 0.2s ease-in-out forwards,
+              orb-down 0.3s 0.7s ease-out forwards,
+              orb-fade 0.3s 1.0s ease-out forwards;
           }
 
-          /* Orb goes down from name to info box */
+          /* Orb appears inside the Ó */
+          @keyframes orb-birth {
+            0% {
+              opacity: 0;
+              transform: translate(-50%, -50%) scale(0);
+            }
+            100% {
+              opacity: 1;
+              transform: translate(-50%, -50%) scale(1);
+            }
+          }
+
+          /* Orb glows in place */
+          @keyframes orb-glow {
+            0%, 100% {
+              opacity: 1;
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              filter: brightness(1.5);
+            }
+          }
+
+          /* Orb goes down from Ó to info box */
           @keyframes orb-down {
             0% {
               opacity: 1;
-              left: 50%;
-              top: 100%;
             }
             100% {
               opacity: 1;
@@ -125,23 +174,24 @@ export function Name() {
           }
 
           .trail-down {
-            left: 50%;
-            top: 100%;
             width: 2px;
             height: 0;
             transform: translateX(-50%);
-            animation: trail-down-grow 0.2s ease-out forwards,
-                       trail-fade 0.2s 0.2s ease-out forwards;
+            animation: trail-down-grow 0.3s 0.7s ease-out forwards;
           }
 
           @keyframes trail-down-grow {
             0% {
               opacity: 1;
               height: 0;
+              left: var(--orb-x);
+              top: var(--orb-y);
             }
             100% {
               opacity: 1;
-              height: 2rem;
+              height: calc(100% + 2rem - var(--orb-y) * 1%);
+              left: 50%;
+              top: var(--orb-y);
             }
           }
 
@@ -238,7 +288,7 @@ export function Name() {
 
           .info-box {
             opacity: 0;
-            animation: info-appear 0.3s 0.3s forwards;
+            animation: info-appear 0.3s 0.8s forwards;
           }
 
           @keyframes info-appear {
@@ -274,6 +324,7 @@ export function Name() {
                 key={i}
                 className="fadein-letter"
                 style={{ animationDelay: `${i * 80}ms` }}
+                ref={i === oIndex ? oCharRef : null}
               >
                 {char === " " ? "\u00A0" : char}
               </span>
@@ -286,9 +337,14 @@ export function Name() {
           <>
             <div 
               className="orb orb-trace"
+              style={{ left: `${orbStart.x}%`, top: `${orbStart.y}%` }}
             />
             <div 
               className="trail-line trail-down"
+              style={{ 
+                '--orb-x': `${orbStart.x}%`, 
+                '--orb-y': `${orbStart.y}%` 
+              } as React.CSSProperties}
             />
           </>
         )}

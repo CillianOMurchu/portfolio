@@ -4,7 +4,6 @@ import { usePageNavigation } from "./hooks/usePageNavigation";
 import LoadingScreen from "./components/app/LoadingScreen";
 import PageRouter from "./components/app/PageRouter";
 import UnifiedNavbar from "./components/UnifiedNavbar";
-import SideNav from "./components/SideNav";
 
 import { AuthContext } from "./context/AuthContext";
 
@@ -43,7 +42,7 @@ function App() {
         }}
       >
         {signInState === "complete" && <UnifiedNavbar />}
-        <SideNav />
+        {/* <SideNav /> */}
         <PageRouter
           session={session}
           signInState={signInState}
