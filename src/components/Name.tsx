@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import AnimatedGrid from "./AnimatedGrid";
 import { useAuth } from "../hooks/useAuth";
 
 const hexagonClip =
@@ -78,6 +79,10 @@ export function Name() {
 
   return (
     <div className="relative">
+      {/* Animated grid background */}
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+        <AnimatedGrid />
+      </div>
       <div
         className={
           isShortCOM
