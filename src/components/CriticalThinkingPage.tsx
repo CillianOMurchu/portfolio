@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { RedVelvetBackground } from "../features/visual-effects/RedVelvetBackground";
 // import { supabase } from "../utils/supabaseClient";
 // import { QuestionCard } from "../figma/Developer Quiz App/src/components/QuestionCard";
 // import { FilterPanel } from "../figma/Developer Quiz App/src/components/FilterPanel";
@@ -47,8 +48,10 @@ const CriticalThinkingPage: React.FC = () => {
   const [isDark, setIsDark] = useState(true);
 
   return (
-    <div>Test</div>
-  )
+    <RedVelvetBackground>
+      <div>Test</div>
+    </RedVelvetBackground>
+  );
 
   //   const [answerResult, setAnswerResult] = useState<{
   //     correct: boolean;

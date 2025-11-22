@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useOrbOrigin } from "./OrbOriginContext";
 import AnimatedGrid from "./AnimatedGrid";
 import { useAuth } from "../hooks/useAuth";
@@ -7,6 +8,7 @@ const hexagonClip =
   "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
 
 export function Name() {
+  const location = useLocation();
   const { session } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -84,6 +86,9 @@ export function Name() {
     }
   }, [isHovered, name, setOrbOrigin]);
 
+  // Only allow hover on welcome or auth screens
+  const allowHover = ["/", "/auth"].includes(location.pathname);
+
   return (
     <div className="relative">
       {/* Animated grid background */}
@@ -96,8 +101,8 @@ export function Name() {
             ? "relative w-fit min-w-[4.5rem] px-2 h-10"
             : "relative w-64 h-20"
         }
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => allowHover && setIsHovered(true)}
+        onMouseLeave={() => allowHover && setIsHovered(false)}
         ref={containerRef}
       >
         <style>{`

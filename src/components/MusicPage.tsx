@@ -1,119 +1,48 @@
-import React, { useState } from "react";
-import { motion, easeOut } from "framer-motion";
 
-const TWITCH_PARENT_DOMAINS = [
-  window.location.hostname,
-  "localhost",
-  "127.0.0.1",
+const spotifyTracks = [
+  {
+    title: "Spotify Track Example",
+    url: "https://open.spotify.com/track/4oVO4fGNRRvEn0CRuFO4qv?si=76ae92f80bc24d2f",
+    embed: "https://open.spotify.com/embed/track/4oVO4fGNRRvEn0CRuFO4qv?utm_source=generator"
+  },
+  // Add more tracks here as needed
 ];
-const twitchChannel = "ichilliano";
-
-// Removed unused EASE constant
-
-// Removed unused fadeUp variant
-function fadeDownCascade(index: number, baseDelay = 0.1, duration = 0.7) {
-  return {
-    initial: { opacity: 0, y: -40 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration,
-        ease: easeOut,
-        delay: baseDelay + index * 0.15,
-      },
-    },
-  };
-}
-
-// Featured video links
-const videoLinks = [
-  {
-    label: "Chill Guitar Jam (YouTube)",
-    url: "https://www.youtube.com/watch?v=5qap5aO4i9A",
-  },
-  {
-    label: "Live Drum Session (Twitch)",
-    url: "https://www.twitch.tv/videos/123456789",
-  },
-  {
-    label: "Piano Improv (YouTube)",
-    url: "https://www.youtube.com/watch?v=DWcJFNfaw9c",
-  },
-];
-// (Removed duplicate videoLinks arrays and stray code)
-
 
 const MusicPage: React.FC = () => {
-  const [show, setShow] = useState(false);
-  React.useEffect(() => {
-    setTimeout(() => setShow(true), 100);
-  }, []);
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900 to-slate-950 flex flex-col items-center justify-center p-0 relative overflow-hidden">
-      <motion.h1
-        variants={fadeDownCascade(0)}
-        initial="initial"
-        animate={show ? "animate" : "initial"}
-        className="text-4xl font-bold text-white mb-4 text-center drop-shadow-lg"
-      >
-        Live Music Stream
-      </motion.h1>
-      <motion.p
-        variants={fadeDownCascade(1)}
-        initial="initial"
-        animate={show ? "animate" : "initial"}
-        className="text-lg text-emerald-200 mb-8 text-center"
-      >
-        Enjoy live music performances and jam sessions from Twitch creators.
-      </motion.p>
-
-      <motion.div
-        variants={fadeDownCascade(2)}
-        initial="initial"
-        animate={show ? "animate" : "initial"}
-        className="w-full max-w-2xl flex justify-center items-center mb-10"
-      >
-        <div className="w-full flex justify-center">
-          <iframe
-            src={`https://player.twitch.tv/?channel=${twitchChannel}&parent=${TWITCH_PARENT_DOMAINS.join("&parent=")}`}
-            height={480}
-            width="100%"
-            allowFullScreen
-            frameBorder="0"
-            title={`Twitch Stream - ${twitchChannel}`}
-            className="rounded-xl shadow-emerald-400/30 shadow-lg border-2 border-emerald-500"
-            style={{ minHeight: 320, background: "#18181b" }}
-          />
-        </div>
-      </motion.div>
-
-      <motion.div
-        variants={fadeDownCascade(3)}
-        initial="initial"
-        animate={show ? "animate" : "initial"}
-        className="w-full max-w-xl flex flex-col items-center gap-4 pb-12"
-      >
-        <h2 className="text-xl font-semibold text-emerald-300 mb-2">Featured Videos</h2>
-        {videoLinks.map((vid: { label: string; url: string }, i: number) => (
-          <motion.a
-            key={vid.url}
-            href={vid.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full text-center py-3 px-6 rounded-lg bg-emerald-900/80 hover:bg-emerald-700 text-emerald-100 font-medium shadow transition-all duration-300"
-            whileHover={{ scale: 1.05, boxShadow: "0 0 24px #10b981" }}
-            variants={fadeDownCascade(4 + i)}
-            initial="initial"
-            animate={show ? "animate" : "initial"}
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-green-900 to-slate-950 flex flex-col items-center justify-center p-4">
+      <h1 className="text-4xl font-bold text-green-300 drop-shadow-lg mb-8 border-b-4 border-green-500 pb-2 w-full text-center shadow-green-500/40 shadow">
+        Music
+      </h1>
+      <div className="w-full max-w-xl flex flex-col gap-8 items-center">
+        {spotifyTracks.map((track, idx) => (
+          <div
+            key={track.url}
+            className="w-full bg-green-950/80 border-4 border-green-500 rounded-xl shadow-lg shadow-green-700/40 p-4 flex flex-col items-center hover:shadow-green-400/60 transition-all duration-300"
+            style={{ boxShadow: "0 0 32px #22c55e, 0 0 8px #166534 inset" }}
           >
-            {vid.label}
-          </motion.a>
+            <iframe
+              src={track.embed}
+              width="100%"
+              height="80"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+              loading="lazy"
+              className="rounded-lg border-2 border-green-400 shadow-green-400/30 shadow"
+              title={track.title}
+            />
+            <a
+              href={track.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 text-green-200 font-semibold underline hover:text-green-400 transition"
+            >
+              Listen on Spotify
+            </a>
+          </div>
         ))}
-      </motion.div>
-    </main>
+      </div>
+    </div>
   );
-};
+}
 
 export default MusicPage;
