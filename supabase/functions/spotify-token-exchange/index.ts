@@ -60,4 +60,101 @@ serve(async (req: Request) => {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
+  });
+  
+  // Updated Edge Function to add CORS support and handle OPTIONS preflight requests
+  serve(async (request: Request) => {
+    // Handle CORS preflight
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+      });
+    }
+
+    if (request.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    let body: TokenRequest;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    const { code, redirect_uri } = body;
+    if (!code || !redirect_uri) {
+      return new Response(JSON.stringify({ error: "Missing code or redirect_uri" }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    const client_id = Deno.env.get("SPOTIFY_CLIENT_ID");
+    const client_secret = Deno.env.get("SPOTIFY_CLIENT_SECRET");
+    if (!client_id || !client_secret) {
+      return new Response(JSON.stringify({ error: "Missing Spotify credentials" }), {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    // Exchange code for token
+    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization":
+          "Basic " + btoa(`${client_id}:${client_secret}`),
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri,
+      }),
+    });
+
+    const tokenData = await tokenRes.json();
+    if (!tokenRes.ok) {
+      return new Response(JSON.stringify({ error: tokenData.error || "Spotify token error" }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    // Success: return token data
+    return new Response(JSON.stringify(tokenData), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
 });

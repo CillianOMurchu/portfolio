@@ -1,0 +1,2 @@
+export const SUPABASE_FUNCTION_URL = import.meta.env.VITE_SUPABASE_FUNCTION_URL;
+export const SUPABASE_CLIENT_ID_URL = import.meta.env.VITE_SUPABASE_CLIENT_ID_URL;

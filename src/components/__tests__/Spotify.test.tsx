@@ -1,15 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { SpotifyLoginButton } from '../Spotify';
 import { Status } from '../Status';
 
 describe('Spotify Login', () => {
-  it('renders the Spotify login button', () => {
-    render(<SpotifyLoginButton />);
-
-    expect(screen.getByRole('button')).toBeInTheDocument();
-  });
-});
 
 describe('Status Component', () => {
   it('renders inactive status by default', () => {

@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import type { Session } from "@supabase/supabase-js";
 import AuthScreen from "./AuthScreen";
 const WelcomeScreen = React.lazy(() => import("./WelcomeScreen"));
-const MusicPage = React.lazy(() => import("../MusicPage"));
 const CriticalThinkingPage = React.lazy(
   () => import("../CriticalThinkingPage")
 );
 const StreamingPage = React.lazy(() => import("../StreamingPage"));
 import LoadingScreen from "./LoadingScreen";
+import MusicPage from "../../features/music/MusicPage";
 
 interface AppRoutesProps {
   session: Session | null;
