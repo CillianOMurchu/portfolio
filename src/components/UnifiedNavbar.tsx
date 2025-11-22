@@ -1,15 +1,11 @@
-// NeonIcon: applies green neon effect to any icon/element
+// Universal neon glow effect
+const NEON_GLOW_CLASS =
+  "text-emerald-400 drop-shadow-[0_0_8px_#10b981] neon-glow";
 const NeonIcon: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className,
 }) => (
-  <span
-    className={[
-      "text-emerald-400 drop-shadow-[0_0_6px_#10b981]",
-      className || "",
-    ].join(" ")}
-    style={{ filter: "drop-shadow(0 0 8px #10b981)" }}
-  >
+  <span className={[NEON_GLOW_CLASS, className || ""].join(" ")}>
     {children}
   </span>
 );
@@ -56,11 +52,16 @@ const navItems = [
       <img
         src={apexLegendsIcon}
         alt="Apex Legends"
-        style={{ width: 24, height: 24, display: "inline-block", verticalAlign: "middle" }}
+        style={{
+          width: 24,
+          height: 24,
+          display: "inline-block",
+          verticalAlign: "middle",
+        }}
       />
     ),
     url: "/streaming",
-  }
+  },
 ];
 
 interface NavItemsProps {
@@ -112,7 +113,11 @@ export const UnifiedNavbar: React.FC = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.75, 0.5, 1.25] }}
+        transition={{
+          duration: 0.7,
+          delay: 0.1,
+          ease: [0.25, 0.75, 0.5, 1.25],
+        }}
         className="relative flex items-center w-full py-3 px-5 justify-between min-h-150px"
       >
         <div className="flex items-center gap-6 border-2relative name-container absoloute bottom-0">
@@ -129,7 +134,7 @@ export const UnifiedNavbar: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="group relative pointer-events-auto text-emerald-400 text-xl font-semibold tracking-wide drop-shadow-[0_0_6px_#10b981] capitalize sm:px-4 sm:py-2 px-8 py-3 outline-none bg-transparent mt-0 grid align-middle"
+              className={`group relative pointer-events-auto text-xl font-semibold tracking-wide capitalize sm:px-4 sm:py-2 px-8 py-3 outline-none bg-transparent mt-0 grid align-middle ${NEON_GLOW_CLASS}`}
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <span className="relative z-10 text-sm sm:text-xl">
@@ -145,7 +150,7 @@ export const UnifiedNavbar: React.FC = () => {
               </span>
               {/* Animated border and arrow */}
               <span
-                className="pointer-events-none absolute inset-0 rounded-xl border-2 border-emerald-400 opacity-0 group-hover:opacity-100 group-hover:shadow-[0_0_16px_#10b981]"
+                className={`pointer-events-none absolute inset-0 rounded-xl border-2 border-emerald-400 opacity-0 group-hover:opacity-100  ${NEON_GLOW_CLASS}`}
                 style={{
                   zIndex: 1,
                   padding: "0.25rem",
@@ -154,7 +159,7 @@ export const UnifiedNavbar: React.FC = () => {
               ></span>
               <span
                 className="pointer-events-none absolute left-[-2.5rem] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100"
-                style={{ 
+                style={{
                   zIndex: 2,
                   transition: "all 0.3s cubic-bezier(.25,.75,.5,1.25)",
                 }}
@@ -165,12 +170,12 @@ export const UnifiedNavbar: React.FC = () => {
                   viewBox="0 0 28 28"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  className="text-emerald-400"
+                  className={NEON_GLOW_CLASS}
                 >
                   <polygon
                     points="18,6 8,14 18,22"
                     fill="#10b981"
-                    className="drop-shadow-[0_0_6px_#10b981]"
+                    className={NEON_GLOW_CLASS}
                   />
                 </svg>
               </span>
@@ -189,20 +194,17 @@ export const UnifiedNavbar: React.FC = () => {
                 transition={{ duration: 0.3, ease: [0.25, 0.75, 0.5, 1.25] }}
               >
                 <span
-                  className="text-emerald-400 font-mono text-lg font-bold whitespace-nowrap"
-                  style={{
-                    textShadow: `0 0 5px rgba(16,185,129,0.8),0 0 10px rgba(16,185,129,0.6),0 0 15px rgba(16,185,129,0.4),0 0 20px rgba(16,185,129,0.3)`,
-                  }}
+                  className={`font-mono text-lg font-bold whitespace-nowrap ${NEON_GLOW_CLASS}`}
                 >
                   LOGOUT
                 </span>
               </motion.div>
-              
-              <Button 
-                onClick={onLogout} 
+
+              <Button
+                onClick={onLogout}
                 onMouseEnter={() => setIsLogoutHovered(true)}
                 onMouseLeave={() => setIsLogoutHovered(false)}
-                value="Sign Out" 
+                value="Sign Out"
               />
             </div>
           ) : (

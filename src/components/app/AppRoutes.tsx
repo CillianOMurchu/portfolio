@@ -5,7 +5,10 @@ import type { Session } from "@supabase/supabase-js";
 import AuthScreen from "./AuthScreen";
 const WelcomeScreen = React.lazy(() => import("./WelcomeScreen"));
 const MusicPage = React.lazy(() => import("../MusicPage"));
-import CriticalThinkingPage from "../CriticalThinkingPage";
+const CriticalThinkingPage = React.lazy(
+  () => import("../CriticalThinkingPage")
+);
+const StreamingPage = React.lazy(() => import("../StreamingPage"));
 import LoadingScreen from "./LoadingScreen";
 
 interface AppRoutesProps {
@@ -16,7 +19,11 @@ interface AppRoutesProps {
 
 const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
   // Show auth screen if not signed in, except for loading-test
-  if (!session && signInState === "signin" && window.location.pathname !== "/loading-test") {
+  if (
+    !session &&
+    signInState === "signin" &&
+    window.location.pathname !== "/loading-test"
+  ) {
     return (
       <motion.div
         key="auth"
@@ -106,6 +113,22 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
             className="relative z-10"
           >
             <CriticalThinkingPage />
+          </motion.div>
+        }
+      />
+
+      <Route
+        path="/streaming"
+        element={
+          <motion.div
+            key="streaming"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
+            className="relative z-10"
+          >
+            <StreamingPage />
           </motion.div>
         }
       />

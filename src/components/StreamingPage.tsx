@@ -43,7 +43,7 @@ const videoLinks = [
 ];
 // (Removed duplicate videoLinks arrays and stray code)
 
-const MusicPage: React.FC = () => {
+const StreamingPage: React.FC = () => {
   const [show, setShow] = useState(false);
   React.useEffect(() => {
     setTimeout(() => setShow(true), 100);
@@ -117,4 +117,4 @@ const MusicPage: React.FC = () => {
   );
 };
 
-export default MusicPage;
+export default StreamingPage;
