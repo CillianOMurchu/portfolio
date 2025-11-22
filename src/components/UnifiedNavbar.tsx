@@ -27,9 +27,11 @@ import { usePageNavigation } from "../hooks/usePageNavigation";
 
 export interface NavItem {
   id: string;
-  icon: string;
+  icon: string | React.ReactElement;
   url: string;
 }
+
+import apexLegendsIcon from "../assets/apex-legends-icon.svg"; // Adjust path as needed
 
 const navItems = [
   {
@@ -47,6 +49,18 @@ const navItems = [
     icon: "\ud83c\udfb5",
     url: "/music",
   },
+  // add one for streaming twitch apex legends
+  {
+    id: "streaming",
+    icon: (
+      <img
+        src={apexLegendsIcon}
+        alt="Apex Legends"
+        style={{ width: 24, height: 24, display: "inline-block", verticalAlign: "middle" }}
+      />
+    ),
+    url: "/streaming",
+  }
 ];
 
 interface NavItemsProps {

@@ -43,7 +43,6 @@ const videoLinks = [
 ];
 // (Removed duplicate videoLinks arrays and stray code)
 
-
 const MusicPage: React.FC = () => {
   const [show, setShow] = useState(false);
   React.useEffect(() => {
@@ -95,7 +94,9 @@ const MusicPage: React.FC = () => {
         animate={show ? "animate" : "initial"}
         className="w-full max-w-xl flex flex-col items-center gap-4 pb-12"
       >
-        <h2 className="text-xl font-semibold text-emerald-300 mb-2">Featured Videos</h2>
+        <h2 className="text-xl font-semibold text-emerald-300 mb-2">
+          Featured Videos
+        </h2>
         {videoLinks.map((vid: { label: string; url: string }, i: number) => (
           <motion.a
             key={vid.url}

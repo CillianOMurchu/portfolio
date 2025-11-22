@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
+import { useOrbOrigin } from "./OrbOriginContext";
 import AnimatedGrid from "./AnimatedGrid";
 import { useAuth } from "../hooks/useAuth";
 
@@ -57,25 +58,31 @@ export function Name() {
     }
   }, [showText]);
 
-  useEffect(() => {
+  const { setOrbOrigin } = useOrbOrigin();
+  useLayoutEffect(() => {
+    if (oCharRef.current) {
+      const oRect = oCharRef.current.getBoundingClientRect();
+      const center = {
+        x: oRect.left + oRect.width / 2,
+        y: oRect.top + oRect.height / 2,
+      };
+      setOrbOrigin(center);
+    }
     if (isHovered && oCharRef.current && containerRef.current) {
       const oRect = oCharRef.current.getBoundingClientRect();
       const containerRect = containerRef.current.getBoundingClientRect();
-      
       // Calculate the center of the Ó character
       const oCenterX = oRect.left + oRect.width / 2;
       const oCenterY = oRect.top + oRect.height / 2;
-      
       // Convert to percentage relative to container
       const xPercent = ((oCenterX - containerRect.left) / containerRect.width) * 100;
       const yPercent = ((oCenterY - containerRect.top) / containerRect.height) * 100;
-      
       setOrbStart({
         x: xPercent,
         y: yPercent,
       });
     }
-  }, [isHovered, name]);
+  }, [isHovered, name, setOrbOrigin]);
 
   return (
     <div className="relative">
