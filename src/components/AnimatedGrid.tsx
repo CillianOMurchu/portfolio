@@ -12,6 +12,8 @@ export default function AnimatedGrid() {
     delay: number;
     duration: number;
     isVertical: boolean;
+    exitDuration: number;
+    tailDuration: number;
   };
   const [lines, setLines] = useState<Line[]>([]);
 
@@ -32,6 +34,8 @@ export default function AnimatedGrid() {
     for (let x = 0; x <= width; x += gridSpacing) {
       const delay = 0;
       const duration = 0.7 + Math.random() * 0.7;
+      const exitDuration = 1.5 + Math.random() * 1.5;
+      const tailDuration = 1.2 + Math.random() * 1.2;
       generated.push({
         x1: x,
         y1: 0,
@@ -40,12 +44,16 @@ export default function AnimatedGrid() {
         delay,
         duration,
         isVertical: true,
+        exitDuration,
+        tailDuration,
       });
     }
     // Horizontal lines
     for (let y = 0; y <= height; y += gridSpacing) {
       const delay = 0;
       const duration = 0.7 + Math.random() * 0.7;
+      const exitDuration = 1.5 + Math.random() * 1.5;
+      const tailDuration = 1.2 + Math.random() * 1.2;
       generated.push({
         x1: 0,
         y1: y,
@@ -54,6 +62,8 @@ export default function AnimatedGrid() {
         delay,
         duration,
         isVertical: false,
+        exitDuration,
+        tailDuration,
       });
     }
     setLines(generated);
@@ -68,20 +78,19 @@ export default function AnimatedGrid() {
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         preserveAspectRatio="none"
       >
-        {lines.map((line, i) => {
-          // Animate line growth for grid: vertical grows y1->y2, horizontal grows x1->x2
-          return (
-            <g key={i}>
-              <line
-                x1={line.x1}
-                y1={line.y1}
-                x2={line.isVertical ? line.x1 : line.x2}
-                y2={line.isVertical ? line.y1 : line.y2}
-                stroke="#10b981"
-                strokeWidth="1.5"
-                opacity="0.7"
-              >
-                {line.isVertical ? (
+        {lines.map((line, i) => (
+          <g key={i}>
+            <line
+              x1={line.x1}
+              y1={line.y1}
+              x2={line.isVertical ? line.x1 : line.x2}
+              y2={line.isVertical ? line.y1 : line.y2}
+              stroke="#10b981"
+              strokeWidth="1.5"
+              opacity="0.7"
+            >
+              {line.isVertical ? (
+                <>
                   <animate
                     attributeName="y2"
                     from={line.y1}
@@ -92,7 +101,31 @@ export default function AnimatedGrid() {
                     keySplines="0.42 0 0.58 1"
                     calcMode="spline"
                   />
-                ) : (
+                  {/* Animate line out of frame */}
+                  <animate
+                    attributeName="y1"
+                    from={line.y1}
+                    to={-dimensions.height}
+                    dur={`${line.exitDuration}s`}
+                    begin={`${line.duration + 1}s`}
+                    fill="freeze"
+                    keySplines="0.42 0 0.58 1"
+                    calcMode="spline"
+                  />
+                  {/* Tail away: shrink y2 off screen */}
+                  <animate
+                    attributeName="y2"
+                    from={line.y2}
+                    to={dimensions.height * 2}
+                    dur={`${line.tailDuration}s`}
+                    begin={`${line.duration + line.exitDuration + 1}s`}
+                    fill="freeze"
+                    keySplines="0.42 0 0.58 1"
+                    calcMode="spline"
+                  />
+                </>
+              ) : (
+                <>
                   <animate
                     attributeName="x2"
                     from={line.x1}
@@ -103,17 +136,41 @@ export default function AnimatedGrid() {
                     keySplines="0.42 0 0.58 1"
                     calcMode="spline"
                   />
-                )}
-              </line>
-              {/* Green orb at the growing end */}
-              <circle
-                r={4.5}
-                fill="url(#orbGradient)"
-                opacity="0.85"
-                cx={line.isVertical ? line.x1 : line.x2}
-                cy={line.isVertical ? line.y1 : line.y2}
-              >
-                {line.isVertical ? (
+                  {/* Animate line out of frame */}
+                  <animate
+                    attributeName="x1"
+                    from={line.x1}
+                    to={-dimensions.width}
+                    dur={`${line.exitDuration}s`}
+                    begin={`${line.duration + 1}s`}
+                    fill="freeze"
+                    keySplines="0.42 0 0.58 1"
+                    calcMode="spline"
+                  />
+                  {/* Tail away: shrink x2 off screen */}
+                  <animate
+                    attributeName="x2"
+                    from={line.x2}
+                    to={dimensions.width * 2}
+                    dur={`${line.tailDuration}s`}
+                    begin={`${line.duration + line.exitDuration + 1}s`}
+                    fill="freeze"
+                    keySplines="0.42 0 0.58 1"
+                    calcMode="spline"
+                  />
+                </>
+              )}
+            </line>
+            {/* Green orb at the growing end, animate out of frame and fade */}
+            <circle
+              r={4.5}
+              fill="url(#orbGradient)"
+              opacity="0.85"
+              cx={line.isVertical ? line.x1 : line.x2}
+              cy={line.isVertical ? line.y1 : line.y2}
+            >
+              {line.isVertical ? (
+                <>
                   <animate
                     attributeName="cy"
                     from={line.y1}
@@ -124,7 +181,19 @@ export default function AnimatedGrid() {
                     keySplines="0.42 0 0.58 1"
                     calcMode="spline"
                   />
-                ) : (
+                  <animate
+                    attributeName="cy"
+                    from={line.y2}
+                    to={dimensions.height * 2}
+                    dur={`${line.tailDuration}s`}
+                    begin={`${line.duration + line.exitDuration + 1}s`}
+                    fill="freeze"
+                    keySplines="0.42 0 0.58 1"
+                    calcMode="spline"
+                  />
+                </>
+              ) : (
+                <>
                   <animate
                     attributeName="cx"
                     from={line.x1}
@@ -135,19 +204,37 @@ export default function AnimatedGrid() {
                     keySplines="0.42 0 0.58 1"
                     calcMode="spline"
                   />
-                )}
-                <animate
-                  attributeName="opacity"
-                  from="0"
-                  to="0.85"
-                  dur="0.2s"
-                  begin={`${line.delay}s`}
-                  fill="freeze"
-                />
-              </circle>
-            </g>
-          );
-        })}
+                  <animate
+                    attributeName="cx"
+                    from={line.x2}
+                    to={dimensions.width * 2}
+                    dur={`${line.tailDuration}s`}
+                    begin={`${line.duration + line.exitDuration + 1}s`}
+                    fill="freeze"
+                    keySplines="0.42 0 0.58 1"
+                    calcMode="spline"
+                  />
+                </>
+              )}
+              <animate
+                attributeName="opacity"
+                from="0"
+                to="0.85"
+                dur="0.2s"
+                begin={`${line.delay}s`}
+                fill="freeze"
+              />
+              <animate
+                attributeName="opacity"
+                from="0.85"
+                to="0"
+                dur="0.3s"
+                begin={`${line.duration + line.exitDuration + line.tailDuration + 1.2}s`}
+                fill="freeze"
+              />
+            </circle>
+          </g>
+        ))}
         {/* Orb gradient definition */}
         <defs>
           <radialGradient id="orbGradient" cx="50%" cy="50%" r="50%">

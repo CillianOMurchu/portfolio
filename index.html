@@ -5,16 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfolio | Creative Developer</title>
-    
+
     <!-- DNS prefetch for external resources -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//apis.google.com">
-    
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//apis.google.com" />
+
     <!-- Critical CSS for instant loading -->
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { 
-        font-family: system-ui, -apple-system, sans-serif; 
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
         background-color: #f9fafb;
         color: #1f2937;
         line-height: 1.6;
@@ -22,35 +29,85 @@
       .instant-loader {
         position: fixed;
         inset: 0;
-        background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+        background: linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #581c87 50%,
+          #0f172a 100%
+        );
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 9999;
       }
-      .text-8xl { font-size: 6rem; line-height: 1; }
-      .font-bold { font-weight: 700; }
-      .text-center { text-align: center; }
-      .mb-1 { margin-bottom: 0.25rem; }
-      .mb-2 { margin-bottom: 0.5rem; }
-      .mb-4 { margin-bottom: 1rem; }
-      .mb-6 { margin-bottom: 1.5rem; }
-      .mb-8 { margin-bottom: 2rem; }
-      .p-8 { padding: 2rem; }
-      .bg-white { background-color: white; }
-      .bg-gray-50 { background-color: #f9fafb; }
-      .text-gray-600 { color: #4b5563; }
-      .text-gray-900 { color: #111827; }
-      .rounded-lg { border-radius: 0.5rem; }
-      .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-      .min-h-screen { min-height: 100vh; }
-      .flex { display: flex; }
-      .flex-col { flex-direction: column; }
-      .items-center { align-items: center; }
-      .justify-center { justify-content: center; }
-      .max-w-md { max-width: 28rem; }
-      .w-full { width: 100%; }
-      
+      .text-8xl {
+        font-size: 6rem;
+        line-height: 1;
+      }
+      .font-bold {
+        font-weight: 700;
+      }
+      .text-center {
+        text-align: center;
+      }
+      .mb-1 {
+        margin-bottom: 0.25rem;
+      }
+      .mb-2 {
+        margin-bottom: 0.5rem;
+      }
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+      .mb-6 {
+        margin-bottom: 1.5rem;
+      }
+      .mb-8 {
+        margin-bottom: 2rem;
+      }
+      .p-8 {
+        padding: 2rem;
+      }
+      .bg-white {
+        background-color: white;
+      }
+      .bg-gray-50 {
+        background-color: #f9fafb;
+      }
+      .text-gray-600 {
+        color: #4b5563;
+      }
+      .text-gray-900 {
+        color: #111827;
+      }
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+      .shadow-md {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .min-h-screen {
+        min-height: 100vh;
+      }
+      .flex {
+        display: flex;
+      }
+      .flex-col {
+        flex-direction: column;
+      }
+      .items-center {
+        align-items: center;
+      }
+      .justify-center {
+        justify-content: center;
+      }
+      .max-w-md {
+        max-width: 28rem;
+      }
+      .w-full {
+        width: 100%;
+      }
+
       /* Ensure LCP text renders immediately */
       .lcp-text {
         font-size: 6rem;
@@ -62,17 +119,20 @@
         contain: layout style paint;
       }
     </style>
-    
+
     <!-- Preload critical resources only -->
     <link rel="preload" href="/src/index.css" as="style" />
-    
+
     <!-- DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-    
+
     <!-- Performance optimizations -->
     <meta name="theme-color" content="#3B82F6" />
-    <meta name="description" content="Creative developer portfolio showcasing 3D animations, interactive effects, and modern web development skills." />
+    <meta
+      name="description"
+      content="Creative developer portfolio showcasing 3D animations, interactive effects, and modern web development skills."
+    />
   </head>
   <body>
     <div id="root"></div>

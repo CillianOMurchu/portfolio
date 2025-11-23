@@ -7,6 +7,7 @@ import ItemSphere from "../ItemSphere";
 import HeroTitle from "../HeroTitle";
 import { motion } from "framer-motion";
 import { Name } from "../Name";
+import AnimatedGrid from "../AnimatedGrid";
 
 const AuthScreen: React.FC = () => {
   const handleAuthClick = () => {
@@ -29,7 +30,7 @@ const AuthScreen: React.FC = () => {
         <HeroTitle />
       </div>
 
-      <div className="cillywilly absolute ml-2">
+      <div className=" absolute ml-2">
         <Name />
       </div>
 
@@ -58,7 +59,11 @@ const AuthScreen: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
+              transition={{
+                duration: 1,
+                delay: 0.5,
+                ease: [0.25, 0.75, 0.5, 1.25],
+              }}
               onClick={handleAuthClick}
               className="animated-button"
             >
@@ -110,7 +115,11 @@ const AuthScreen: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
+              transition={{
+                duration: 1,
+                delay: 0.5,
+                ease: [0.25, 0.75, 0.5, 1.25],
+              }}
               onClick={handleAuthClick}
               className="animated-button"
             >
