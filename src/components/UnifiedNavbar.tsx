@@ -1,248 +1,108 @@
-// Universal neon glow effect
-const NEON_GLOW_CLASS =
-  "text-emerald-400 drop-shadow-[0_0_8px_#10b981] neon-glow";
-const NeonIcon: React.FC<{ children: React.ReactNode; className?: string }> = ({
-  children,
-  className,
-}) => (
-  <span className={[NEON_GLOW_CLASS, className || ""].join(" ")}>
-    {children}
-  </span>
-);
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "./Button";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "../hooks/useAuth";
-import { useAuth } from "../hooks/useAuth";
+import "../styles/neon.css";
+import { FiHome, FiUser } from "react-icons/fi";
 import { Name } from "./Name";
-import { AuthContext } from "../context/AuthContext";
-import { usePageNavigation } from "../hooks/usePageNavigation";
 
-export interface NavItem {
-  id: string;
-  icon: string | React.ReactElement;
-  url: string;
-}
-
-import apexLegendsIcon from "../assets/apex-legends-icon.svg"; // Adjust path as needed
-
-const navItems = [
-  {
-    id: "home",
-    icon: "🏠",
-    url: "/",
-  },
-  {
-    id: "critical-thinking",
-    icon: "🧠",
-    url: "/critical-thinking",
-  },
-  {
-    id: "music",
-    icon: "\ud83c\udfb5",
-    url: "/music",
-  },
-  // add one for streaming twitch apex legends
-  {
-    id: "streaming",
-    icon: (
-      <img
-        src={apexLegendsIcon}
-        alt="Apex Legends"
-        style={{
-          width: 24,
-          height: 24,
-          display: "inline-block",
-          verticalAlign: "middle",
-        }}
-      />
-    ),
-    url: "/streaming",
-  },
-];
-
-interface NavItemsProps {
-  navItems: NavItem[];
-  currentPage: string;
-  onNavigate: (url: string) => void;
-}
-
-const NavItems: React.FC<NavItemsProps> = ({
-  navItems,
-  currentPage,
-  onNavigate,
+const BurgerMenu: React.FC<{ open: boolean; onClick: () => void }> = ({
+  open,
+  onClick,
 }) => (
-  <>
-    {navItems
-      .filter((item) => item.url !== currentPage)
-      .map((item) => (
-        <motion.div
-          onClick={() => onNavigate(item.url)}
-          key={item.id}
-          className="cursor-pointer"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <NeonIcon className="text-3xl">{item.icon}</NeonIcon>
-        </motion.div>
-      ))}
-  </>
+  <div
+    style={{
+      right: 0,
+      top: 0,
+      height: "100%",
+      display: "flex",
+      alignItems: "center",
+      zIndex: 100,
+    }}
+  >
+    <button
+      className="relative w-10 h-10 flex items-center justify-center focus:outline-none"
+      aria-label={open ? "Close menu" : "Open menu"}
+      onClick={onClick}
+      style={{ background: "transparent" }}
+    >
+      <motion.span
+        className="absolute w-7 h-0.5 bg-emerald-400 neon"
+        initial={false}
+        animate={open ? { rotate: 45, y: 0 } : { rotate: 0, y: -8 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      />
+      <motion.span
+        className="absolute w-7 h-0.5 bg-emerald-400 neon"
+        initial={false}
+        animate={open ? { opacity: 0 } : { opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      />
+      <motion.span
+        className="absolute w-7 h-0.5 bg-emerald-400 neon"
+        initial={false}
+        animate={open ? { rotate: -45, y: 0 } : { rotate: 0, y: 8 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      />
+    </button>
+  </div>
 );
 
 export const UnifiedNavbar: React.FC = () => {
-  const auth = useContext(AuthContext);
-  const { onLogout } = auth!;
-  const navigate = useNavigate();
-  const { currentPage } = usePageNavigation();
-  const { session } = useAuth();
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [isLogoutHovered, setIsLogoutHovered] = React.useState(false);
-
-  React.useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <>
+    <nav className="fixed top-0 left-0 w-full h-16 flex items-center justify-between px-4 bg-black/80 backdrop-blur z-50">
+      <Name />
+      {/* Hamburger menu icon top right, always visible and clickable */}
+      <BurgerMenu
+        open={menuOpen}
+        onClick={() => setMenuOpen((open) => !open)}
+      />
+      {/* Side panel for mobile menu */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{
-          duration: 0.7,
-          delay: 0.1,
-          ease: [0.25, 0.75, 0.5, 1.25],
+        className="fixed right-0 top-16 flex flex-col bg-black/90 backdrop-blur-lg shadow-lg z-50"
+        initial={{ x: "100%" }}
+        animate={menuOpen ? { x: 0 } : { x: "100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        style={{
+          height: "calc(100vh - 64px)",
+          minWidth: "240px",
+          width: "min(50vw, 400px)",
+          top: "64px",
+          right: 0,
+          borderLeft: "2px solid #10b981",
+          borderTop: "none",
+          borderBottom: "none",
+          borderRight: "none",
+          boxSizing: "border-box",
+          pointerEvents: menuOpen ? "auto" : "none",
         }}
-        className="relative flex items-center w-full py-3 px-5 justify-between min-h-150px"
       >
-        <div className="flex items-center gap-6 border-2relative name-container absoloute bottom-0">
-          <Name />
-        </div>
-        <motion.nav className="absolute left-1/2 transform -translate-x-1/2 flex justify-center gap-4 z-20">
-          {currentPage === "/" ? (
-            <NavItems
-              navItems={navItems}
-              currentPage={currentPage}
-              onNavigate={navigate}
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className={`group relative pointer-events-auto text-xl font-semibold tracking-wide capitalize sm:px-4 sm:py-2 px-8 py-3 outline-none bg-transparent mt-0 grid align-middle ${NEON_GLOW_CLASS}`}
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
-              <span className="relative z-10 text-sm sm:text-xl">
-                {(() => {
-                  if (currentPage === "/music") return "Music";
-                  if (currentPage === "/critical-thinking")
-                    return "Critical Thinking";
-                  return currentPage
-                    .replace(/^\//, "")
-                    .replace(/-/g, " ")
-                    .replace(/\b\w/g, (c) => c.toUpperCase());
-                })()}
-              </span>
-              {/* Animated border and arrow */}
-              <span
-                className={`pointer-events-none absolute inset-0 rounded-xl border-2 border-emerald-400 opacity-0 group-hover:opacity-100  ${NEON_GLOW_CLASS}`}
-                style={{
-                  zIndex: 1,
-                  padding: "0.25rem",
-                  transition: "all 0.3s cubic-bezier(.25,.75,.5,1.25)",
-                }}
-              ></span>
-              <span
-                className="pointer-events-none absolute left-[-2.5rem] top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100"
-                style={{
-                  zIndex: 2,
-                  transition: "all 0.3s cubic-bezier(.25,.75,.5,1.25)",
-                }}
-              >
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 28 28"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={NEON_GLOW_CLASS}
-                >
-                  <polygon
-                    points="18,6 8,14 18,22"
-                    fill="#10b981"
-                    className={NEON_GLOW_CLASS}
-                  />
-                </svg>
-              </span>
-            </button>
-          )}
-        </motion.nav>
-        <div className="flex items-center ml-auto">
-          {/* Show Sign Out if signed in, else show Google Auth on desktop */}
-          {session ? (
-            <div className="relative flex items-center">
-              {/* Animated LOGOUT letters */}
-              <motion.div
-                className="flex items-center mr-2 overflow-hidden"
-                initial={{ width: 0 }}
-                animate={isLogoutHovered ? { width: "auto" } : { width: 0 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.75, 0.5, 1.25] }}
-              >
-                <span
-                  className={`font-mono text-lg font-bold whitespace-nowrap ${NEON_GLOW_CLASS}`}
-                >
-                  LOGOUT
-                </span>
-              </motion.div>
-
-              <Button
-                onClick={onLogout}
-                onMouseEnter={() => setIsLogoutHovered(true)}
-                onMouseLeave={() => setIsLogoutHovered(false)}
-                value="Sign Out"
-              />
-            </div>
-          ) : (
-            !isMobile && (
-              <Auth
-                onlyThirdPartyProviders
-                supabaseClient={supabase}
-                appearance={{
-                  theme: ThemeSupa,
-                  style: {
-                    button: {
-                      borderRadius: "0.75rem",
-                      fontSize: "0.875rem",
-                      fontWeight: "500",
-                      padding: "0.75rem 1rem",
-                      background: "transparent",
-                      border: "1px solid #ccc",
-                      cursor: "pointer",
-                      transition: "all 0.2s cubic-bezier(.25,.75,.5,1.25)",
-                      boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                    },
-                    container: {
-                      display: "flex",
-                      flexDirection: "column",
-                    },
-                  },
-                }}
-                theme="light"
-                providers={["google"]}
-                view="sign_in"
-                showLinks={false}
-                redirectTo={`${window.location.origin}/`}
-              />
-            )
-          )}
-        </div>
+        <nav className="flex flex-col gap-6 mt-8">
+          <a
+            href="/"
+            className="flex items-center gap-3 text-emerald-400 neon text-lg font-bold px-4 py-2 rounded hover:bg-emerald-900/30 transition-colors"
+          >
+            <FiHome className="w-5 h-5" />
+            Home
+          </a>
+          <a
+            href="/about"
+            className="flex items-center gap-3 text-emerald-400 neon text-lg font-bold px-4 py-2 rounded hover:bg-emerald-900/30 transition-colors"
+          >
+            <FiUser className="w-5 h-5" />
+            About
+          </a>
+          {/* Add more menu links here */}
+        </nav>
       </motion.div>
-    </>
+      {menuOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40"
+          onClick={() => setMenuOpen(false)}
+          style={{ backdropFilter: "blur(2px)", zIndex: 99 }}
+        />
+      )}
+    </nav>
   );
 };
 

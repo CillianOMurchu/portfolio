@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -33,9 +34,12 @@ export function useAuth(): UseAuthReturn {
   };
 
   // Local version for the hook
+  const navigate = useNavigate();
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setSignInState("signin");
+    navigate("/");
   };
 
   useEffect(() => {

@@ -1,6 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
-// Velvet rope SVG component
-
+import React, { useRef, useEffect } from "react";
 // Vite: Import all SVGs from the programming-icons folder
 const svgModules = import.meta.glob("../assets/programming-icons/*.svg", {
   eager: true,
@@ -28,31 +26,21 @@ function generateFibonacciSphere(count: number) {
   return positions;
 }
 
-interface Props {
-  iconSize?: number;
-}
-
-export const ItemSphere: React.FC<Props> = (props) => {
-  const [collapsed, setCollapsed] = useState(false);
+export const ItemSphere: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const sizeRef = useRef(100); // Will be set by ResizeObserver
-  const iconSize = props.iconSize || 40;
+  const sizeRef = useRef(100);
+  const iconSize = 40;
   const positions = generateFibonacciSphere(iconNames.length);
-  // Preload all SVG images as HTMLImageElement
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
-
-  // Cascade fade-in timing
-  const fadeInDuration = 400; // ms for each icon to fade in
-  const fadeInStagger = 60; // ms delay between each icon
+  const fadeInDuration = 400;
+  const fadeInStagger = 60;
   const mountTimeRef = useRef<number>(0);
 
   useEffect(() => {
-    // Only load once
     if (Object.keys(imagesRef.current).length === iconNames.length) return;
     iconNames.forEach((name) => {
       const img = new window.Image();
-      // Vite import.meta.glob returns a URL string
       const svgPath = Object.keys(svgModules).find((p) =>
         p.endsWith(`/${name}.svg`)
       );
@@ -63,27 +51,12 @@ export const ItemSphere: React.FC<Props> = (props) => {
     });
   }, []);
 
-  // Rotation state
-  const state = useRef({
-    rx: Math.PI * 0.14, // X axis rotation
-    rz: 0, // Y axis rotation
-    vx: 0.01, // X velocity
-    vy: 0.015, // Y velocity
-    dragging: false,
-    lastX: 0,
-    lastY: 0,
-    auto: true,
-  });
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    // Responsive: observe container size
-    //
     const resize = () => {
       const rect = container.getBoundingClientRect();
       const min = Math.min(rect.width, rect.height);
@@ -107,50 +80,29 @@ export const ItemSphere: React.FC<Props> = (props) => {
 
     let animationId: number;
     if (!mountTimeRef.current) mountTimeRef.current = performance.now();
-    // Collapse animation state
-    const collapseAnim = { progress: 0, target: collapsed ? 1 : 0 };
-    let collapseStart: number | null = null;
+    const state = {
+      rx: Math.PI * 0.14,
+      rz: 0,
+      vx: 0.01,
+      vy: 0.015,
+    };
     function draw(now?: number) {
       const nowVal = typeof now === "number" ? now : performance.now();
       const size = sizeRef.current;
       if (!ctx) return;
       ctx.clearRect(0, 0, size, size);
-      // Apply collapse scale to shrink to center
-      const collapseScale = 1 - 0.8 * collapseAnim.progress;
       ctx.save();
       ctx.translate(size / 2, size / 2);
-      ctx.scale(collapseScale, collapseScale);
+      ctx.scale(1, 1);
       ctx.translate(-size / 2, -size / 2);
-      if (state.current.auto && !state.current.dragging) {
-        state.current.rx += state.current.vx;
-        state.current.rz += state.current.vy;
-      }
-      // Animate collapse progress
-      collapseAnim.target = collapsed ? 1 : 0;
-      if (collapseAnim.progress !== collapseAnim.target) {
-        if (collapseStart === null) collapseStart = nowVal;
-        const elapsed = nowVal - collapseStart;
-        const direction = collapseAnim.target > collapseAnim.progress ? 1 : -1;
-        collapseAnim.progress += direction * (elapsed / 700);
-        collapseAnim.progress = Math.max(0, Math.min(1, collapseAnim.progress));
-        if (Math.abs(collapseAnim.progress - collapseAnim.target) < 0.01) {
-          collapseAnim.progress = collapseAnim.target;
-          collapseStart = null;
-        }
-      } else {
-        collapseStart = null;
-      }
-
+      state.rx += state.vx;
+      state.rz += state.vy;
       const projected = positions.map((pos, i) => {
         const { x, y, z } = pos;
-        const y1 =
-          y * Math.cos(state.current.rx) - z * Math.sin(state.current.rx);
-        const z1 =
-          y * Math.sin(state.current.rx) + z * Math.cos(state.current.rx);
-        const x2 =
-          x * Math.cos(state.current.rz) - z1 * Math.sin(state.current.rz);
-        const z2 =
-          x * Math.sin(state.current.rz) + z1 * Math.cos(state.current.rz);
+        const y1 = y * Math.cos(state.rx) - z * Math.sin(state.rx);
+        const z1 = y * Math.sin(state.rx) + z * Math.cos(state.rx);
+        const x2 = x * Math.cos(state.rz) - z1 * Math.sin(state.rz);
+        const z2 = x * Math.sin(state.rz) + z1 * Math.cos(state.rz);
         return { name: iconNames[i], x: x2, y: y1, z: z2, index: i };
       });
       projected.sort((a, b) => b.z - a.z);
@@ -161,14 +113,12 @@ export const ItemSphere: React.FC<Props> = (props) => {
         const scale = perspective;
         const scaledIconSize = iconSize * scale;
         const img = imagesRef.current[icon.name];
-        // Cascade fade-in calculation
         const iconDelay = icon.index * fadeInStagger;
         const elapsed = nowVal - mountTimeRef.current;
         const fadeInAlpha = Math.min(
           1,
           Math.max(0, (elapsed - iconDelay) / fadeInDuration)
         );
-        // 3D fade as before
         const fade3d = 0.4 + 0.6 * ((icon.z + 1) / 2);
         const isFrontAndLarge = icon.z > 0.8;
         const finalAlpha = isFrontAndLarge ? 1 : fade3d * fadeInAlpha;
@@ -185,51 +135,12 @@ export const ItemSphere: React.FC<Props> = (props) => {
           ctx.restore();
         }
       }
-      ctx.restore(); // Restore after collapse scale
+      ctx.restore();
       animationId = requestAnimationFrame(draw);
     }
     draw();
-
-    // Drag interaction
-    let dragging = false;
-    let lastX = 0;
-    let lastY = 0;
-    function onPointerDown(e: PointerEvent) {
-      dragging = true;
-      state.current.dragging = true;
-      state.current.auto = false;
-      lastX = e.clientX;
-      lastY = e.clientY;
-    }
-    function onPointerMove(e: PointerEvent) {
-      if (!dragging) return;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      state.current.rz += dx * 0.01;
-      state.current.rx += dy * 0.01;
-      state.current.rx = Math.max(
-        -Math.PI / 2,
-        Math.min(Math.PI / 2, state.current.rx)
-      );
-    }
-    function onPointerUp() {
-      dragging = false;
-      state.current.dragging = false;
-      setTimeout(() => {
-        state.current.auto = true;
-      }, 1200);
-    }
-    canvas.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointermove", onPointerMove);
-    window.addEventListener("pointerup", onPointerUp);
-
     return () => {
       cancelAnimationFrame(animationId);
-      canvas.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerup", onPointerUp);
       ro.disconnect();
     };
   });

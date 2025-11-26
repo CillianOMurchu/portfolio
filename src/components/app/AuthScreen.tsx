@@ -51,9 +51,9 @@ const AuthScreen: React.FC = () => {
         <HeroTitle />
       </div>
 
-      <div className=" absolute ml-2">
+      {/* <div className=" absolute ml-2">
         <Name />
-      </div>
+      </div> */}
 
       <div
         className="sphere"
@@ -66,7 +66,7 @@ const AuthScreen: React.FC = () => {
       >
         <ItemSphere />
       </div>
-      {!session && (
+      {/* {!session && (
         <div className={containerClass}>
           <Suspense
             fallback={
@@ -106,7 +106,7 @@ const AuthScreen: React.FC = () => {
             </motion.div>
           </Suspense>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -2,14 +2,9 @@ import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { Session } from "@supabase/supabase-js";
-import AuthScreen from "./AuthScreen";
+import HomeScreen from "./HomeScreen";
 const WelcomeScreen = React.lazy(() => import("./WelcomeScreen"));
-const CriticalThinkingPage = React.lazy(
-  () => import("../CriticalThinkingPage")
-);
-const StreamingPage = React.lazy(() => import("../StreamingPage"));
 import LoadingScreen from "./LoadingScreen";
-import MusicPage from "../../features/music/MusicPage";
 
 interface AppRoutesProps {
   session: Session | null;
@@ -33,7 +28,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
         transition={{ duration: 0.4, ease: [0.25, 0.75, 0.5, 1.25] }}
         className="relative z-10"
       >
-        <AuthScreen />
+        <HomeScreen />
       </motion.div>
     );
   }
@@ -78,58 +73,28 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ session, signInState }) => {
           </Suspense>
         }
       />
+
       <Route
-        path="/music"
+        path="/about"
         element={
           <Suspense
             fallback={
               <div className="flex items-center justify-center min-h-screen bg-black text-emerald-400">
-                Loading music page...
+                Loading...
               </div>
             }
           >
             <motion.div
-              key="music"
+              key="about"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
               className="relative z-10"
             >
-              <MusicPage />
+              <AboutScreen />
             </motion.div>
           </Suspense>
-        }
-      />
-      <Route
-        path="/critical-thinking"
-        element={
-          <motion.div
-            key="critical-thinking"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
-            className="relative z-10"
-          >
-            <CriticalThinkingPage />
-          </motion.div>
-        }
-      />
-
-      <Route
-        path="/streaming"
-        element={
-          <motion.div
-            key="streaming"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
-            className="relative z-10"
-          >
-            <StreamingPage />
-          </motion.div>
         }
       />
     </Routes>

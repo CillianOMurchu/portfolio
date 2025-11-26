@@ -41,7 +41,7 @@ function App() {
           isLoggedIn: signInState === "complete",
         }}
       >
-        {signInState === "complete" && <UnifiedNavbar />}
+        <UnifiedNavbar />
         <PageRouter
           session={session}
           signInState={signInState}

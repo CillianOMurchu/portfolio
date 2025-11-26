@@ -59,7 +59,7 @@ export function Name() {
     }
   }, [showText]);
 
-  const { setOrbOrigin } = useOrbOrigin();
+  const { setOrbOrigin, setOCharPosition } = useOrbOrigin();
   useLayoutEffect(() => {
     if (oCharRef.current) {
       const oRect = oCharRef.current.getBoundingClientRect();
@@ -68,6 +68,7 @@ export function Name() {
         y: oRect.top + oRect.height / 2,
       };
       setOrbOrigin(center);
+      setOCharPosition(center); // Share globally
     }
     if (isHovered && oCharRef.current && containerRef.current) {
       const oRect = oCharRef.current.getBoundingClientRect();
@@ -83,7 +84,7 @@ export function Name() {
         y: yPercent,
       });
     }
-  }, [isHovered, name, setOrbOrigin]);
+  }, [isHovered, name, setOrbOrigin, setOCharPosition]);
 
   // Only allow hover on welcome or auth screens
   const allowHover = ["/", "/auth"].includes(location.pathname);
@@ -94,7 +95,7 @@ export function Name() {
         className={
           isShortCOM
             ? "relative w-fit min-w-[4.5rem] px-2 h-10"
-            : "relative w-64 h-20"
+            : "relative w-40 h-20"
         }
         onMouseEnter={() => allowHover && setIsHovered(true)}
         onMouseLeave={() => allowHover && setIsHovered(false)}
