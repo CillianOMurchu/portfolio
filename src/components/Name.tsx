@@ -1,22 +1,7 @@
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
 import { useOrbOrigin } from "./OrbOriginContext";
-import { useAuth } from "../hooks/useAuth";
 import "./NameAnimations.css";
 
-// Custom hook for mobile detection
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-  return isMobile;
-}
-
-// Presentational component for name display
 interface NameDisplayProps {
   name: string;
   letters: string[];

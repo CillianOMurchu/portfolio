@@ -3,23 +3,24 @@ import "./styles/theme.css";
 import { usePageNavigation } from "./hooks/usePageNavigation";
 import PageRouter from "./components/app/PageRouter";
 import UnifiedNavbar from "./components/layout/UnifiedNavbar";
+import Footer from "./components/layout/Footer";
 
 function App() {
   const { currentPage } = usePageNavigation();
 
   return (
-    <div className="min-h-screen w-full bg-fixed bg-[#0a0e1a]">
-      <div className="fixed top-0 left-0 w-full z-50">
-        <UnifiedNavbar />
-      </div>
-      <main className="pt-16 relative z-10">
+    <>
+      <UnifiedNavbar />
+
+      <main className="page-main">
         <PageRouter currentPage={currentPage} />
       </main>
-    </div>
+
+      <footer className="site-footer">
+        <Footer />
+      </footer>
+    </>
   );
 }
 
 export default App;
-
-
-

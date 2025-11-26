@@ -2,22 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Critical styles for immediate rendering */
+
 html,
 body {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeSpeed;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
-  height: 100vh;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header that can hide/show */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(0);
+  transition: transform 0.25s ease-in-out;
+  z-index: 1000;
+}
+
+/* space for fixed header */
+.page-main {
+  flex: 1 0 auto;
+  padding-top: 60px; /* match header height */
+}
+
+/* sticky footer at bottom */
+.site-footer {
+  flex-shrink: 0;
 }
 
 h1,

@@ -2,7 +2,6 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion";
 import HomeScreen from "./HomeScreen";
-import AboutScreen from "./AboutScreen";
 
 const defaultMotion = {
   initial: { opacity: 0, y: 20 },
@@ -16,12 +15,6 @@ const routeConfigs = [
     path: "/",
     key: "home",
     screen: <HomeScreen />,
-    motion: defaultMotion,
-  },
-  {
-    path: "/about",
-    key: "about",
-    screen: <AboutScreen />,
     motion: defaultMotion,
   },
 ];
