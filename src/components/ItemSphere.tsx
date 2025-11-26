@@ -26,6 +26,25 @@ function generateFibonacciSphere(count: number) {
   return positions;
 }
 
+// Store mount time and animation state outside component so they never reset
+let globalMountTime: number | null = null;
+const persistentState = {
+  rx: Math.PI * 0.14,
+  rz: 0,
+  vx: 0.01,
+  vy: 0.015,
+};
+
+function getPersistentMountTime() {
+  if (globalMountTime === null) {
+    globalMountTime = performance.now();
+    console.log("[ItemSphere] Mount time set:", globalMountTime);
+  } else {
+    console.log("[ItemSphere] Mount time reused:", globalMountTime);
+  }
+  return globalMountTime;
+}
+
 export const ItemSphere: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,7 +54,6 @@ export const ItemSphere: React.FC = () => {
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const fadeInDuration = 400;
   const fadeInStagger = 60;
-  const mountTimeRef = useRef<number>(0);
 
   useEffect(() => {
     if (Object.keys(imagesRef.current).length === iconNames.length) return;
@@ -79,13 +97,9 @@ export const ItemSphere: React.FC = () => {
     ro.observe(container);
 
     let animationId: number;
-    if (!mountTimeRef.current) mountTimeRef.current = performance.now();
-    const state = {
-      rx: Math.PI * 0.14,
-      rz: 0,
-      vx: 0.01,
-      vy: 0.015,
-    };
+    const mountTime = getPersistentMountTime();
+    // Use persistentState for animation so it never resets
+    const state = persistentState;
     function draw(now?: number) {
       const nowVal = typeof now === "number" ? now : performance.now();
       const size = sizeRef.current;
@@ -114,7 +128,7 @@ export const ItemSphere: React.FC = () => {
         const scaledIconSize = iconSize * scale;
         const img = imagesRef.current[icon.name];
         const iconDelay = icon.index * fadeInStagger;
-        const elapsed = nowVal - mountTimeRef.current;
+        const elapsed = nowVal - mountTime;
         const fadeInAlpha = Math.min(
           1,
           Math.max(0, (elapsed - iconDelay) / fadeInDuration)
