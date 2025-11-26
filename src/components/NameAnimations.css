@@ -1,0 +1,72 @@
+/* NameAnimations.css: Animations and styles for Name component */
+.fadein-letter {
+  opacity: 0;
+  display: inline-block;
+  will-change: opacity, transform;
+  transform: translateY(10px);
+  animation: fadein-up 0.5s forwards;
+}
+@keyframes fadein-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.orb {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #10b981, 0 0 20px #10b981, 0 0 30px #10b981;
+  opacity: 0;
+  z-index: 20;
+}
+.orb-trace {
+  transform: translate(-50%, -50%);
+  animation: orb-birth 0.2s ease-out forwards, orb-glow 0.5s 0.2s ease-in-out forwards, orb-down 0.3s 0.7s ease-out forwards, orb-fade 0.3s 1.0s ease-out forwards;
+}
+@keyframes orb-birth {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@keyframes orb-glow {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.5);
+  }
+}
+@keyframes orb-down {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    left: 50%;
+    top: calc(100% + 2rem);
+  }
+}
+@keyframes orb-fade {
+  to {
+    opacity: 0;
+  }
+}
+.info-box {
+  opacity: 0;
+  animation: info-appear 0.3s 0.8s forwards;
+}
+@keyframes info-appear {
+  to {
+    opacity: 1;
+  }
+}
