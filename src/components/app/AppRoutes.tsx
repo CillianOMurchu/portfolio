@@ -5,6 +5,7 @@ import type { Session } from "@supabase/supabase-js";
 import HomeScreen from "./HomeScreen";
 const WelcomeScreen = React.lazy(() => import("./WelcomeScreen"));
 import LoadingScreen from "./LoadingScreen";
+import AboutScreen from "./AboutScreen";
 
 interface AppRoutesProps {
   session: Session | null;
