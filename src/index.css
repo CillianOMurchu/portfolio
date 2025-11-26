@@ -36,8 +36,9 @@ p {
   contain: layout style paint;
 }
 
-.home-page {
-  position: absolute;
+.home-screen {
   height: calc(100vh - 4rem);
+  display: flex;
+  align-items: end;
   width: 100vw;
 }
