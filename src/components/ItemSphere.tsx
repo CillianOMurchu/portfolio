@@ -105,7 +105,7 @@ export const ItemSphere: React.FC = () => {
         const z2 = x * Math.sin(state.rz) + z1 * Math.cos(state.rz);
         return { name: iconNames[i], x: x2, y: y1, z: z2, index: i };
       });
-      projected.sort((a, b) => b.z - a.z);
+      projected.sort((a, b) => a.z - b.z);
       for (const icon of projected) {
         const perspective = 1.2 / (1.6 - icon.z);
         const x2d = size / 2 + icon.x * size * 0.36 * perspective;
