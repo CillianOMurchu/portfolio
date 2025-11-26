@@ -24,7 +24,6 @@ const AuthScreen: React.FC = () => {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Shared style and animation props
   const containerClass = !session
     ? isMobile
       ? "fixed bottom-0 left-0 w-full z-30 px-4 py-6 backdrop-blur-md"
