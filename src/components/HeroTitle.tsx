@@ -9,13 +9,13 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
     <div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="flex flex-col items-center gap-4">
-          <span className="block text-slate-500/15 text-8xl lg:text-[12rem] xl:text-[14rem] whitespace-nowrap tracking-wider">
+          <span className="block text-slate-500/15 text-8xl lg:text-[12rem] xl:text-[14rem] whitespace-nowrap">
             Fintech
           </span>
-          <span className="block text-slate-500/15 text-6xl lg:text-[12rem] xl:text-[14rem] whitespace-nowrap tracking-wider">
+          <span className="block text-slate-500/15 text-6xl lg:text-[12rem] xl:text-[14rem] whitespace-nowrap">
             Hospitality
           </span>
-          <span className="block text-slate-500/15 text-8xl lg:text-[12rem] xl:text-[14rem] whitespace-nowrap tracking-wider">
+          <span className="block text-slate-500/15 text-8xl lg:text-[12rem] xl:text-[14rem] whitespace-nowrap">
             iGaming
           </span>
         </div>

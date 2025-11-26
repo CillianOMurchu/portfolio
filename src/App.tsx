@@ -42,7 +42,6 @@ function App() {
         }}
       >
         {signInState === "complete" && <UnifiedNavbar />}
-        {/* <SideNav /> */}
         <PageRouter
           session={session}
           signInState={signInState}

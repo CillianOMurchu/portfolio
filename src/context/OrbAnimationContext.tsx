@@ -8,13 +8,13 @@ interface OrbAnimationContextType {
 
 const OrbAnimationContext = createContext<OrbAnimationContextType | undefined>(undefined);
 
-export const useOrbAnimation = () => {
-  const context = useContext(OrbAnimationContext);
-  if (!context) {
-    throw new Error('useOrbAnimation must be used within an OrbAnimationProvider');
-  }
-  return context;
-};
+// export const useOrbAnimation = () => {
+//   const context = useContext(OrbAnimationContext);
+//   if (!context) {
+//     throw new Error('useOrbAnimation must be used within an OrbAnimationProvider');
+//   }
+//   return context;
+// };
 
 interface OrbAnimationProviderProps {
   children: ReactNode;

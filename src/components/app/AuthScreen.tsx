@@ -7,7 +7,6 @@ import ItemSphere from "../ItemSphere";
 import HeroTitle from "../HeroTitle";
 import { motion } from "framer-motion";
 import { Name } from "../Name";
-import AnimatedGrid from "../AnimatedGrid";
 
 const AuthScreen: React.FC = () => {
   const handleAuthClick = () => {
