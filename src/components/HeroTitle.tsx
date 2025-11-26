@@ -6,7 +6,14 @@ interface HeroTitleProps {
 
 const HeroTitle: React.FC<HeroTitleProps> = () => {
   return (
-    <div>
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        position: "absolute",
+        zIndex: -1,
+      }}
+    >
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="flex flex-col items-center gap-4">
           <span className="block text-slate-500/15 text-8xl lg:text-[12rem] xl:text-[14rem] whitespace-nowrap">
@@ -20,7 +27,6 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
           </span>
         </div>
       </div>
-
     </div>
   );
 };
