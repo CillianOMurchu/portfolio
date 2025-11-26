@@ -1,90 +1,52 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion";
 import HomeScreen from "./HomeScreen";
-const WelcomeScreen = React.lazy(() => import("./WelcomeScreen"));
-import LoadingScreen from "./LoadingScreen";
 import AboutScreen from "./AboutScreen";
 
-const AppRoutes: React.FC = () => {
+const defaultMotion = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  duration: 0.5,
+};
+
+const routeConfigs = [
+  {
+    path: "/",
+    key: "home",
+    screen: <HomeScreen />,
+    motion: defaultMotion,
+  },
+  {
+    path: "/about",
+    key: "about",
+    screen: <AboutScreen />,
+    motion: defaultMotion,
+  },
+];
+
+export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <motion.div
-            key="home"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
-            className="relative z-10"
-          >
-            <HomeScreen />
-          </motion.div>
-        }
-      />
-      <Route
-        path="/welcome"
-        element={
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center min-h-screen bg-black text-emerald-400">
-                Loading...
-              </div>
-            }
-          >
+      {routeConfigs.map(({ path, key, screen, motion: m }) => (
+        <Route
+          key={key}
+          path={path}
+          element={
             <motion.div
-              key="welcome"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
+              key={key}
+              initial={m.initial}
+              animate={m.animate}
+              exit={m.exit}
+              transition={{ duration: m.duration, ease: [0.25, 0.75, 0.5, 1.25] }}
               className="relative z-10"
             >
-              <WelcomeScreen />
+              {screen}
             </motion.div>
-          </Suspense>
-        }
-      />
-      <Route
-        path="/loading-test"
-        element={
-          <motion.div
-            key="loading-test"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.75, 0.5, 1.25] }}
-            className="relative z-10"
-          >
-            <LoadingScreen authLoading={false} />
-          </motion.div>
-        }
-      />
-      <Route
-        path="/about"
-        element={
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center min-h-screen bg-black text-emerald-400">
-                Loading...
-              </div>
-            }
-          >
-            <motion.div
-              key="about"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, ease: [0.25, 0.75, 0.5, 1.25] }}
-              className="relative z-10"
-            >
-              <AboutScreen />
-            </motion.div>
-          </Suspense>
-        }
-      />
+          }
+        />
+      ))}
     </Routes>
   );
 };

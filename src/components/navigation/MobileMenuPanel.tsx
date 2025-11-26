@@ -8,7 +8,11 @@ interface MobileMenuPanelProps {
   onClose: () => void;
 }
 
-export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({ isOpen, onClose }) => {
+export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({
+  isOpen,
+  onClose,
+}) => {
+
   return (
     <>
       {isOpen && (
@@ -26,10 +30,18 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({ isOpen, onClos
         style={{ pointerEvents: isOpen ? "auto" : "none" }}
       >
         <nav className="flex flex-col gap-6 mt-8">
-          <NavMenuItem href="/" icon={FiHome} onClick={onClose}>
+          <NavMenuItem
+            href="/"
+            icon={FiHome}
+            onNavigate={onClose}
+          >
             Home
           </NavMenuItem>
-          <NavMenuItem href="/about" icon={FiUser} onClick={onClose}>
+          <NavMenuItem
+            href="/about"
+            icon={FiUser}
+            onNavigate={onClose}
+          >
             About
           </NavMenuItem>
         </nav>

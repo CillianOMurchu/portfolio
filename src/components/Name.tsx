@@ -15,7 +15,7 @@ export function Name() {
   const [orbStart, setOrbStart] = useState({ x: 50, y: 100 });
   const oCharRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
@@ -36,11 +36,12 @@ export function Name() {
   const name = isMobile && session ? "C Ó M" : "CILLIAN Ó MURCHÚ";
   const letters = name.split("");
   const isShortCOM = isMobile && session;
-  
+
   // Find the index of Ó character
   const oIndex = name.indexOf("Ó");
 
-  const bioText = "Full-stack developer specializing in modern web technologies and creative digital experiences.";
+  const bioText =
+    "Full-stack developer specializing in modern web technologies and creative digital experiences.";
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
@@ -77,17 +78,16 @@ export function Name() {
       const oCenterX = oRect.left + oRect.width / 2;
       const oCenterY = oRect.top + oRect.height / 2;
       // Convert to percentage relative to container
-      const xPercent = ((oCenterX - containerRect.left) / containerRect.width) * 100;
-      const yPercent = ((oCenterY - containerRect.top) / containerRect.height) * 100;
+      const xPercent =
+        ((oCenterX - containerRect.left) / containerRect.width) * 100;
+      const yPercent =
+        ((oCenterY - containerRect.top) / containerRect.height) * 100;
       setOrbStart({
         x: xPercent,
         y: yPercent,
       });
     }
   }, [isHovered, name, setOrbOrigin, setOCharPosition]);
-
-  // Only allow hover on welcome or auth screens
-  const allowHover = ["/", "/auth"].includes(location.pathname);
 
   return (
     <div className="relative">
@@ -97,8 +97,8 @@ export function Name() {
             ? "relative w-fit min-w-[4.5rem] px-2 h-10"
             : "relative w-40 h-20"
         }
-        onMouseEnter={() => allowHover && setIsHovered(true)}
-        onMouseLeave={() => allowHover && setIsHovered(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         ref={containerRef}
       >
         <style>{`
@@ -178,127 +178,6 @@ export function Name() {
             }
           }
 
-          /* Trail line */
-          .trail-line {
-            position: absolute;
-            background: #10b981;
-            box-shadow: 0 0 10px #10b981, 0 0 20px #10b981;
-            opacity: 0;
-          }
-
-          .trail-down {
-            width: 2px;
-            height: 0;
-            transform: translateX(-50%);
-            animation: trail-down-grow 0.3s 0.7s ease-out forwards;
-          }
-
-          @keyframes trail-down-grow {
-            0% {
-              opacity: 1;
-              height: 0;
-              left: var(--orb-x);
-              top: var(--orb-y);
-            }
-            100% {
-              opacity: 1;
-              height: calc(100% + 2rem - var(--orb-y) * 1%);
-              left: 50%;
-              top: var(--orb-y);
-            }
-          }
-
-          .trail-top {
-            left: 50%;
-            top: calc(100% + 2rem);
-            width: 0;
-            height: 2px;
-            transform: translateY(-50%);
-            animation: trail-top-grow 0.3s 0.2s ease-out forwards,
-                       trail-fade 0.2s 0.5s ease-out forwards;
-          }
-
-          @keyframes trail-top-grow {
-            0% {
-              opacity: 1;
-              width: 0;
-            }
-            100% {
-              opacity: 1;
-              width: 50%;
-            }
-          }
-
-          .trail-right {
-            left: 100%;
-            top: calc(100% + 2rem);
-            width: 2px;
-            height: 0;
-            transform: translateX(-50%);
-            animation: trail-right-grow 0.3s 0.5s ease-out forwards,
-                       trail-fade 0.2s 0.8s ease-out forwards;
-          }
-
-          @keyframes trail-right-grow {
-            0% {
-              opacity: 1;
-              height: 0;
-            }
-            100% {
-              opacity: 1;
-              height: var(--box-height);
-            }
-          }
-
-          .trail-bottom {
-            left: 100%;
-            top: calc(100% + 2rem + var(--box-height));
-            width: 0;
-            height: 2px;
-            transform: translateY(-50%);
-            animation: trail-bottom-grow 0.3s 0.8s ease-out forwards,
-                       trail-fade 0.2s 1.1s ease-out forwards;
-          }
-
-          @keyframes trail-bottom-grow {
-            0% {
-              opacity: 1;
-              width: 0;
-            }
-            100% {
-              opacity: 1;
-              width: 100%;
-              transform: translateY(-50%) translateX(-100%);
-            }
-          }
-
-          .trail-left {
-            left: 0%;
-            top: calc(100% + 2rem + var(--box-height));
-            width: 2px;
-            height: 0;
-            animation: trail-left-grow 0.3s 1.1s ease-out forwards,
-                       trail-fade 0.2s 1.4s ease-out forwards;
-          }
-
-          @keyframes trail-left-grow {
-            0% {
-              opacity: 1;
-              height: 0;
-            }
-            100% {
-              opacity: 1;
-              height: var(--box-height);
-              transform: translateY(-100%);
-            }
-          }
-
-          @keyframes trail-fade {
-            to {
-              opacity: 0;
-            }
-          }
-
           .info-box {
             opacity: 0;
             animation: info-appear 0.3s 0.8s forwards;
@@ -319,9 +198,7 @@ export function Name() {
           />
         )}
 
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-        >
+        <div className="absolute inset-0 flex items-center justify-center">
           <span
             className={
               isShortCOM
@@ -347,19 +224,10 @@ export function Name() {
 
         {/* Animated orb and trail */}
         {isHovered && (
-          <>
-            <div 
-              className="orb orb-trace"
-              style={{ left: `${orbStart.x}%`, top: `${orbStart.y}%` }}
-            />
-            <div 
-              className="trail-line trail-down"
-              style={{ 
-                '--orb-x': `${orbStart.x}%`, 
-                '--orb-y': `${orbStart.y}%` 
-              } as React.CSSProperties}
-            />
-          </>
+          <div
+            className="orb orb-trace"
+            style={{ left: `${orbStart.x}%`, top: `${orbStart.y}%` }}
+          />
         )}
       </div>
 
@@ -375,7 +243,7 @@ export function Name() {
             className="text-emerald-400 text-sm tracking-wide leading-relaxed"
             style={{
               textShadow: `0 0 3px rgba(16,185,129,0.5)`,
-              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontFamily: "system-ui, -apple-system, sans-serif",
             }}
           >
             {displayedText}
