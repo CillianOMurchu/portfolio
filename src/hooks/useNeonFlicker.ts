@@ -9,14 +9,14 @@ import { useEffect, useState } from "react";
 export function useNeonFlicker(delayMs: number = 2000): boolean {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    let flickerTimeouts: NodeJS.Timeout[] = [];
+    const flickerTimeouts: ReturnType<typeof setTimeout>[] = [];
     const flickerOn = () => {
       setShow(true);
       flickerTimeouts.push(setTimeout(() => setShow(false), 80));
       flickerTimeouts.push(setTimeout(() => setShow(true), 160));
       flickerTimeouts.push(setTimeout(() => setShow(false), 240));
       flickerTimeouts.push(setTimeout(() => setShow(true), 320));
-      flickerTimeouts.push(setTimeout(() => setShowTitle(false), 400));
+      flickerTimeouts.push(setTimeout(() => setShow(false), 400));
       flickerTimeouts.push(setTimeout(() => setShow(true), 600));
       // After last flicker, keep on
       flickerTimeouts.push(setTimeout(() => setShow(true), 1200));
