@@ -1,5 +1,25 @@
+.menu-border {
+  border-left: 2px solid #10b981;
+}
+.menu-border-top {
+  border-top: 2px solid #10b981;
+}
+.neon-border-left {
+  border-left: 2px solid var(--color-accent-primary);
+  box-shadow: 0 0 8px var(--color-accent-primary), 0 0 16px var(--color-accent-primary);
+}
 /* Website Theme: Dark Mode / Neon Emerald */
-:root {
+ :root {
+  --menu-border: 2px solid #10b981;
+    .menu-border-top {
+      border-top: var(--menu-border);
+    }
+    --neon-border: 2px solid var(--color-accent-primary);
+    --neon-border-glow: 0 0 8px var(--color-accent-primary), 0 0 16px var(--color-accent-primary);
+  .neon-border {
+    border-top: var(--neon-border);
+    box-shadow: var(--neon-border-glow);
+  }
   --color-bg-primary: #0a0e1a;
   --color-bg-surface: #131a28;
   --color-bg-hover: #17252f;
