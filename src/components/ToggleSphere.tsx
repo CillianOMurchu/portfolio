@@ -1,21 +1,20 @@
 import React, { useState } from "react";
 import { useNeonFlicker } from "../hooks/useNeonFlicker";
 
+
 type ToggleSphereProps = {
-  onToggle?: (next: boolean) => void;
+  toggled: boolean;
+  setToggled: (next: boolean) => void;
 };
 
-const ToggleSphere: React.FC<ToggleSphereProps> = ({ onToggle }) => {
-  const [toggled, setToggled] = useState(true);
+const ToggleSphere: React.FC<ToggleSphereProps> = ({ toggled, setToggled }) => {
   const pillWidth =
     typeof window !== "undefined" && window.innerWidth < 500 ? 44 : 64;
   const pillHeight =
     typeof window !== "undefined" && window.innerWidth < 500 ? 22 : 32;
 
   const handleToggle = () => {
-    const next = !toggled;
-    setToggled(next);
-    if (onToggle) onToggle(next);
+    setToggled(!toggled);
   };
 
   // Use extracted neon flicker hook

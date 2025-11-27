@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./HeroTitle.anim.css";
 
 interface HeroTitleProps {
@@ -14,6 +15,10 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
     },
     { text: "iGaming", className: "text-8xl lg:text-[12rem] xl:text-[14rem]" },
   ];
+  const navigate = useNavigate();
+  const handleClick = (name: string) => {
+    navigate(`/${name.toLowerCase()}`);
+  };
   return (
     <div
       className="hero-title "
@@ -26,7 +31,7 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
     >
       <div className="flex flex-col items-center justify-center h-full">
         {items.map((item, i) => (
-          <span
+          <button
             key={item.text}
             className={`block text-slate-500/15${item.text === "Hospitality" ? "" : " font-bold"} ${item.className} whitespace-nowrap`}
             style={{
@@ -42,9 +47,14 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
               position: "relative",
               ...(item.text === "Hospitality" ? {} : { fontWeight: 700 }),
             }}
+            onClick={() => handleClick(item.text)}
+            aria-label={`Go to ${item.text}`}
+            background="none"
+            border="none"
+            cursor="pointer"
           >
             {item.text}
-          </span>
+          </button>
         ))}
       </div>
     </div>

@@ -4,12 +4,10 @@ import ToggleSphere from "../ToggleSphere";
 import ItemSphere from "../ItemSphere";
 
 const HomeScreen: React.FC = () => {
-  const [showSphere, setShowSphere] = useState(true);
+  const [showSphere, setShowSphere] = useState(false);
   return (
     <div className="home-screen">
-      <ToggleSphere
-        onToggle={(next) => setShowSphere(next)}
-      />
+      <ToggleSphere toggled={showSphere} setToggled={setShowSphere} />
       <HeroTitle />
       <div
         className="sphere"
