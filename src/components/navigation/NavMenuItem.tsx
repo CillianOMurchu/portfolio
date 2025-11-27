@@ -22,7 +22,6 @@ export function NavMenuItem({ href, icon: Icon, children, onNavigate, selected }
       href={href}
       className={`flex items-center gap-3 text-emerald-400 neon text-lg font-bold px-4 py-2 rounded transition-colors
         hover:bg-emerald-900/30
-        ${Icon ? "" : "pl-8"}
         ${selected ? "bg-emerald-900/20 shadow-inner" : ""}`}
       onClick={handleClick}
       style={selected ? { background: "rgba(16,185,129,0.12)" } : {}}
