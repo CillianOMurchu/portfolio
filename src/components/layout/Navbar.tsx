@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useScrollDirection } from "../../hooks/useScrollDirection";
-import { MobileMenu } from "../navigation/MobileMenu";
 import { Name } from "../Name";
+import { MobileMenu } from "../navigation/MobileMenu";
 
-export const Navbar: React.FC = () => {
+const Navbar: React.FC = () => {
   const scrollDirection = useScrollDirection();
   const hideHeader = scrollDirection === "down" && window.scrollY > 200;
+
+  // Scroll to top on page refresh
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <header
