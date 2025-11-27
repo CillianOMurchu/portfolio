@@ -2,6 +2,10 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion";
 import HomeScreen from "./HomeScreen";
+import About from "./About";
+import Fintech from "./Fintech";
+import Hospitality from "./Hospitality";
+import IGaming from "./iGaming";
 
 const defaultMotion = {
   initial: { opacity: 0, y: 20 },
@@ -15,6 +19,30 @@ const routeConfigs = [
     path: "/",
     key: "home",
     screen: <HomeScreen />,
+    motion: defaultMotion,
+  },
+  {
+    path: "/about",
+    key: "about",
+    screen: <About />,
+    motion: defaultMotion,
+  },
+  {
+    path: "/fintech",
+    key: "fintech",
+    screen: <Fintech />,
+    motion: defaultMotion,
+  },
+  {
+    path: "/hospitality",
+    key: "hospitality",
+    screen: <Hospitality />,
+    motion: defaultMotion,
+  },
+  {
+    path: "/igaming",
+    key: "igaming",
+    screen: <IGaming />,
     motion: defaultMotion,
   },
 ];
