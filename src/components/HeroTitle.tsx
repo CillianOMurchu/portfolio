@@ -49,9 +49,6 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
             }}
             onClick={() => handleClick(item.text)}
             aria-label={`Go to ${item.text}`}
-            background="none"
-            border="none"
-            cursor="pointer"
           >
             {item.text}
           </button>
