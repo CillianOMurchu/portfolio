@@ -1,3 +1,13 @@
+.border-bottom-neon{
+  border-bottom: 2px solid #10b981;
+}
+.border-top-neon{
+  border-top: 2px solid #10b981;
+}
+.border-left-neon{
+  border-left: 2px solid #10b981;
+}
+
 .menu-border {
   border-left: 2px solid #10b981;
 }

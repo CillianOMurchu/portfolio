@@ -8,7 +8,10 @@ interface MobileMenuPanelProps {
   onClose: () => void;
 }
 
-export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({ isOpen, onClose }) => {
+export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({
+  isOpen,
+  onClose,
+}) => {
   return (
     <>
       {isOpen && (
@@ -19,26 +22,19 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({ isOpen, onClos
           style={{ backdropFilter: "blur(2px)", zIndex: 99 }}
         >
           <motion.div
-            className="menu-panel flex flex-col bg-black/90 backdrop-blur-lg shadow-2xl h-[calc(100vh-64px)] min-w-[240px] w-min[50vw,400px] z-50 mt-16"
+            className="menu-panel  border-left-neon
+            flex flex-col bg-black/90 backdrop-blur-lg shadow-2xl h-[calc(100vh-64px)] min-w-[240px] w-min[50vw,400px] z-50 mt-16"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             style={{ pointerEvents: "auto" }}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <nav className="flex flex-col gap-6 mt-8">
-              <NavMenuItem
-                href="/"
-                icon={FiHome}
-                onNavigate={onClose}
-              >
+              <NavMenuItem href="/" icon={FiHome} onNavigate={onClose}>
                 Home
               </NavMenuItem>
-              <NavMenuItem
-                href="/about"
-                icon={FiUser}
-                onNavigate={onClose}
-              >
+              <NavMenuItem href="/about" icon={FiUser} onNavigate={onClose}>
                 About
               </NavMenuItem>
             </nav>
@@ -47,4 +43,4 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({ isOpen, onClos
       )}
     </>
   );
-}
+};

@@ -6,7 +6,7 @@ type ToggleSphereProps = {
 };
 
 const ToggleSphere: React.FC<ToggleSphereProps> = ({ onToggle }) => {
-  const [toggled, setToggled] = useState(false);
+  const [toggled, setToggled] = useState(true);
   const pillWidth =
     typeof window !== "undefined" && window.innerWidth < 500 ? 44 : 64;
   const pillHeight =
