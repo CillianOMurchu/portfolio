@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FiHome, FiUser } from "react-icons/fi";
+import { FiHome, FiUser, FiDollarSign, FiCoffee, FiCpu } from "react-icons/fi";
 import { NavMenuItem } from "./NavMenuItem";
+import { useLocation } from "react-router-dom";
 
 interface MobileMenuPanelProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({
   isOpen,
   onClose,
 }) => {
+  const location = useLocation();
+  const currentPage = location.pathname;
   return (
     <>
       {isOpen && (
@@ -31,11 +34,20 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             <nav className="flex flex-col gap-6 mt-8">
-              <NavMenuItem href="/" icon={FiHome} onNavigate={onClose}>
+              <NavMenuItem href="/" icon={FiHome} onNavigate={onClose} selected={currentPage === "/"}>
                 Home
               </NavMenuItem>
-              <NavMenuItem href="/about" icon={FiUser} onNavigate={onClose}>
+              <NavMenuItem href="/about" icon={FiUser} onNavigate={onClose} selected={currentPage === "/about"}>
                 About
+              </NavMenuItem>
+              <NavMenuItem href="/igaming" icon={FiCpu} onNavigate={onClose} selected={currentPage === "/igaming"}>
+                iGaming
+              </NavMenuItem>
+              <NavMenuItem href="/hospitality" icon={FiCoffee} onNavigate={onClose} selected={currentPage === "/hospitality"}>
+                Hospitality
+              </NavMenuItem>
+              <NavMenuItem href="/fintech" icon={FiDollarSign} onNavigate={onClose} selected={currentPage === "/fintech"}>
+                Fintech
               </NavMenuItem>
             </nav>
           </motion.div>

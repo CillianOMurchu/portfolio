@@ -7,9 +7,10 @@ interface NavMenuItemProps {
   icon: IconType;
   children: React.ReactNode;
   onNavigate?: () => void;
+  selected?: boolean;
 }
 
-export const NavMenuItem: React.FC<NavMenuItemProps> = ({ href, icon: Icon, children, onNavigate }) => {
+export function NavMenuItem({ href, icon: Icon, children, onNavigate, selected }: NavMenuItemProps) {
   const navigate = useNavigate();
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -19,11 +20,15 @@ export const NavMenuItem: React.FC<NavMenuItemProps> = ({ href, icon: Icon, chil
   return (
     <a
       href={href}
-      className="flex items-center gap-3 text-emerald-400 neon text-lg font-bold px-4 py-2 rounded hover:bg-emerald-900/30 transition-colors"
+      className={`flex items-center gap-3 text-emerald-400 neon text-lg font-bold px-4 py-2 rounded transition-colors
+        hover:bg-emerald-900/30
+        ${Icon ? "" : "pl-8"}
+        ${selected ? "bg-emerald-900/20 shadow-inner" : ""}`}
       onClick={handleClick}
+      style={selected ? { background: "rgba(16,185,129,0.12)" } : {}}
     >
       <Icon className="w-5 h-5" />
       {children}
     </a>
   );
-};
+}
