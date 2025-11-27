@@ -17,18 +17,21 @@ export const BurgerMenuIcon: React.FC<BurgerMenuIconProps> = ({ isOpen, onClick 
       initial={false}
       animate={isOpen ? { rotate: 45, y: 0 } : { rotate: 0, y: -8 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      style={{ filter: "none" }}
     />
     <motion.span
       className="absolute w-7 h-0.5 bg-emerald-400 neon"
       initial={false}
       animate={isOpen ? { opacity: 0 } : { opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      style={{ filter: "none" }}
     />
     <motion.span
       className="absolute w-7 h-0.5 bg-emerald-400 neon"
       initial={false}
       animate={isOpen ? { rotate: -45, y: 0 } : { rotate: 0, y: 8 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      style={{ filter: "none" }}
     />
   </button>
 );
