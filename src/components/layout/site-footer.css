@@ -1,0 +1,7 @@
+/* src/components/layout/site-footer.css */
+.site-footer {
+  bottom: 0;
+  position: absolute;
+  width: 100vw;
+  z-index: 100;
+}

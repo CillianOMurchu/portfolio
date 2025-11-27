@@ -19,7 +19,7 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({ isOpen, onClos
           style={{ backdropFilter: "blur(2px)", zIndex: 99 }}
         >
           <motion.div
-            className="menu-panel flex flex-col bg-black/90 backdrop-blur-lg shadow-2xl h-[calc(100vh-64px)] min-w-[240px] w-min[50vw,400px] border-l-2 border-emerald-500 z-50 mt-16"
+            className="menu-panel flex flex-col bg-black/90 backdrop-blur-lg shadow-2xl h-[calc(100vh-64px)] min-w-[240px] w-min[50vw,400px] z-50 mt-16"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}

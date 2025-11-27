@@ -16,10 +16,8 @@ function App() {
         <PageRouter currentPage={currentPage} />
       </main>
 
-      <footer className="site-footer">
-        <Footer />
-      </footer>
-    </>
+      <Footer />
+      </>
   );
 }
 
