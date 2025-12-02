@@ -15,10 +15,7 @@ const HeroTitle: React.FC<HeroTitleProps> = () => {
     },
     { text: "iGaming", className: "text-8xl lg:text-[12rem] xl:text-[14rem]" },
   ];
-  const navigate = useNavigate();
-  const handleClick = (name: string) => {
-    navigate(`/${name.toLowerCase()}`);
-  };
+
   return (
     <div
       className="hero-title "
