@@ -49,7 +49,18 @@ export const ItemSphere: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const sizeRef = useRef(100);
-  const iconSize = 40;
+  const screenSizeRef = useRef({ width: 0, height: 0 });
+  
+  // Dynamic icon size based on screen size
+  const getIconSize = () => {
+    const width = screenSizeRef.current.width;
+    if (width >= 1536) return 80; // 2xl screens
+    if (width >= 1280) return 70; // xl screens
+    if (width >= 1024) return 60; // lg screens
+    if (width >= 768) return 50; // md screens
+    return 40; // sm and mobile
+  };
+  
   const positions = generateFibonacciSphere(iconNames.length);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const fadeInDuration = 400;
@@ -75,6 +86,16 @@ export const ItemSphere: React.FC = () => {
     if (!canvas || !container) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    
+    // Update screen size tracking
+    const updateScreenSize = () => {
+      screenSizeRef.current = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+    };
+    updateScreenSize();
+    
     const resize = () => {
       const rect = container.getBoundingClientRect();
       const min = Math.min(rect.width, rect.height);
@@ -103,6 +124,7 @@ export const ItemSphere: React.FC = () => {
     function draw(now?: number) {
       const nowVal = typeof now === "number" ? now : performance.now();
       const size = sizeRef.current;
+      const iconSize = getIconSize();
       if (!ctx) return;
       ctx.clearRect(0, 0, size, size);
       ctx.save();
@@ -153,9 +175,14 @@ export const ItemSphere: React.FC = () => {
       animationId = requestAnimationFrame(draw);
     }
     draw();
+    
+    // Add window resize listener to track screen size changes
+    window.addEventListener("resize", updateScreenSize);
+    
     return () => {
       cancelAnimationFrame(animationId);
       ro.disconnect();
+      window.removeEventListener("resize", updateScreenSize);
     };
   });
 
