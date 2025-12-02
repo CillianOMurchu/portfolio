@@ -1,3 +1,7 @@
+import lighthouseImage from "../assets/about/header-lighthouse.png";
+import betsson from "../assets/about/header-betsson.png";
+import pokerstars from "../assets/about/header-pokerstars.png";
+
 export const experienceData = [
   // {
   //   id: "1",
@@ -16,7 +20,7 @@ export const experienceData = [
     id: "2",
     name: "Lighthouse",
     title: "Senior Software Engineer",
-    projectImage: "/src/assets/about/header-lighthouse.png", // Image of the tool/UI
+    projectImage: lighthouseImage, // Imported image module
     dates: "Feb 2023 – Feb 2025",
     responsibilities:
       "Architected and maintained predictive pricing and analytics systems supporting 70,000+ hotel customers and 300,000+ properties, processing 1.7B daily price change events Built interactive dashboards and data visualization components enabling data-driven pricing decisions based on historical trends and real-time event triggers",
@@ -29,7 +33,7 @@ export const experienceData = [
     id: "3",
     name: "Betsson Group",
     title: "Software Engineer",
-    projectImage: "/src/assets/about/header-betsson.png",
+    projectImage: betsson,
     dates: "Oct 2020 – Jan 2023",
     responsibilities:
       "Maintained and enhanced multi-tenant iGaming platform serving 1.38M active users across 10+ international brands in regulated markets. Engineered centralized time-handling component using dayjs, ensuring timezone consistency and regional compliance across distributed user base",
@@ -43,7 +47,7 @@ export const experienceData = [
     id: "4",
     name: "PokerStars",
     title: "Gaming Operator & Tournament Coordinator",
-    projectImage: "/src/assets/about/header-pokerstars.png",
+    projectImage: pokerstars,
     dates: "Jan 2003 – Jul 2016",
     responsibilities:
       "Managed tournament operations and gaming floor efficiency for high-volume poker events over 13+ years. Optimized table layouts and staffing models to maximize throughput during peak tournament seasons.",

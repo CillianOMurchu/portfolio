@@ -1,10 +1,5 @@
 import { motion } from "framer-motion";
 
-const getImage = (imagePath: string | undefined): string => {
-  if (!imagePath) return "";
-  return imagePath as string;
-};
-
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
@@ -46,7 +41,7 @@ export const TimelineItem = ({ work, index }: TimelineItemProps) => {
       <div className="sm:col-span-1">
         {work.projectImage && (
           <img
-            src={getImage(work.projectImage)}
+            src={work.projectImage}
             alt={`Screenshot of ${work.name} tool`}
             className="w-full h-auto rounded-lg object-cover shadow-2xl sm:max-h-60 sm:w-auto mx-auto sm:mx-0"
           />
