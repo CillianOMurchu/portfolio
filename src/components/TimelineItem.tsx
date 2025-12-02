@@ -6,7 +6,7 @@ const getImage = (imagePath: string | undefined): string => {
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
+  hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
 };
 
@@ -32,9 +32,9 @@ export const TimelineItem = ({ work, index }: TimelineItemProps) => {
       key={work.id}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.8 }}
+      viewport={{ once: true, amount: 0.2 }}
       variants={cardVariants}
-      transition={{ delay: index * 0.2, duration: 0.4 }}
+      transition={{ delay: index * 0.1, duration: 0.3 }}
       className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-6 rounded-xl shadow-lg bg-black/30 border border-emerald-700 backdrop-blur-md"
       style={{
         backgroundColor: "rgba(19, 26, 40, 0.4)",
