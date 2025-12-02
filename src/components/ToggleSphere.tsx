@@ -20,9 +20,20 @@ const ToggleSphere: React.FC<ToggleSphereProps> = ({ toggled, setToggled }) => {
   // Use extracted neon flicker hook
   const showTitle = useNeonFlicker(2000);
 
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20 && toggled) {
+        setToggled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [toggled, setToggled]);
+
   return (
     <div
-      className="sphere-toggle absolute right-4 z-50 top-[75px]"
+      className="sphere-toggle absolute right-4 z-[9999] top-[75px]"
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <button
