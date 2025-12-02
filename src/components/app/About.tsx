@@ -21,7 +21,7 @@ const About = () => (
       <img
         src={profileImage}
         alt="Portrait of Cillian O'Murchu"
-        className="w-100 h-100 rounded-full shadow-lg object-cover mb-6 border-4 border-white"
+        className="max-h-[25rem] w-100 h-100 rounded-full shadow-lg object-cover mb-6 border-4 border-white"
       />
     </motion.div>
 
