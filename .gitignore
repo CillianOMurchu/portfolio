@@ -22,3 +22,59 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Large files and build artifacts
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+build/
+.env
+.env.local
+.env.*.local
+
+# Media files (can be large)
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.flv
+*.wmv
+*.webm
+*.iso
+
+# OS and system files
+Thumbs.db
+*.tmp
+*.temp
+.cache/
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+
+# Dependencies cache
+.yarn/cache/
+.yarn/install-state.gz
+
+# IDE
+.eslintcache
+*.tsbuildinfo
+
+# Chromedriver and browser automation tools
+chromedriver*
+geckodriver*
+Downloads/chromedriver*
+
+# Large installer files
+*.deb
+*.exe
+*.msi
+*.pkg
+*.deb
