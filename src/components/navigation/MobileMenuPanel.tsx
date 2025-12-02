@@ -40,15 +40,6 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({
               <NavMenuItem href="/about" icon={FiUser} onNavigate={onClose} selected={currentPage === "/about"}>
                 About
               </NavMenuItem>
-              <NavMenuItem href="/igaming" icon={FiCpu} onNavigate={onClose} selected={currentPage === "/igaming"}>
-                iGaming
-              </NavMenuItem>
-              <NavMenuItem href="/hospitality" icon={FiCoffee} onNavigate={onClose} selected={currentPage === "/hospitality"}>
-                Hospitality
-              </NavMenuItem>
-              <NavMenuItem href="/fintech" icon={FiDollarSign} onNavigate={onClose} selected={currentPage === "/fintech"}>
-                Fintech
-              </NavMenuItem>
             </nav>
           </motion.div>
         </div>
