@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FiHome, FiUser, FiDollarSign, FiCoffee, FiCpu } from "react-icons/fi";
+import { FiHome, FiUser } from "react-icons/fi";
 import { NavMenuItem } from "./NavMenuItem";
 import { useLocation } from "react-router-dom";
 
