@@ -14,17 +14,20 @@ interface ThemeConfig {
 
 const themeMap: Record<string, ThemeConfig> = {
   SASS: {
-    background: "linear-gradient(135deg, #6b1635 0%, #4a0f24 50%, #2d0917 100%)",
+    background:
+      "linear-gradient(135deg, #6b1635 0%, #4a0f24 50%, #2d0917 100%)",
     accentColor: "#e73e7f",
     scrollIndicatorColor: "#f29bc0",
   },
   Hospitality: {
-    background: "linear-gradient(135deg, #3d5a7d 0%, #2d3f52 50%, #1a252f 100%)",
+    background:
+      "linear-gradient(135deg, #3d5a7d 0%, #2d3f52 50%, #1a252f 100%)",
     accentColor: "#6ba3d1",
     scrollIndicatorColor: "#9bc5ed",
   },
   iGaming: {
-    background: "linear-gradient(135deg, #3d5a47 0%, #2d4435 50%, #1a2820 100%)",
+    background:
+      "linear-gradient(135deg, #3d5a47 0%, #2d4435 50%, #1a2820 100%)",
     accentColor: "#5d9d7a",
     scrollIndicatorColor: "#8fbca5",
   },
@@ -49,15 +52,6 @@ const HomeScreen: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
 
   const theme = themeMap[selectedItem || "null"];
-
-  const handleItemClick = (item: ItemType) => {
-    // If clicking the same item, deactivate it
-    if (selectedItem === item) {
-      setSelectedItem(null);
-    } else {
-      setSelectedItem(item);
-    }
-  };
 
   const handleCloseDescription = () => {
     setSelectedItem(null);
@@ -94,7 +88,7 @@ const HomeScreen: React.FC = () => {
           zIndex: 1,
         }}
       >
-        <HeroTitle onItemClick={handleItemClick} selectedItem={selectedItem} />
+        <HeroTitle selectedItem={selectedItem} />
         <div
           className="sphere"
           style={{
@@ -199,32 +193,68 @@ const HomeScreen: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {selectedItem === "SASS" && (
                     <>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">SASS/SCSS</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">CSS Modules</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Tailwind CSS</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">PostCSS</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Animations</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Theme Systems</div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        SASS/SCSS
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        CSS Modules
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Tailwind CSS
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        PostCSS
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Animations
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Theme Systems
+                      </div>
                     </>
                   )}
                   {selectedItem === "Hospitality" && (
                     <>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">React</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Node.js</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">PostgreSQL</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Real-time Updates</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">APIs</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">UI/UX</div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        React
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Node.js
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        PostgreSQL
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Real-time Updates
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        APIs
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        UI/UX
+                      </div>
                     </>
                   )}
                   {selectedItem === "iGaming" && (
                     <>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">WebGL</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Three.js</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Analytics</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Real-time</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">WebSocket</div>
-                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">Performance</div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        WebGL
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Three.js
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Analytics
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Real-time
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        WebSocket
+                      </div>
+                      <div className="px-4 py-3 bg-white/5 rounded-lg text-sm hover:bg-white/10 transition-colors cursor-default border border-white/5">
+                        Performance
+                      </div>
                     </>
                   )}
                 </div>

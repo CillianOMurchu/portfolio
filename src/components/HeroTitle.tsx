@@ -5,11 +5,10 @@ type ItemType = "SASS" | "Hospitality" | "iGaming" | null;
 
 interface HeroTitleProps {
   className?: string;
-  onItemClick?: (item: ItemType) => void;
   selectedItem?: ItemType;
 }
 
-const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
+const HeroTitle: React.FC<HeroTitleProps> = ({ selectedItem }) => {
   const itemRefs = React.useRef<Record<string, HTMLButtonElement | null>>({});
 
   const items = [
@@ -76,10 +75,14 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
             }}
             className={`p-4 block text-slate-500/15${item.text === "Hospitality" ? "" : " font-bold"} ${item.className} whitespace-nowrap transition-all duration-300 cursor-pointer`}
             style={{
-              opacity: selectedItem && selectedItem !== (item.text as ItemType) ? 0.3 : 0,
-              transform: selectedItem && selectedItem !== (item.text as ItemType)
-                ? "scale(0.9) translateY(20px)" 
-                : "translateY(0)",
+              opacity:
+                selectedItem && selectedItem !== (item.text as ItemType)
+                  ? 0.3
+                  : 0,
+              transform:
+                selectedItem && selectedItem !== (item.text as ItemType)
+                  ? "scale(0.9) translateY(20px)"
+                  : "translateY(0)",
               animation: `flyInUp 0.8s cubic-bezier(.4,0,.2,1) forwards`,
               animationDelay: `${i * 0.15}s`,
               textAlign: "center",
@@ -93,8 +96,11 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
               ...(item.text === "Hospitality" ? {} : { fontWeight: 700 }),
             }}
             aria-label={item.text}
-            // onClick={() => onItemClick?.(item.text as ItemType)}
-            title={selectedItem === (item.text as ItemType) ? "Click to deactivate" : "Click to explore"}
+            title={
+              selectedItem === (item.text as ItemType)
+                ? "Click to deactivate"
+                : "Click to explore"
+            }
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
