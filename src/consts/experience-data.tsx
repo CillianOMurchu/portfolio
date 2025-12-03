@@ -1,6 +1,10 @@
 import lighthouseImage from "../assets/about/header-lighthouse.png";
 import betsson from "../assets/about/header-betsson.png";
 import pokerstars from "../assets/about/header-pokerstars.png";
+import roadooImage from "../assets/about/header-roadoo.png";
+
+// TODO: Add Maslo logo image import when available
+// import masloImage from "../assets/about/header-maslo.png";
 
 export const experienceData = [
   {
@@ -38,6 +42,23 @@ export const experienceData = [
       "Optimized Terms & Conditions registration flow through UX refinement and progressive disclosure patterns, resulting in an **8% conversion rate improvement**.",
       "Developed responsible gaming UI compliance modules and white-label affiliate configuration systems meeting complex jurisdictional regulatory requirements.",
       "Contributed to the **Selenium-based UAT testing infrastructure**, establishing test structure, coverage standards, and CI integration.",
+    ],
+  },
+  {
+    id: "1",
+    name: "Maslo / Roadoo Network",
+    title: "Lead Frontend Developer",
+    projectImage: roadooImage, // TODO: Replace with masloImage when available
+    dates: "Apr 2018 – Oct 2020",
+    responsibilities: [
+      "Developed and maintained a SaaS gamification platform designed to inspire and engage workforces through social interaction and rewards.",
+      "Built modular Angular 5 application integrated with PHP backend, delivering separate client and admin consoles supporting flexible configurations across multiple organizations.",
+      "Set up continuous integration pipelines via Jenkins, improving deployment efficiency and code reliability.",
+    ],
+    keyFeatures: [
+      "Designed and implemented a Facebook-style newsfeed, challenge system, and ranking system featuring an integrated rewards shop for prize redemption (trips, merchandise, etc.).",
+      "Collaborated on UX design and feature development, blending gamification and social media principles to increase employee engagement and motivation.",
+      "Architected modular frontend components enabling seamless multi-tenant support with customizable branding and feature configurations.",
     ],
   },
   {

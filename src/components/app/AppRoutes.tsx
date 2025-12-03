@@ -6,6 +6,7 @@ import About from "./About";
 import Fintech from "./Fintech";
 import Hospitality from "./Hospitality";
 import IGaming from "./iGaming";
+import Contact from "./Contact";
 
 const defaultMotion = {
   initial: { opacity: 0, y: 20 },
@@ -43,6 +44,12 @@ const routeConfigs = [
     path: "/igaming",
     key: "igaming",
     screen: <IGaming />,
+    motion: defaultMotion,
+  },
+  {
+    path: "/contact",
+    key: "contact",
+    screen: <Contact />,
     motion: defaultMotion,
   },
 ];

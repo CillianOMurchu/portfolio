@@ -81,7 +81,7 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
                 ? "scale(0.9) translateY(20px)" 
                 : "translateY(0)",
               animation: `flyInUp 0.8s cubic-bezier(.4,0,.2,1) forwards`,
-              animationDelay: `${i * 0.5}s`,
+              animationDelay: `${i * 0.15}s`,
               textAlign: "center",
               width: "100%",
               left: 0,
@@ -93,7 +93,7 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
               ...(item.text === "Hospitality" ? {} : { fontWeight: 700 }),
             }}
             aria-label={item.text}
-            onClick={() => onItemClick?.(item.text as ItemType)}
+            // onClick={() => onItemClick?.(item.text as ItemType)}
             title={selectedItem === (item.text as ItemType) ? "Click to deactivate" : "Click to explore"}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

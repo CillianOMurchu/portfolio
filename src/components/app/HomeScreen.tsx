@@ -110,7 +110,6 @@ const HomeScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator Arrow */}
       {selectedItem && scrollY < 50 && (
         <motion.div
           className="fixed bottom-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 z-20 pointer-events-none"
@@ -119,9 +118,6 @@ const HomeScreen: React.FC = () => {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.5 }}
         >
-          {/* <div className="text-sm font-medium" style={{ color: theme.scrollIndicatorColor }}>
-            Scroll down
-          </div> */}
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
@@ -144,7 +140,6 @@ const HomeScreen: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Description Section - Below Hero */}
       {selectedItem && (
         <motion.div
           className="relative w-full px-4 md:px-8 lg:px-16 py-16"
@@ -157,7 +152,6 @@ const HomeScreen: React.FC = () => {
           }}
         >
           <div className="max-w-4xl mx-auto">
-            {/* Close Button */}
             <div className="flex justify-end mb-4">
               <button
                 onClick={handleCloseDescription}
