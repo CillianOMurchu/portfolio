@@ -48,7 +48,7 @@ export const experienceData = [
     id: "1",
     name: "Maslo / Roadoo Network",
     title: "Lead Frontend Developer",
-    projectImage: roadooImage, // TODO: Replace with masloImage when available
+    projectImage: roadooImage,
     dates: "Apr 2018 – Oct 2020",
     responsibilities: [
       "Developed and maintained a SaaS gamification platform designed to inspire and engage workforces through social interaction and rewards.",

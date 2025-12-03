@@ -22,12 +22,11 @@ const animationTiming = { duration: 0.8 };
 const ProfileHeader = () => (
   <>
     <h1 className="text-5xl md:text-3xl font-extrabold text-emerald-400 mb-6">
-      Cillian Ó Murchú
+      Cillian
+      <p>Ó Murchú</p>
     </h1>
     <div className="mt-8 space-y-3">
-      <p className="text-emerald-300 text-sm">
-        🎵 Music • 🎮 Gaming • 💼 Full-Stack Engineering
-      </p>
+      <p className="text-emerald-300 text-sm"> Full Stack Software Engineer</p>
     </div>
   </>
 );

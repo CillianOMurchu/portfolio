@@ -94,7 +94,7 @@ export function Name() {
   const oIndex = name.indexOf("Ó");
 
   const bioText =
-    "Full-stack developer specializing in modern web technologies and creative digital experiences.";
+    "Full-stack engineer specializing in modern web technologies and creative digital experiences.";
   const [displayedText, setDisplayedText] = useState("");
   
   useEffect(() => {

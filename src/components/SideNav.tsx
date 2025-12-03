@@ -42,7 +42,7 @@ const SideNav: React.FC = () => {
           </button>
           <div className="flex-1 flex items-center justify-center">
             <p className="text-xl text-center max-w-2xl leading-relaxed">
-              Full-stack developer specializing in modern web technologies and
+              Full-stack engineer specializing in modern web technologies and
               creative digital experiences.
             </p>
           </div>
