@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FiHome, FiUser } from "react-icons/fi";
+import { FiRadio } from "react-icons/fi";
 import { NavMenuItem } from "./NavMenuItem";
 import { useLocation } from "react-router-dom";
 
@@ -39,6 +40,9 @@ export const MobileMenuPanel: React.FC<MobileMenuPanelProps> = ({
               </NavMenuItem>
               <NavMenuItem href="/about" icon={FiUser} onNavigate={onClose} selected={currentPage === "/about"}>
                 About
+              </NavMenuItem>
+              <NavMenuItem href="/streaming" icon={FiRadio} onNavigate={onClose} selected={currentPage === "/streaming"}>
+                Streaming
               </NavMenuItem>
             </nav>
           </motion.div>

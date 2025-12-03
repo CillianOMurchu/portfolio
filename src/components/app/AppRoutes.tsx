@@ -7,6 +7,7 @@ import Fintech from "./Fintech";
 import Hospitality from "./Hospitality";
 import IGaming from "./iGaming";
 import Contact from "./Contact";
+import Streaming from "./Streaming";
 
 const defaultMotion = {
   initial: { opacity: 0, y: 20 },
@@ -50,6 +51,12 @@ const routeConfigs = [
     path: "/contact",
     key: "contact",
     screen: <Contact />,
+    motion: defaultMotion,
+  },
+  {
+    path: "/streaming",
+    key: "streaming",
+    screen: <Streaming />,
     motion: defaultMotion,
   },
 ];
