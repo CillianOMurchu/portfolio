@@ -76,7 +76,7 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
             }}
             className={`p-4 block text-slate-500/15${item.text === "Hospitality" ? "" : " font-bold"} ${item.className} whitespace-nowrap transition-all duration-300 cursor-pointer`}
             style={{
-              opacity: selectedItem && selectedItem !== (item.text as ItemType) ? 0.3 : undefined,
+              opacity: selectedItem && selectedItem !== (item.text as ItemType) ? 0.3 : 0,
               transform: selectedItem && selectedItem !== (item.text as ItemType)
                 ? "scale(0.9) translateY(20px)" 
                 : "translateY(0)",
