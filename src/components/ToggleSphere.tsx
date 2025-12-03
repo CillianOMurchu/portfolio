@@ -22,7 +22,7 @@ const ToggleSphere: React.FC<ToggleSphereProps> = ({ toggled, setToggled }) => {
 
   React.useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20 && toggled) {
+      if (window.scrollY > 200 && toggled) {
         setToggled(false);
       }
     };
