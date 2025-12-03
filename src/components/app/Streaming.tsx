@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 // --- Configuration ---
 const TWITCH_CHANNEL_NAME = "ichilliano"; // The Twitch channel name you want to stream
-const ALLOWED_PARENTS = ["localhost", "cillianomurchu.vercel.app"]; 
+const ALLOWED_PARENTS = ["localhost", "cillianomurchu.vercel.app", "www.cillianmurchu.com", "cillianmurchu.com"]; 
 
 const Streaming = () => {
   useEffect(() => {
