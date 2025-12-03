@@ -8,7 +8,7 @@ interface BurgerMenuIconProps {
 
 export const BurgerMenuIcon: React.FC<BurgerMenuIconProps> = ({ isOpen, onClick }) => (
   <button
-    className="relative w-10 h-10 flex items-center justify-center focus:outline-none z-50 md:hidden"
+    className="relative w-10 h-10 flex items-center justify-center focus:outline-none z-50"
     aria-label={isOpen ? "Close menu" : "Open menu"}
     onClick={onClick}
   >
