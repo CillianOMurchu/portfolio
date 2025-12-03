@@ -1,4 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react"; // 👈 Added useRef
+
+// Extend Window type to include Twitch (Simplified for functional JavaScript/React setup)
+// In a dedicated TypeScript file (.d.ts), you would use the detailed interface provided earlier.
+declare global {
+    interface Window {
+        Twitch: any;
+    }
+}
 
 // --- Configuration ---
 const TWITCH_CHANNEL_NAME = "ichilliano";
@@ -21,31 +29,37 @@ function loadTwitchEmbedScript() {
 
 const Streaming = () => {
     const [isLive, setIsLive] = useState(false);
+    // 1. Use useRef to hold the Twitch Player instance
+    const playerRef = useRef(null); 
     
     useEffect(() => {
-        let playerInstance;
-
+        // 2. Load the script and initialize the player once
         loadTwitchEmbedScript().then(() => {
-            // Script is loaded, Twitch object is available
-            if (typeof window.Twitch !== 'undefined') {
+            if (window.Twitch) {
                 initializePlayer();
             }
         });
 
         function initializePlayer() {
-             // 1. Initialize the Twitch Player, targeting the div ID
-            // The Twitch object is expected to be on the window after the script loads
-            playerInstance = new window.Twitch.Player(PLAYER_EMBED_ID, {
+            // Prevent initialization if a player is already attached to this component
+            if (playerRef.current) {
+                return; 
+            }
+            
+            // 3. Initialize the Twitch Player, targeting the div ID
+            const playerInstance = new window.Twitch.Player(PLAYER_EMBED_ID, {
                 width: '100%',
                 height: '100%',
                 channel: TWITCH_CHANNEL_NAME,
-                // Pass allowed domains as an array
                 parent: ALLOWED_PARENTS, 
                 autoplay: true, 
                 muted: true 
             });
 
-            // 2. Attach event listeners directly to the player instance
+            // 4. Store the instance in the ref
+            playerRef.current = playerInstance; 
+            
+            // 5. Attach event listeners directly to the player instance
             playerInstance.addEventListener(window.Twitch.Player.ONLINE, () => {
                 console.log(`${TWITCH_CHANNEL_NAME} is LIVE.`);
                 setIsLive(true);
@@ -57,11 +71,18 @@ const Streaming = () => {
             });
         }
 
-        // Cleanup: Important to destroy the player instance if needed
+        // 6. Cleanup Function: CRITICAL for preventing memory leaks
         return () => {
-             // Future cleanup: playerInstance.destroy();
+            if (playerRef.current && typeof playerRef.current.destroy === 'function') {
+                console.log('Destroying Twitch Player instance.');
+                playerRef.current.destroy();
+                playerRef.current = null; // Clear the ref
+                // Clean up the DOM element content to be safe
+                const embedDiv = document.getElementById(PLAYER_EMBED_ID);
+                if (embedDiv) embedDiv.innerHTML = '';
+            }
         };
-    }, []);
+    }, []); // Empty dependency array ensures run on mount, cleanup on unmount
 
     // 🔴 The Twitch Player API will manage the iframe inside this div
     return (
@@ -88,4 +109,4 @@ const Streaming = () => {
     );
 };
 
-export default Streaming; 
+export default Streaming;
