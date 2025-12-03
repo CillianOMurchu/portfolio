@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import "../styles/theme.css";
 
 // --- ANIMATION CONFIGURATIONS ---
 
@@ -31,6 +32,7 @@ interface TimelineWork {
   title: string;
   dates: string;
   projectImage?: string;
+  link?: string;
   // UPDATED: Now an array for better presentation
   responsibilities?: string[];
   keyFeatures?: string[];
@@ -52,57 +54,69 @@ export const TimelineItem = ({ work, index }: TimelineItemProps) => {
       viewport={{ once: true, amount: 0.2 }}
       variants={cardVariants}
       transition={{ delay: index * 0.1, duration: 0.3 }}
-      className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-6 rounded-xl shadow-lg border border-emerald-700 backdrop-blur-md"
-      style={{
-        backgroundColor: "rgba(19, 26, 40, 0.4)", // Dark background
-        borderColor: "rgba(16, 185, 129, 0.3)", // Subtle border
-        boxShadow:
-          "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-        backdropFilter: "blur(10px)",
-      }}
+      className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-6 timeline-card"
     >
       {/* 1. Image/Media Column */}
       <div className="sm:col-span-1">
         {work.projectImage && (
-          <img
-            src={work.projectImage}
-            alt={`Screenshot of ${work.name} tool`}
-            className="w-full h-auto rounded-lg object-cover shadow-2xl sm:max-h-60 sm:w-auto mx-auto sm:mx-0"
-          />
+          <a
+            href={work.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block group"
+            title={`Visit ${work.name} website`}
+          >
+            <img
+              src={work.projectImage}
+              alt={`Screenshot of ${work.name} tool`}
+              className="w-full h-auto sm:max-h-60 sm:w-auto mx-auto sm:mx-0 timeline-card-image"
+            />
+          </a>
         )}
       </div>
 
       {/* 2. Content Column */}
       <div className="sm:col-span-2 flex flex-col">
         <div className="mb-4">
-          <h3 className="text-2xl font-extrabold text-emerald-400">
-            {work.name}
-          </h3>
-          <p className="text-lg font-semibold text-white">
+          {work.link ? (
+            <a
+              href={work.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+              title={`Visit ${work.name} website`}
+            >
+              <h3 className="timeline-card-title">
+                {work.name}
+              </h3>
+            </a>
+          ) : (
+            <h3 className="timeline-card-title">
+              {work.name}
+            </h3>
+          )}
+          <p className="timeline-card-subtitle">
             {work.title} ({work.dates})
           </p>
         </div>
 
         {/* --- Responsibilities Panel (Section 1) --- */}
         {work.responsibilities && work.responsibilities.length > 0 && (
-          <div className="p-4 rounded-lg bg-black/20 border border-slate-700/50 mb-6">
-            <h4 className="text-base font-bold text-emerald-300 mb-3 border-b border-emerald-700/50 pb-2">
+          <div className="timeline-card-section">
+            <h4 className="timeline-card-section-title">
               <span className="mr-2">💡</span>Primary Responsibilities
             </h4>
 
             <motion.ul
-              className="space-y-3 text-slate-300"
+              className="timeline-card-list"
               variants={listContainerVariants}
             >
               {work.responsibilities.map((responsibility, i) => (
                 <motion.li
                   key={`resp-${i}`}
                   variants={listItemVariants}
-                  className="flex items-start"
                 >
-                  <span className="text-emerald-500 text-xl font-bold mr-2 leading-none">
-                    •
-                  </span>
+                  <span className="timeline-card-list-bullet">•</span>
                   <ReactMarkdown>{responsibility}</ReactMarkdown>
                 </motion.li>
               ))}
@@ -112,23 +126,20 @@ export const TimelineItem = ({ work, index }: TimelineItemProps) => {
 
         {/* --- Key Features/Highlights Panel (Section 2) --- */}
         {work.keyFeatures && work.keyFeatures.length > 0 && (
-          <div className="p-4 rounded-lg bg-black/20 border border-slate-700/50">
-            <h4 className="text-base font-bold text-emerald-300 mb-3 border-b border-emerald-700/50 pb-2">
+          <div className="timeline-card-section">
+            <h4 className="timeline-card-section-title">
               <span className="mr-2">⚙️</span>Key Features & Contributions
             </h4>
             <motion.ul
-              className="space-y-3 text-slate-400"
+              className="timeline-card-list"
               variants={listContainerVariants}
             >
               {work.keyFeatures.map((feature, i) => (
                 <motion.li
                   key={`feat-${i}`}
                   variants={listItemVariants}
-                  className="flex items-start"
                 >
-                  <span className="text-emerald-500 mr-2 text-xl leading-none font-bold">
-                    »
-                  </span>
+                  <span className="timeline-card-list-bullet">»</span>
                   <ReactMarkdown>{feature}</ReactMarkdown>
                 </motion.li>
               ))}

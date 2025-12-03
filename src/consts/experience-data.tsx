@@ -12,6 +12,7 @@ export const experienceData = [
     name: "Lighthouse",
     title: "Senior Software Engineer",
     projectImage: lighthouseImage, // Imported image module
+    link: "https://www.mylighthouse.com/",
     dates: "Feb 2023 – Feb 2025",
     // --- UPDATED: responsibilities is now an array ---
     responsibilities: [
@@ -31,6 +32,7 @@ export const experienceData = [
     name: "Betsson Group",
     title: "Software Engineer",
     projectImage: betsson,
+    link: "https://betssongroup.com/",
     dates: "Oct 2020 – Jan 2023",
     // --- UPDATED: responsibilities is now an array ---
     responsibilities: [
@@ -49,6 +51,7 @@ export const experienceData = [
     name: "Maslo / Roadoo Network",
     title: "Lead Frontend Developer",
     projectImage: roadooImage,
+    link: "https://www.maslo.app/en",
     dates: "Apr 2018 – Oct 2020",
     responsibilities: [
       "Developed and maintained a SaaS gamification platform designed to inspire and engage workforces through social interaction and rewards.",
@@ -66,6 +69,7 @@ export const experienceData = [
     name: "PokerStars",
     title: "Gaming Operator & Tournament Coordinator",
     projectImage: pokerstars,
+    link: "https://www.pokerstarslive.com/",
     dates: "Jan 2003 – Jul 2016",
     responsibilities: [
       "Managed high-volume tournament operations and gaming floor efficiency for major poker events over 13+ years.",
