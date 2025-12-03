@@ -3,7 +3,6 @@ import { useEffect } from "react";
 // --- Configuration ---
 const TWITCH_CHANNEL_NAME = "ichilliano"; // The Twitch channel name you want to stream
 const ALLOWED_PARENTS = ["localhost", "cillianomurchu.vercel.app"]; 
-// IMPORTANT: These must be your exact domains (excluding https:// or www)
 
 const Streaming = () => {
   useEffect(() => {
@@ -27,10 +26,6 @@ const Streaming = () => {
 
   // 1. Twitch Player URL (for the main video stream)
   const playerUrl = `https://player.twitch.tv/?channel=${TWITCH_CHANNEL_NAME}&${parentParams}&autoplay=true`;
-
-  // 2. Twitch Chat URL (optional, if you want the chat next to the player)
-  const chatUrl = `https://www.twitch.tv/embed/${TWITCH_CHANNEL_NAME}/chat?${parentParams}`;
-
 
   return (
     <div className="min-h-screen bg-black flex flex-col lg:flex-row items-center justify-center px-4 pt-20 pb-16 lg:space-x-4">
