@@ -85,7 +85,7 @@ export default function AnimatedGrid() {
               y1={line.y1}
               x2={line.isVertical ? line.x1 : line.x2}
               y2={line.isVertical ? line.y1 : line.y2}
-              stroke="#10b981"
+              stroke="var(--color-accent-primary)"
               strokeWidth="1.5"
               opacity="0.7"
             >
@@ -239,7 +239,7 @@ export default function AnimatedGrid() {
         <defs>
           <radialGradient id="orbGradient" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#6ee7b7" stopOpacity="1" />
-            <stop offset="60%" stopColor="#10b981" stopOpacity="0.7" />
+            <stop offset="60%" stopColor="var(--color-accent-primary)" stopOpacity="0.7" />
             <stop offset="100%" stopColor="#065f46" stopOpacity="0.2" />
           </radialGradient>
         </defs>

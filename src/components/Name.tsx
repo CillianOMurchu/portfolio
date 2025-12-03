@@ -15,7 +15,7 @@ const NameDisplay: React.FC<NameDisplayProps> = ({
 }) => (
   <div className="absolute inset-0 flex items-center justify-center">
     <span
-      className="text-emerald-400 text-[11px] tracking-wider"
+      className="text-accent text-[11px] tracking-wider"
       style={{
         textShadow:
           "0 0 5px rgba(16,185,129,0.8),0 0 10px rgba(16,185,129,0.6),0 0 15px rgba(16,185,129,0.4),0 0 20px rgba(16,185,129,0.3)",
@@ -47,14 +47,14 @@ const InfoBox: React.FC<InfoBoxProps> = ({
   bioText,
 }) => (
   <div
-    className="info-box absolute left-0 mt-8 w-80 max-w-[calc(100vw-40px)] h-24 border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded"
+        className="info-box absolute left-0 mt-8 w-80 max-w-[calc(100vw-40px)] h-24 border border-accent-subtle bg-black/80 backdrop-blur-sm p-4 rounded"
     style={{
       boxShadow:
         "0 0 10px rgba(16,185,129,0.3), 0 0 20px rgba(16,185,129,0.2), inset 0 0 20px rgba(16,185,129,0.05)",
     }}
   >
     <p
-      className="text-emerald-400 text-sm tracking-wide leading-relaxed"
+      className="text-accent text-sm tracking-wide leading-relaxed"
       style={{
         textShadow: "0 0 3px rgba(16,185,129,0.5)",
         fontFamily: "system-ui, -apple-system, sans-serif",
@@ -62,7 +62,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
     >
       {displayedText}
       {showText && displayedText.length < bioText.length && (
-        <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
+        <span className="inline-block w-[2px] h-[1em] bg-accent ml-[2px] animate-pulse" />
       )}
     </p>
   </div>
@@ -161,7 +161,7 @@ export function Name() {
       >
         <div className="absolute inset-0" />
         <div
-          className="absolute inset-3 border border-emerald-500/25"
+          className="absolute inset-3 border border-accent-subtle"
           style={{ clipPath: hexagonClip }}
         />
         <NameDisplay

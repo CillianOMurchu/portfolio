@@ -4,7 +4,6 @@ interface InfoBoxProps {
   isVisible: boolean;
   displayedText: string;
   showText: boolean;
-  bioTextLength: number;
   isActive: boolean;
 }
 
@@ -12,7 +11,6 @@ const InfoBox: React.FC<InfoBoxProps> = ({
   isVisible,
   displayedText,
   showText,
-  bioTextLength,
   isActive,
 }) => {
   if (!isVisible) return null;
@@ -44,7 +42,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
         }
       `}</style>
       <div
-        className={`info-box border-draw absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-80 max-w-[90vw] border border-emerald-500/60 bg-black/80 backdrop-blur-sm p-4 rounded ${
+        className={`info-box border-draw absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-80 max-w-[90vw] border border-accent-subtle bg-black/80 backdrop-blur-sm p-4 rounded ${
           isActive ? "" : "fade-out"
         }`}
         style={{
@@ -54,15 +52,15 @@ const InfoBox: React.FC<InfoBoxProps> = ({
         }}
       >
         <p
-          className="text-emerald-400 text-sm tracking-wide leading-relaxed"
+          className="text-accent text-sm tracking-wide leading-relaxed"
           style={{
-            textShadow: `0 0 3px rgba(16,185,129,0.5)`,
+            textShadow: "0 0 3px rgba(16,185,129,0.5)",
             fontFamily: "system-ui, -apple-system, sans-serif",
           }}
         >
           {displayedText}
-          {showText && displayedText.length < bioTextLength && (
-            <span className="inline-block w-[2px] h-[1em] bg-emerald-400 ml-[2px] animate-pulse" />
+          {showText && (
+            <span className="inline-block w-[2px] h-[1em] bg-accent ml-[2px] animate-pulse" />
           )}
         </p>
       </div>

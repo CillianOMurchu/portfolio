@@ -21,12 +21,12 @@ const animationTiming = { duration: 0.8 };
 
 const ProfileHeader = () => (
   <>
-    <h1 className="text-5xl md:text-3xl font-extrabold text-emerald-400 mb-6">
+    <h1 className="text-5xl md:text-3xl font-extrabold text-accent mb-6">
       Cillian
       <p>Ó Murchú</p>
     </h1>
     <div className="mt-8 space-y-3">
-      <p className="text-emerald-300 text-sm"> Full Stack Software Engineer</p>
+      <p className="text-accent text-sm"> Full Stack Software Engineer</p>
     </div>
   </>
 );
@@ -47,7 +47,7 @@ const About = () => {
           <img
             src={profileImage}
             alt="Portrait of Cillian O'Murchu"
-            className="w-80 h-80 rounded-full shadow-lg object-cover border-4 border-emerald-500/30"
+            className="w-80 h-80 rounded-full shadow-lg object-cover border-4 border-accent-subtle"
           />
         </motion.div>
 

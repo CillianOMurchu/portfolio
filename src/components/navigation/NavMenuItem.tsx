@@ -20,7 +20,7 @@ export function NavMenuItem({ href, icon: Icon, children, onNavigate, selected }
   return (
     <a
       href={href}
-      className={`flex items-center gap-3 text-emerald-400 neon text-lg font-bold px-4 py-2 rounded transition-colors hover:bg-emerald-900/30 ${selected ? "nav-menu-item-selected" : ""}`}
+      className={`flex items-center gap-3 text-accent neon text-lg font-bold px-4 py-2 rounded transition-colors hover:bg-accent-hover ${selected ? "nav-menu-item-selected" : ""}`}
       onClick={handleClick}
     >
       <Icon className="w-5 h-5" />

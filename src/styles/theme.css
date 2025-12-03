@@ -282,6 +282,57 @@ body {
   border-radius: 4px;
 }
 
+/* --- TEXT COLOR UTILITIES --- */
+
+.text-accent {
+  color: var(--color-accent-primary);
+}
+
+.text-accent-light {
+  color: var(--color-accent-light);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* --- BORDER UTILITIES --- */
+
+.border-accent {
+  border-color: var(--color-accent-primary);
+}
+
+.border-accent-subtle {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* --- BACKGROUND UTILITIES --- */
+
+.bg-accent-subtle {
+  background-color: rgba(16, 185, 129, 0.15);
+}
+
+.bg-accent-hover {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* --- SHADOW/GLOW UTILITIES --- */
+
+.shadow-accent {
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3), 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.shadow-accent-strong {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+}
+
+/* --- HAMBURGER MENU --- */
+
+.burger-line {
+  background-color: var(--color-accent-primary);
+  box-shadow: var(--neon-glow-primary);
+}
+
 /* --- SURFACE/CARD IMPROVEMENTS --- */
 
 .surface {

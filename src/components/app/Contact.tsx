@@ -10,7 +10,7 @@ const Contact = () => {
         className="w-full max-w-lg"
       >
         {/* Chatbot Container */}
-        <div className="bg-slate-950/50 backdrop-blur-md border-2 border-emerald-500/50 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-slate-950/50 backdrop-blur-md border-2 border-accent-subtle rounded-2xl shadow-2xl overflow-hidden">
           {/* Header */}
           {/* <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-400/20 border-b border-emerald-500/30 px-6 py-4"> */}
           {/* <h2 className="text-emerald-400 font-semibold text-lg">Let's Connect</h2> */}
@@ -25,8 +25,8 @@ const Contact = () => {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="flex justify-start"
             >
-              <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-lg px-5 py-3 max-w-xs">
-                <p className="text-emerald-300 text-base leading-relaxed">
+              <div className="bg-accent-subtle border border-accent-subtle rounded-lg px-5 py-3 max-w-xs">
+                <p className="text-accent text-base leading-relaxed">
                   Hello there 👋
                 </p>
               </div>
@@ -42,16 +42,16 @@ const Contact = () => {
               <input
                 type="text"
                 placeholder="Type a message..."
-                className="w-full px-4 py-3 bg-slate-900/50 border border-emerald-500/30 rounded-lg text-gray-300 placeholder-gray-600 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+                className="w-full px-4 py-3 bg-slate-900/50 border border-accent-subtle rounded-lg text-gray-300 placeholder-gray-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent-subtle transition-all"
               />
-              <button className="w-full px-4 py-3 bg-emerald-500/80 hover:bg-emerald-500 text-white font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-emerald-500/20">
+              <button className="w-full px-4 py-3 bg-accent/80 hover:bg-accent text-white font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-accent/20">
                 Send
               </button>
             </motion.div>
           </div>
 
           {/* Footer Info */}
-          <div className="self-end bg-slate-900/50 border-t border-emerald-500/20 px-6 py-3 text-center">
+          <div className="self-end bg-slate-900/50 border-t border-accent-subtle px-6 py-3 text-center">
             <p className="text-gray-500 text-xs">
               💬 Let's chat about projects, ideas, or opportunities
             </p>

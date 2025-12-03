@@ -26,7 +26,7 @@ export const Status: React.FC<StatusProps> = ({ isActive = false, animateToActiv
       inline-flex items-center px-4 py-2 rounded-md font-medium text-sm
       border-2 transition-all duration-500 ease-in-out
       bg-slate-800 shadow-lg text-gray-400
-      ${displayActive ? 'border-emerald-400' : 'border-gray-500'}
+      ${displayActive ? 'border-accent' : 'border-gray-500'}
     `}>
       <span className="mr-2">
         Active
@@ -34,7 +34,7 @@ export const Status: React.FC<StatusProps> = ({ isActive = false, animateToActiv
       <div className={`
         w-3 h-3 rounded-full transition-all duration-500 ease-in-out
         ${displayActive
-          ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50'
+          ? 'bg-accent shadow-accent-strong'
           : 'bg-red-400 shadow-lg shadow-red-400/50'
         }
       `}
