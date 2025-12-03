@@ -46,6 +46,7 @@ const itemDescriptions: Record<Exclude<ItemType, null>, string> = {
 const HomeScreen: React.FC = () => {
   const [showSphere, setShowSphere] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ItemType>(null);
+  const [scrollY, setScrollY] = useState(0);
 
   const theme = themeMap[selectedItem || "null"];
 
@@ -62,6 +63,15 @@ const HomeScreen: React.FC = () => {
     setSelectedItem(null);
   };
 
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <motion.div
       className="home-screen relative"
@@ -70,7 +80,7 @@ const HomeScreen: React.FC = () => {
       }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
       style={{
-        minHeight: selectedItem ? "200vh" : "100vh",
+        minHeight: "auto",
       }}
     >
       {/* Background transition overlay */}
@@ -101,7 +111,7 @@ const HomeScreen: React.FC = () => {
       </div>
 
       {/* Scroll Indicator Arrow */}
-      {selectedItem && (
+      {selectedItem && scrollY < 50 && (
         <motion.div
           className="fixed bottom-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 z-20 pointer-events-none"
           initial={{ opacity: 0, y: -20 }}
@@ -109,9 +119,9 @@ const HomeScreen: React.FC = () => {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="text-sm font-medium" style={{ color: theme.scrollIndicatorColor }}>
+          {/* <div className="text-sm font-medium" style={{ color: theme.scrollIndicatorColor }}>
             Scroll down
-          </div>
+          </div> */}
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}

@@ -27,7 +27,7 @@ const About = () => {
   // ];
 
   return (
-    <div className="bg-black min-h-screen pt-20 pb-16 flex flex-col items-center justify-start space-y-8 px-4">
+    <div className=" bg-black min-h-screen pt-20 pb-16 flex flex-col items-center justify-start space-y-8 px-4">
       {/* Profile section - hidden on mobile, shown on iPad+ */}
       <div className="hidden md:flex w-full max-w-6xl gap-12 items-start">
         {/* Profile Image - slides in from right */}
@@ -53,7 +53,7 @@ const About = () => {
           viewport={{ once: true, amount: 0.8 }}
           variants={detailsAnimationVariants}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex-1 flex flex-col justify-center"
+          className="self-center flex-1 flex flex-col justify-center"
         >
           <h1 className="text-5xl font-extrabold text-emerald-400 mb-6">
             Cillian Ó Murchú

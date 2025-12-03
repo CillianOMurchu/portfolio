@@ -10,6 +10,8 @@ interface HeroTitleProps {
 }
 
 const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
+  const itemRefs = React.useRef<Record<string, HTMLButtonElement | null>>({});
+
   const items = [
     { text: "SASS", className: " text-8xl lg:text-[12rem] xl:text-[14rem]" },
     {
@@ -19,17 +21,40 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
     { text: "iGaming", className: "text-8xl lg:text-[12rem] xl:text-[14rem]" },
   ];
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>, item: string) => {
-    // Apply glow if nothing is selected, or if this is the selected item
-    if (!selectedItem || selectedItem === (item as ItemType)) {
+  // Update glow state when selectedItem changes
+  React.useEffect(() => {
+    items.forEach((item) => {
+      const btn = itemRefs.current[item.text];
+      if (!btn) return;
+
+      if (selectedItem === (item.text as ItemType)) {
+        // Selected item always has glow
+        btn.style.boxShadow = "var(--neon-glow-primary)";
+        btn.style.color = "var(--color-accent-primary)";
+      } else {
+        // Clear styles for non-selected items
+        btn.style.boxShadow = "";
+        btn.style.color = "";
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedItem]);
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Apply glow only on hover when nothing is selected
+    if (!selectedItem) {
       e.currentTarget.style.boxShadow = "var(--neon-glow-primary)";
       e.currentTarget.style.color = "var(--color-accent-primary)";
     }
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.boxShadow = "";
-    e.currentTarget.style.color = "";
+    // Clear hover styles only if nothing is selected
+    if (!selectedItem) {
+      e.currentTarget.style.boxShadow = "";
+      e.currentTarget.style.color = "";
+    }
+    // If something is selected, keep the glow managed by useEffect
   };
 
   return (
@@ -46,7 +71,10 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
         {items.map((item, i) => (
           <button
             key={item.text}
-            className={`block text-slate-500/15${item.text === "Hospitality" ? "" : " font-bold"} ${item.className} whitespace-nowrap transition-all duration-300 cursor-pointer`}
+            ref={(el) => {
+              if (el) itemRefs.current[item.text] = el;
+            }}
+            className={`p-4 block text-slate-500/15${item.text === "Hospitality" ? "" : " font-bold"} ${item.className} whitespace-nowrap transition-all duration-300 cursor-pointer`}
             style={{
               opacity: selectedItem && selectedItem !== (item.text as ItemType) ? 0.3 : undefined,
               transform: selectedItem && selectedItem !== (item.text as ItemType)
@@ -61,12 +89,13 @@ const HeroTitle: React.FC<HeroTitleProps> = ({ onItemClick, selectedItem }) => {
               margin: "0 auto",
               position: "relative",
               willChange: "opacity, transform",
+              outline: "none",
               ...(item.text === "Hospitality" ? {} : { fontWeight: 700 }),
             }}
             aria-label={item.text}
             onClick={() => onItemClick?.(item.text as ItemType)}
             title={selectedItem === (item.text as ItemType) ? "Click to deactivate" : "Click to explore"}
-            onMouseEnter={(e) => handleMouseEnter(e, item.text)}
+            onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             {item.text}
