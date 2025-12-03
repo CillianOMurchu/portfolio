@@ -9,13 +9,13 @@ const Footer: React.FC = () => (
   >
     <div className="absolute top-0 left-0 w-full" />
     <SocialLinks />
-    <a
+    {/* <a
       href="/contact"
       className="mt-4 text-emerald-400 hover:underline cursor-pointer transition-colors duration-200"
       aria-label="Contact via email"
     >
       cillian.murchu@gmail.com
-    </a>
+    </a> */}
   </footer>
 );
 
