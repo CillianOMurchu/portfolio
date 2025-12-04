@@ -1,12 +1,12 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import './index.css'
-import App from './App.tsx'
-import { OrbOriginProvider } from './components/OrbOriginContext';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import "./index.css";
+import App from "./App.tsx";
+import { OrbOriginProvider } from "./components/OrbOriginContext";
 
 // Get the root element and create React root
-const rootElement = document.getElementById('root')!;
+const rootElement = document.getElementById("root")!;
 const root = createRoot(rootElement);
 
 // Render React app immediately
@@ -17,5 +17,5 @@ root.render(
         <App />
       </OrbOriginProvider>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );

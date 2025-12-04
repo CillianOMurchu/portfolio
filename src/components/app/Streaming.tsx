@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from "react"; // 👈 Added useRef
+import { motion, AnimatePresence } from "framer-motion";
 
 // Extend Window type to include Twitch (Simplified for functional JavaScript/React setup)
 // In a dedicated TypeScript file (.d.ts), you would use the detailed interface provided earlier.
 declare global {
     interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Twitch: any;
     }
 }
@@ -30,7 +32,8 @@ function loadTwitchEmbedScript() {
 const Streaming = () => {
     const [isLive, setIsLive] = useState(false);
     // 1. Use useRef to hold the Twitch Player instance
-    const playerRef = useRef(null); 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const playerRef = useRef<any>(null); 
     
     useEffect(() => {
         // 2. Load the script and initialize the player once
@@ -86,25 +89,67 @@ const Streaming = () => {
 
     // 🔴 The Twitch Player API will manage the iframe inside this div
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center px-4 pt-20 pb-16 relative">
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center px-4 pt-20 pb-16 relative overflow-hidden">
             
-            {/* 🔴 LIVE INDICATOR */}
-            <div className="absolute top-20 right-4 flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full animate-pulse ${isLive ? 'bg-emerald-400 shadow-lg shadow-emerald-400/60' : 'bg-red-400 shadow-lg shadow-red-400/40'}`} />
-                <span className={`text-sm font-semibold ${isLive ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {isLive ? "LIVE" : "OFFLINE"}
-                </span>
-            </div>
+            {/* 🔴 LIVE INDICATOR - Animated Position */}
+            <AnimatePresence mode="wait">
+                <motion.div 
+                    key={isLive ? "live" : "offline"}
+                    className="flex items-center gap-2"
+                    initial={{
+                        opacity: 0,
+                        top: "50%",
+                        left: "50%",
+                        x: "-50%",
+                        y: "-50%"
+                    }}
+                    animate={{
+                        opacity: 1,
+                        top: isLive ? "70px" : "50%",
+                        right: isLive ? "16px" : "auto",
+                        left: isLive ? "auto" : "50%",
+                        x: isLive ? 0 : "-50%",
+                        y: isLive ? 0 : "-50%"
+                    }}
+                    exit={{
+                        opacity: 0
+                    }}
+                    style={{
+                        position: "fixed"
+                    }}
+                    transition={{ 
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 15,
+                        duration: 0.6
+                    }}
+                >
+                    <div className={`w-3 h-3 rounded-full animate-pulse ${isLive ? 'bg-emerald-400 shadow-lg shadow-emerald-400/60' : 'bg-red-400 shadow-lg shadow-red-400/40'}`} />
+                    <span className={`text-sm font-semibold ${isLive ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {isLive ? "LIVE" : "OFFLINE"}
+                    </span>
+                </motion.div>
+            </AnimatePresence>
             
-            {/* 📺 VIDEO PLAYER CONTAINER - The target for the Twitch Player API */}
-            <div 
-                id="twitch-player-embed" 
+            {/* 📺 VIDEO PLAYER CONTAINER - Fades in when live */}
+            <motion.div
                 className="w-full max-w-7xl aspect-video"
-                style={{
-                    borderRadius: "8px",
-                    border: "1px solid rgba(16, 185, 129, 0.3)",
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isLive ? 1 : 0 }}
+                transition={{ 
+                    delay: isLive ? 1.2 : 0,
+                    duration: 0.6
                 }}
-            />
+            >
+                <div 
+                    id="twitch-player-embed" 
+                    className="w-full h-full"
+                    style={{
+                        borderRadius: "8px",
+                        border: "1px solid rgba(16, 185, 129, 0.3)",
+                    }}
+                />
+            </motion.div>
         </div>
     );
 };
